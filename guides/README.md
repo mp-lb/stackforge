@@ -16,7 +16,7 @@ when it outgrows one file — i.e. it carries `snippets/`, sub-docs, or living s
 - **[clerk.md](./clerk.md)** — Clerk auth setup choices and CLI-assisted setup.
 - **[security.md](./security.md)** — security practices (blank canvas — nothing exists yet).
 - **[publishing.md](./publishing.md)** — publishing npm packages via CI. A pointer-guide: the substance is canon (`fssstack/standards/*`) and is **referenced, not copied**.
-- **[react-native/](./react-native/)** — standing up an Expo mobile app (folder: carries `snippets/`).
+- **[react-native/](./react-native/)** — standing up an Expo mobile app and getting it published (folder: carries `snippets/` + an inputs interpolation script). Three short guides — `INPUTS.md` (front-loaded console work), `SETUP.md`, `BOOTSTRAP.md` (first deploy) — with `SETUP_REACT_NATIVE.md` as the deep reference. Publishing is the one strong-default spine (there's only one way onto the stores); auth, structure, and everything else is "here's how you might do it."
 - **[observability/](./observability/)** — OTel + Sentry + reliability (folder: carries the recipe + per-project rollout state).
 
 ## On graduation
