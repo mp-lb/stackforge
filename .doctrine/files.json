@@ -292,7 +292,7 @@
     "fssstack/shell/apps/example-backend/dist/index.d.ts": {
       "storageClass": "text",
       "hash": "sha256:87c5523fa609f33aeb47a245318cf67fc2bde7999bcdebf559db303bc65268fe",
-      "lastSyncedAt": "2026-06-04T16:05:06.354Z",
+      "lastSyncedAt": "2026-06-14T22:49:08.938Z",
       "remoteFileId": "fd3fe491-7bd9-4643-b485-673d335c8a7c",
       "remotePath": "/shell/apps/example-backend/dist/index.d.ts",
       "remoteUpdatedAt": "2026-06-02T10:52:02.228Z",
@@ -301,7 +301,7 @@
     "fssstack/shell/apps/example-backend/dist/index.js": {
       "storageClass": "text",
       "hash": "sha256:7fc39f62ef8d268778571b6b743f035ba8c143b204c8c9a339a862025cf093f7",
-      "lastSyncedAt": "2026-06-04T16:05:06.354Z",
+      "lastSyncedAt": "2026-06-14T22:49:08.938Z",
       "remoteFileId": "f2bc2ee1-f71a-42b2-85ea-fdd31a230f3a",
       "remotePath": "/shell/apps/example-backend/dist/index.js",
       "remoteUpdatedAt": "2026-06-02T10:50:42.807Z",
@@ -1533,11 +1533,11 @@
   },
   "references": {
     "fssstack/skills": {
-      "lastSeenAt": "2026-06-12T18:31:49.425Z",
+      "lastSeenAt": "2026-06-14T22:49:08.938Z",
       "type": "store-reference"
     },
     "fssstack/standards": {
-      "lastSeenAt": "2026-06-12T18:31:49.425Z",
+      "lastSeenAt": "2026-06-14T22:49:08.938Z",
       "type": "store-reference"
     }
   },

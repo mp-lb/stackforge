@@ -14,15 +14,34 @@ jobs:
           node-version: 22
           cache: npm
 
-      - uses: expo/expo-github-action@v8
+      # Run from RUNNER_TEMP: the repo .npmrc routes the @mp-lb scope to
+      # GitHub Packages, but these tools live on the public npm registry.
+      - name: Decrypt shared secrets
+        env:
+          SECRETS_KEY: ${{ secrets.SECRETS_KEY }}
+        run: |
+          cd "$RUNNER_TEMP"
+          npx -y @mp-lb/doctrine-secrets decrypt "$GITHUB_WORKSPACE/docs/secrets.json.enc" --secret "$SECRETS_KEY" > "$RUNNER_TEMP/secrets.json"
+
+      # Call the mapper's cli.js through node directly: the published bin
+      # guard (`process.argv[1].endsWith("cli.js")`) silently no-ops when run
+      # via the .bin symlink, e.g. through npx.
+      - name: Load env (release)
+        run: |
+          cd "$RUNNER_TEMP"
+          npm install --prefix "$RUNNER_TEMP/env-mapper" @mp-lb/tools-env-mapper > /dev/null
+          node "$RUNNER_TEMP/env-mapper/node_modules/@mp-lb/tools-env-mapper/dist/cli.js" github-env release \
+            --secrets "$RUNNER_TEMP/secrets.json" \
+            --public "$GITHUB_WORKSPACE/.env.production" \
+            --map "$GITHUB_WORKSPACE/env-map.yaml"
+
+      - uses: expo/expo-github-action@v9
         with:
           eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+          token: ${{ env.EXPO_TOKEN }}
 
       - name: Install dependencies
         run: npm ci
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
 
       - name: Test EAS CLI
         run: |

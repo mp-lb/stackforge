@@ -1,0 +1,16 @@
+# Which env vars each consumer needs. tools-env-mapper merges committed
+# .env.production with the decrypted shared secrets file
+# (docs/secrets.json.enc) and exports only the mapped keys; values that come
+# from secrets are masked in GitHub Actions output.
+ci:
+  - NODE_AUTH_TOKEN
+release:
+  - NODE_AUTH_TOKEN
+  - EXPO_TOKEN
+# Pushed to the EAS production environment (eas env:push) so EAS builds and
+# update bundles resolve the same values server-side.
+eas:
+  - NODE_AUTH_TOKEN
+  - EXPO_PUBLIC_APP_ENV
+  - EXPO_PUBLIC_API_BASE_URL
+  - EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY

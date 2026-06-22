@@ -1,0 +1,54 @@
+# When .easignore exists, EAS uses it instead of .gitignore — keep the
+# .gitignore entries here too.
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+.zap/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env
+.env*.local
+
+# decrypted secrets
+secrets.json
+
+# typescript
+*.tsbuildinfo
+
+# generated native folders
+/ios
+/android
+
+# Not needed for builds: shared docs store (large media), CI, docs
+docs/
+.github/
+.changeset/
+mvp.md
+README.md

@@ -133,7 +133,7 @@ const buildPrompt = (
   includePrerequisites: boolean,
 ) => `${
   includePrerequisites
-    ? `Before starting, make sure the \`dx\`, \`git\`, \`docker\`, \`node\`, \`pm2\`, and \`zap\` commands are available. Install anything missing before continuing. Default to installing with Homebrew on macOS. For PM2, Zap, and Doctrine, install globally with npm using package names \`pm2\`, \`@mp-lb/zapper\`, and \`@mp-lb/doctrine-cli\`.
+    ? `Before starting, make sure the \`dx\`, \`git\`, \`docker\`, \`node\`, and \`zap\` commands are available. Install anything missing before continuing. Default to installing with Homebrew on macOS. For Zap and Doctrine, install globally with npm using package names \`@mp-lb/zapper\` and \`@mp-lb/doctrine-cli\`.
 
 `
     : ""

@@ -1,0 +1,55 @@
+project: REPLACE_WITH_APP_SLUG
+env: [.env.local, .env]
+profiles:
+  default:
+    env-files: [.env.local, .env]
+    services: [web]
+ports: [EXPO_WEB_PORT, EXPO_NATIVE_PORT]
+homepage: http://localhost:${EXPO_WEB_PORT}
+native:
+  web:
+    cmd: npm run web -- --port ${EXPO_WEB_PORT}
+    env: "*"
+  app:
+    aliases: [mobile]
+    cmd: npm run start -- --port ${EXPO_NATIVE_PORT}
+    env: "*"
+tasks:
+  install:
+    env: "*"
+    cmds:
+      - npm install {{REST}}
+  start:
+    env: "*"
+    cmds:
+      - npm run start -- --port ${EXPO_NATIVE_PORT} {{REST}}
+  ios:
+    env: "*"
+    cmds:
+      - npm run ios -- --port ${EXPO_NATIVE_PORT} {{REST}}
+  android:
+    env: "*"
+    cmds:
+      - npm run android -- --port ${EXPO_NATIVE_PORT} {{REST}}
+  web:
+    env: "*"
+    cmds:
+      - npm run web -- --port ${EXPO_WEB_PORT} {{REST}}
+  typecheck:
+    env: "*"
+    cmds:
+      - npm run typecheck
+  lint:
+    env: "*"
+    cmds:
+      - npm run lint
+  doctor:
+    env: "*"
+    cmds:
+      - npx expo-doctor
+  check:
+    env: "*"
+    cmds:
+      - zap task lint
+      - zap task typecheck
+      - zap task doctor

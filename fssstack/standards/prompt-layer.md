@@ -1,5 +1,9 @@
 # Prompt Storage
 
+This standard is for generic reusable LLM prompt text. Product agents use
+[agents-framework.md](./agents-framework.md) instead: agent prompt bodies live in
+Langfuse and are loaded through `@mp-lb/agents-framework`.
+
 Store reusable LLM prompts as Markdown files in a top-level `prompts/` directory. Each prompt is addressed by a stable id that maps directly to a file name:
 
 - `chat-agent-system` -> `prompts/chat-agent-system.md`

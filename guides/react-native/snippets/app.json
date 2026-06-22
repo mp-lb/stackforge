@@ -4,13 +4,12 @@
     "slug": "REPLACE_WITH_APP_SLUG",
     "scheme": "REPLACE_WITH_URL_SCHEME",
     "owner": "REPLACE_WITH_EXPO_OWNER",
-    "platforms": ["ios", "android"],
+    "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "runtimeVersion": "fingerprint",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "backgroundColor": "#FFFFFF",
     "ios": {
       "supportsTablet": true,
@@ -21,11 +20,6 @@
       },
       "config": {
         "usesNonExemptEncryption": false
-      },
-      "splash": {
-        "image": "./assets/images/splash-icon.png",
-        "resizeMode": "contain",
-        "backgroundColor": "#FFFFFF"
       }
     },
     "android": {
@@ -36,14 +30,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
       "softwareKeyboardLayoutMode": "pan",
       "googleServicesFile": "./google-services.json",
-      "splash": {
-        "image": "./assets/images/splash-icon.png",
-        "resizeMode": "contain",
-        "backgroundColor": "#FFFFFF"
-      },
       "intentFilters": [
         {
           "action": "VIEW",

@@ -10,20 +10,14 @@
       "channel": "development",
       "developmentClient": true,
       "node": "22.17.1",
-      "env": {
-        "NODE_AUTH_TOKEN": "$NODE_AUTH_TOKEN",
-        "EXPO_PUBLIC_APP_ENV": "development"
-      }
+      "environment": "development"
     },
     "production": {
       "distribution": "store",
       "autoIncrement": true,
       "channel": "production",
       "node": "22.17.1",
-      "env": {
-        "NODE_AUTH_TOKEN": "$NODE_AUTH_TOKEN",
-        "EXPO_PUBLIC_APP_ENV": "production"
-      }
+      "environment": "production"
     }
   },
   "submit": {

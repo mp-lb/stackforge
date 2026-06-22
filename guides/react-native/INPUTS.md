@@ -1,10 +1,15 @@
 # Inputs: the front-loaded human work
 
 Everything here happens in vendor consoles and can't be automated — Apple and
-Google require a human for most of it. Do it **before** development starts:
-the items are ordered by lead time, and the slowest ones take weeks. The
-output is a filled `inputs.env` (copy `inputs.example.env`); hand that to
+Google require a human for most of it. Prefer doing this **before** development
+starts: the items are ordered by lead time, and the slowest ones take weeks.
+The output is a filled `inputs.env` (copy `inputs.example.env`); hand that to
 whoever runs `SETUP.md` and everything downstream is automated.
+
+If vendor access is blocked, the mobile repo can still be scaffolded with the
+stable identifiers you do know. Leave unavailable values blank in `inputs.env`;
+the interpolation script keeps those placeholders visible. Record the deferred
+items in the repo and come back to this file before EAS, CI, or release setup.
 
 ## 1. Accounts (days to weeks — start immediately)
 
@@ -14,7 +19,9 @@ whoever runs `SETUP.md` and everything downstream is automated.
   12+ testers for 14 days before they're *allowed* to publish to production.
   If that applies, recruit the testers now — it's the longest pole in the
   whole process. (Internal testing and the `internal` track work immediately.)
-- **Expo account/org** (free to start) — this is `EXPO_OWNER`.
+- **Expo account/org** (free to start) — this is `EXPO_OWNER`. MAP Lab apps
+  default to `mp-lb`; use a client/product org only when ownership should
+  live outside the MAP Lab Expo account.
 - **Clerk production instance** — requires a real domain even for
   mobile-only apps.
 
@@ -72,7 +79,7 @@ Add to the shared encrypted secrets file (`docs/secrets.json.enc` via the
 Doctrine store — see SETUP_REACT_NATIVE.md §9 for the mechanics):
 
 - `EXPO_TOKEN` — Expo dashboard → account settings → access tokens.
-- `GITHUB_PAT` — read-only token for the private tRPC package.
+- `NODE_AUTH_TOKEN` — read-only token for the private tRPC package.
 
 The repo's only GitHub Actions secret is `SECRETS_KEY` (the decryption key).
 
