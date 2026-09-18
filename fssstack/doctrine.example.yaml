@@ -1,21 +1,21 @@
 defaults:
-  store: felixsebastian/fssstack
+  store: mp-lb/fssstack
 git:
   commit_message: Update doctrine docs
 sync:
   - target: docs/standards
-    store: felixsebastian/fssstack
+    store: mp-lb/fssstack
     path: standards
     readonly: true
   - target: docs/extensions
-    store: felixsebastian/fssstack
+    store: mp-lb/fssstack
     path: extensions
     readonly: true
   - target: docs/examples
-    store: felixsebastian/fssstack
+    store: mp-lb/fssstack
     path: examples
     readonly: true
   - target: docs/skills
-    store: felixsebastian/fssstack
+    store: mp-lb/fssstack
     path: skills
     readonly: true

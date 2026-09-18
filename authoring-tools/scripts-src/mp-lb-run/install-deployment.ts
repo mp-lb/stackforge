@@ -101,7 +101,7 @@ const readRepoFile = (relativePath: string) => {
   if (fs.existsSync(localPath)) return read(localPath);
 
   try {
-    return execFileSync("dx", ["--store", storeName, "read", relativePath], {
+    return execFileSync("fm", ["--store", storeName, "read", relativePath], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "inherit"],
     });

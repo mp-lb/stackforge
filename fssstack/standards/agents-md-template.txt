@@ -14,11 +14,11 @@ Read [PRODUCT.md](PRODUCT.md) if you need to understand the product.
 
 <<packages_summary>>
 
-`dx read docs/modular-monolith.md` for more monorepo architecture info.
+`fm read docs/modular-monolith.md` for more monorepo architecture info.
 
 ## Doctrine
 
-Central docs are stored in the cloud using doctrine. You can run commands like `dx read some-file.md`, `dx ls` . Relative file paths are likely to be real files on disk.
+Central docs are stored in the cloud using doctrine. You can run commands like `fm read some-file.md`, `fm ls` . Relative file paths are likely to be real files on disk.
 
 ## Process management
 

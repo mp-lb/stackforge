@@ -12,7 +12,7 @@ The current direction is:
 The shell is represented by `flatpack-shell/`. It should be a working monorepo, not pseudo-template code. It should install, typecheck, test, build, and run locally. When setup docs say to start from the base shell, the target-agent-facing form is expected to be something like:
 
 ```bash
-dx clone example-repo ./
+fm clone example-repo ./
 ```
 
 After that, target setup instructions can tell the agent to create Vite or Next.js apps with the appropriate external scaffolders, and to create simple backends and libraries by copying examples from the shell and running augment scripts.

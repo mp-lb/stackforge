@@ -329,7 +329,7 @@ secrets:
   ```
 
   ```bash
-  dx sync --yes
+  fm sync --yes
   ```
 
   Commit the synced `docs/` so CI can decrypt without Doctrine auth. Add the
@@ -378,8 +378,8 @@ Two more first-run gotchas:
 
 - When someone changes the shared secrets file (new key, rotated value, new
   recipient), every consuming repo has a stale committed copy until it runs
-  `dx sync` and commits. CI decrypts the committed copy, not the store.
-  Consider a scheduled job that runs `dx sync --dry-run` and opens a re-sync
+  `fm sync` and commits. CI decrypts the committed copy, not the store.
+  Consider a scheduled job that runs `fm sync --dry-run` and opens a re-sync
   PR when the store has moved.
 - The first push to main tags the current version (`changeset tag` with no
   pending changesets) and reports `published=true`, so the deploy job fires

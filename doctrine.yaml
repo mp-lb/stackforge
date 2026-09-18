@@ -2,6 +2,6 @@ git:
   commit-message: "Update doctrine docs"
 sync:
   - target: fssstack
-    store: felixsebastian/fssstack
+    store: mp-lb/fssstack
   - target: mp-lb-run
-    store: felixsebastian/mp-lb-run
+    store: mp-lb/mp-lb-run

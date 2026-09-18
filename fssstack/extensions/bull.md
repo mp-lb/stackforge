@@ -5,7 +5,7 @@ How to add [BullMQ](https://docs.bullmq.io/) background jobs.
 BullMQ requires Redis. Install the Redis extension first:
 
 ```bash
-dx read extensions/redis.md
+fm read extensions/redis.md
 ```
 
 ## Dependencies

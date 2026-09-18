@@ -9,6 +9,6 @@ For Doctrine payload changes:
 3. Run focused validation for the changed surface.
 4. If generated Doctrine artifacts are still involved, run `pnpm -C authoring-tools build:docs`.
 5. Commit changes in this repository.
-6. Publish Doctrine payloads with `dx pull`, `dx push`, or `dx git sync` as appropriate.
+6. Publish Doctrine payloads with `fm pull`, `fm push`, or `fm git sync` as appropriate.
 
 Do not edit built `.mjs` files directly unless doing an emergency published-artifact patch.
