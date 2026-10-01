@@ -8,7 +8,7 @@ Use this when changing `SETUP_PROCESS.md`, extension markdown, layer files, or s
 
 The flatpack Doctrine payload is not the application. It is the published source kit used to assemble an application somewhere else.
 
-The target repo starts empty. Setup gradually unfolds it into a pnpm monorepo by reading files and scripts from doctrine with `npx -y @mp-lb/forum-cli read`, running a few external generators, rendering project-specific values, installing dependencies, and validating the generated result.
+The target repo starts empty. Setup gradually unfolds it into a pnpm monorepo by reading files and scripts from doctrine with `pnpm exec fm read`, running a few external generators, rendering project-specific values, installing dependencies, and validating the generated result.
 
 Do not write target setup instructions that assume:
 
@@ -80,7 +80,7 @@ The goal is not to prove the flatpack repo is an app. The goal is to prove the g
 
 When changing setup markdown, be explicit about the stage where the instruction runs and the paths that exist at that stage.
 
-When changing script behavior, edit `authoring-tools/scripts-src/`, run `pnpm -C authoring-tools build:docs`, and inspect the generated `.mjs` artifacts in the Doctrine payload folders. Target repos execute the built scripts through `npx -y @mp-lb/forum-cli read`.
+When changing script behavior, edit `authoring-tools/scripts-src/`, run `pnpm -C authoring-tools build:docs`, and inspect the generated `.mjs` artifacts in the Doctrine payload folders. Target repos execute the built scripts through `pnpm exec fm read`.
 
 When changing layer files, think about whether they are copied directly, applied as overlays, rendered later, or produced by an external generator. Keep fssstack overlays focused on project-specific wiring instead of taking ownership of generic scaffold code.
 

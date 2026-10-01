@@ -4,12 +4,15 @@ Run this from an empty folder. If other project files already exist, stop and as
 
 ## Shell
 
-Start by fetching the shell project files and the helper scripts:
+Fetch the shell project files with the one-off CLI, install Forum CLI as a local workspace dev dependency, then fetch the helper scripts with the local CLI:
 
 ```bash
 npx -y @mp-lb/forum-cli pull --direct --store mp-lb/fssstack --path shell --target .
-npx -y @mp-lb/forum-cli pull --direct --store mp-lb/fssstack --path scripts --target scripts
+pnpm add -Dw --save-exact @mp-lb/forum-cli
+pnpm exec fm pull --direct --store mp-lb/fssstack --path scripts --target scripts
 ```
+
+Use `pnpm exec fm` for subsequent Forum CLI commands from the project root.
 
 The shell is a working monorepo: the root workspace config, the shared
 `etc/` config that re-exports our published presets, the internal `core` /
@@ -224,7 +227,7 @@ generated-docs workflow works. That guidance is a conditional layer, not part of
 the base template — copy it into the project's `docs/agents-md/` layers folder:
 
 ```bash
-npx -y @mp-lb/forum-cli pull --direct --store mp-lb/fssstack --path agents-md/docs-website.md --target docs/agents-md/docs-website.md
+pnpm exec fm pull --direct --store mp-lb/fssstack --path agents-md/docs-website.md --target docs/agents-md/docs-website.md
 ```
 
 This is the conditional-snippet pattern: a project gets

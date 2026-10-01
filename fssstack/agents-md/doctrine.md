@@ -1,3 +1,3 @@
 ## Doctrine
 
-Central docs are stored in the cloud using doctrine. You can run commands like `npx -y @mp-lb/forum-cli read some-file.md` and `npx -y @mp-lb/forum-cli ls`. Relative file paths are likely to be real files on disk.
+Central docs are stored in the cloud using doctrine. You can run commands like `pnpm exec fm read some-file.md` and `pnpm exec fm ls`. Relative file paths are likely to be real files on disk.
