@@ -1,12 +1,15 @@
-import { stringify } from "yaml";
+import { Document, Scalar } from "yaml";
 import type { ProjectPromptConfig } from "./project-schema";
 
-export const buildManifestYaml = (config: ProjectPromptConfig) =>
-  stringify({
+export const buildManifestYaml = (config: ProjectPromptConfig) => {
+  const description = new Scalar(config.description);
+  description.type = Scalar.QUOTE_DOUBLE;
+
+  const document = new Document({
     type: "fssstack",
     name: config.name,
     emoji: config.emoji,
-    description: config.description,
+    description,
     projectSlug: config.slug,
     packagePrefix: config.packagePrefix,
     shadcnPreset: config.shadcnPreset,
@@ -17,4 +20,7 @@ export const buildManifestYaml = (config: ProjectPromptConfig) =>
     backends: config.backendServices,
     libs: config.libraryPackages,
     extensions: config.extensions,
-  }).trimEnd();
+  });
+
+  return document.toString({ doubleQuotedAsJSON: true }).trimEnd();
+};

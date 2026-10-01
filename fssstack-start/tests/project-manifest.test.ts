@@ -55,4 +55,23 @@ describe("buildManifestYaml", () => {
     expect(manifest.libs).toEqual([]);
     expect(manifest.extensions).toEqual([]);
   });
+
+  it.each([
+    'Say "hello"',
+    "C:\\temp\\new",
+    "First line\nSecond line\twith a tab",
+    "Details: # quoted 'text'",
+    "true",
+    "",
+  ])("quotes and escapes description %j", (description) => {
+    const manifest = buildManifestYaml({
+      ...defaultProjectPromptConfig,
+      description,
+    });
+
+    expect(manifest.split("\n")).toContain(
+      `description: ${JSON.stringify(description)}`,
+    );
+    expect(parse(manifest).description).toBe(description);
+  });
 });
