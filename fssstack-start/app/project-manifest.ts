@@ -1,28 +1,20 @@
-import JSON5 from "json5";
+import { stringify } from "yaml";
 import type { ProjectPromptConfig } from "./project-schema";
 
-const manifestLine = (key: string, value: unknown, trailingComma = true) =>
-  `  ${key}: ${JSON5.stringify(value)}${trailingComma ? "," : ""}`;
-
-export const buildManifestJson5 = (config: ProjectPromptConfig) =>
-  [
-    "{",
-    manifestLine("type", "fssstack"),
-    manifestLine("name", config.name),
-    manifestLine("emoji", config.emoji),
-    manifestLine("description", config.description),
-    manifestLine("projectSlug", config.slug),
-    manifestLine("packagePrefix", config.packagePrefix),
-    manifestLine("shadcnPreset", config.shadcnPreset),
-    manifestLine(
-      "frontends",
-      config.frontendClients.map((client) => ({
-        name: client.slug,
-        type: client.type,
-      })),
-    ),
-    manifestLine("backends", config.backendServices),
-    manifestLine("libs", config.libraryPackages),
-    manifestLine("extensions", config.extensions, false),
-    "}",
-  ].join("\n");
+export const buildManifestYaml = (config: ProjectPromptConfig) =>
+  stringify({
+    type: "fssstack",
+    name: config.name,
+    emoji: config.emoji,
+    description: config.description,
+    projectSlug: config.slug,
+    packagePrefix: config.packagePrefix,
+    shadcnPreset: config.shadcnPreset,
+    frontends: config.frontendClients.map((client) => ({
+      name: client.slug,
+      type: client.type,
+    })),
+    backends: config.backendServices,
+    libs: config.libraryPackages,
+    extensions: config.extensions,
+  }).trimEnd();

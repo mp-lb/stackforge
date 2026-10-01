@@ -1,6 +1,10 @@
 # fssstack Setup
 
-Run this from an empty folder. If other project files already exist, stop and ask the user for an empty folder or git repo.
+Run this from a folder containing only the setup inputs (`fssstack.yaml` and `doctrine.yaml`). If other project files already exist, stop and ask the user for an empty folder or git repo.
+
+## Project configuration
+
+Read project values, apps, packages, and extensions from `fssstack.yaml`. Use `name`, `emoji`, and `description` for project metadata; `projectSlug` and `packagePrefix` for package naming; and `shadcnPreset` for frontend scaffolding. Each `frontends` entry provides the frontend slug in `name` and its framework in `type`. `backends` and `libs` contain backend and library slugs. Apply the selected `extensions` after the base project validates.
 
 ## Shell
 

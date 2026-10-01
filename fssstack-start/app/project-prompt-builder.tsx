@@ -57,7 +57,7 @@ import {
   toSlug,
   type ProjectPromptConfig,
 } from "./project-schema";
-import { buildManifestJson5 } from "./project-manifest";
+import { buildManifestYaml } from "./project-manifest";
 
 type FrontendType = ProjectPromptConfig["frontendClients"][number]["type"];
 type ExtensionSlug = ProjectPromptConfig["extensions"][number];
@@ -140,13 +140,12 @@ const buildPrompt = (
 }To start setup:
 
 1. Start in an empty folder.
-2. Create \`manifest.json5\` from the JSON5 manifest shown below.
-3. Read setup values from \`manifest.json5\` wherever the setup process asks for project values, apps, packages, or extensions.
-4. Create \`doctrine.yaml\` with \`npx -y @mp-lb/forum-cli read --store mp-lb/fssstack doctrine.example.yaml > doctrine.yaml\`.
-5. Follow \`npx -y @mp-lb/forum-cli read SETUP_PROCESS.md\`.
+2. Create \`fssstack.yaml\` from the YAML configuration shown below.
+3. Create \`doctrine.yaml\` with \`npx -y @mp-lb/forum-cli read --store mp-lb/fssstack doctrine.example.yaml > doctrine.yaml\`.
+4. Follow \`npx -y @mp-lb/forum-cli read SETUP_PROCESS.md\`.
 
-\`\`\`json5
-${buildManifestJson5(config)}
+\`\`\`yaml
+${buildManifestYaml(config)}
 \`\`\``;
 
 const fieldId = (path: PropertyKey[]) =>

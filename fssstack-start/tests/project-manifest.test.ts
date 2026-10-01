@@ -1,11 +1,11 @@
-import JSON5 from "json5";
+import { parse } from "yaml";
 import { describe, expect, it } from "vitest";
-import { buildManifestJson5 } from "../app/project-manifest";
+import { buildManifestYaml } from "../app/project-manifest";
 import { defaultProjectPromptConfig } from "../app/project-schema";
 
-describe("buildManifestJson5", () => {
-  it("renders JSON5 with one line per manifest key", () => {
-    const manifest = buildManifestJson5({
+describe("buildManifestYaml", () => {
+  it("renders YAML with the selected project values", () => {
+    const manifest = buildManifestYaml({
       ...defaultProjectPromptConfig,
       slug: "my-app",
       backendServices: ["api", "worker"],
@@ -17,24 +17,7 @@ describe("buildManifestJson5", () => {
       extensions: ["mongodb", "s3"],
     });
 
-    expect(manifest).toBe(
-      [
-        "{",
-        "  type: 'fssstack',",
-        "  name: 'My App',",
-        "  emoji: '🚀',",
-        "  description: '',",
-        "  projectSlug: 'my-app',",
-        "  packagePrefix: '@fssstack',",
-        "  shadcnPreset: 'b1VlIttI',",
-        "  frontends: [{name:'web',type:'react-vite'},{name:'admin',type:'react-nextjs'}],",
-        "  backends: ['api','worker'],",
-        "  libs: ['sdk','ui'],",
-        "  extensions: ['mongodb','s3']",
-        "}",
-      ].join("\n"),
-    );
-    expect(JSON5.parse(manifest)).toEqual({
+    expect(parse(manifest)).toEqual({
       type: "fssstack",
       name: "My App",
       emoji: "🚀",
@@ -50,5 +33,26 @@ describe("buildManifestJson5", () => {
       libs: ["sdk", "ui"],
       extensions: ["mongodb", "s3"],
     });
+  });
+
+  it("preserves YAML-sensitive strings and empty selections", () => {
+    const config = {
+      ...defaultProjectPromptConfig,
+      name: "true",
+      description: "Details: # quoted 'text'\nSecond line",
+      backendServices: [],
+      frontendClients: [],
+      libraryPackages: [],
+      extensions: [],
+    };
+    const manifest = parse(buildManifestYaml(config));
+
+    expect(manifest.name).toBe(config.name);
+    expect(manifest.description).toBe(config.description);
+    expect(manifest.packagePrefix).toBe(config.packagePrefix);
+    expect(manifest.frontends).toEqual([]);
+    expect(manifest.backends).toEqual([]);
+    expect(manifest.libs).toEqual([]);
+    expect(manifest.extensions).toEqual([]);
   });
 });
