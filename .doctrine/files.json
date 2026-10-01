@@ -99,15 +99,6 @@
       "remoteUpdatedAt": "2026-06-01T10:05:42.936Z",
       "remoteRevisionNumber": 1
     },
-    "fssstack/doctrine.example.yaml": {
-      "storageClass": "text",
-      "hash": "sha256:73ce647b9f44b4246863d4a2053d61f315c64eeb8711bb70db418b06b1c7f390",
-      "lastSyncedAt": "2026-05-31T00:05:21.389Z",
-      "remoteFileId": "c83239ad-1a6c-493b-b86b-78a0e6b02240",
-      "remotePath": "/doctrine.example.yaml",
-      "remoteUpdatedAt": "2026-05-21T22:54:28.124Z",
-      "remoteRevisionNumber": 2
-    },
     "fssstack/extensions/README.md": {
       "storageClass": "text",
       "hash": "sha256:0c0fad61a581251c2371aca5c6aebd3115f5169d4c792fc013695339ee8385b6",
