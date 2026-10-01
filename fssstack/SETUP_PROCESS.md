@@ -1,6 +1,6 @@
 # fssstack Setup
 
-Run this from a folder containing only the setup inputs (`fssstack.yaml` and `doctrine.yaml`). If other project files already exist, stop and ask the user for an empty folder or git repo.
+Run this from a folder containing only the setup inputs (`fssstack.yaml` and `forum.yaml`). If other project files already exist, stop and ask the user for an empty folder or git repo.
 
 ## Project configuration
 

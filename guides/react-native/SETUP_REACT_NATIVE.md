@@ -318,7 +318,7 @@ secrets:
   `EXPO_PUBLIC_API_BASE_URL` and the Clerk *publishable* key.
 - `docs/secrets.json.enc`: one big encrypted JSON object of secrets, shared
   with the main repo by mounting the same Doctrine store. Add a
-  `doctrine.yaml` and sync:
+  `forum.yaml` and sync:
 
   ```yaml
   git:

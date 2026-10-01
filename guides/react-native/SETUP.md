@@ -50,7 +50,7 @@ EXPO_PUBLIC_API_BASE_URL=<API_BASE_URL>
 EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=<CLERK_PUBLISHABLE_KEY>
 ```
 
-Mount the shared secrets store (`doctrine.yaml` + `fm sync --yes`), set the
+Mount the shared secrets store (`forum.yaml` + `fm sync --yes`), set the
 `SECRETS_KEY` GitHub secret, push to main. The release workflow's
 `sync-eas-env` job populates the EAS environment on every push — this must
 happen before the first build, which is why pushing main comes this early.

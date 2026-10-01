@@ -141,7 +141,7 @@ const buildPrompt = (
 
 1. Start in an empty folder.
 2. Create \`fssstack.yaml\` from the YAML configuration shown below.
-3. Create \`doctrine.yaml\` with \`npx -y @mp-lb/forum-cli read --store mp-lb/fssstack doctrine.example.yaml > doctrine.yaml\`.
+3. Create \`forum.yaml\` with \`npx -y @mp-lb/forum-cli read --store mp-lb/fssstack forum.example.yaml > forum.yaml\`.
 4. Follow \`npx -y @mp-lb/forum-cli read SETUP_PROCESS.md\`.
 
 \`\`\`yaml
