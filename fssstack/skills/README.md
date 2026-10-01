@@ -7,19 +7,19 @@ Install skills from this public Doctrine store.
 Install into all supported agents:
 
 ```bash
-fm skill add mp-lb/skills authored-skills/value-analysis
+npx -y @mp-lb/forum-cli skill add mp-lb/skills authored-skills/value-analysis
 ```
 
 Install a skill into Codex:
 
 ```bash
-fm skill add mp-lb/skills authored-skills/value-analysis --agent codex
+npx -y @mp-lb/forum-cli skill add mp-lb/skills authored-skills/value-analysis --agent codex
 ```
 
 Replace an existing local install:
 
 ```bash
-fm skill add mp-lb/skills authored-skills/value-analysis --agent codex --force
+npx -y @mp-lb/forum-cli skill add mp-lb/skills authored-skills/value-analysis --agent codex --force
 ```
 
 Use `--yes` in scripts or other non-interactive installs.

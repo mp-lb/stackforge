@@ -7,8 +7,8 @@ Run this from an empty folder. If other project files already exist, stop and as
 Start by fetching the shell project files and the helper scripts:
 
 ```bash
-fm pull --direct --store mp-lb/fssstack --path shell --target .
-fm pull --direct --store mp-lb/fssstack --path scripts --target scripts
+npx -y @mp-lb/forum-cli pull --direct --store mp-lb/fssstack --path shell --target .
+npx -y @mp-lb/forum-cli pull --direct --store mp-lb/fssstack --path scripts --target scripts
 ```
 
 The shell is a working monorepo: the root workspace config, the shared
@@ -224,7 +224,7 @@ generated-docs workflow works. That guidance is a conditional layer, not part of
 the base template — copy it into the project's `docs/agents-md/` layers folder:
 
 ```bash
-fm pull --direct --store mp-lb/fssstack --path agents-md/docs-website.md --target docs/agents-md/docs-website.md
+npx -y @mp-lb/forum-cli pull --direct --store mp-lb/fssstack --path agents-md/docs-website.md --target docs/agents-md/docs-website.md
 ```
 
 This is the conditional-snippet pattern: a project gets
