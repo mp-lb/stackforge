@@ -24,7 +24,7 @@ describe("buildManifestYaml", () => {
       description: "",
       projectSlug: "my-app",
       packagePrefix: "@fssstack",
-      shadcnPreset: "b1VlIttI",
+      shadcnPreset: "b1a1M7Tvs",
       frontends: [
         { name: "web", type: "react-vite" },
         { name: "admin", type: "react-nextjs" },

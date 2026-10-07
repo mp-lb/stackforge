@@ -52,6 +52,7 @@ import {
 import { cn } from "@/lib/utils";
 import {
   defaultProjectPromptConfig,
+  defaultTheme,
   normalizeProjectPromptConfig,
   projectPromptSchema,
   toSlug,
@@ -202,7 +203,7 @@ export default function ProjectPromptBuilder() {
   const [customPrompt, setCustomPrompt] = useState<string | null>(null);
   const prompt = customPrompt ?? generatedPrompt;
   const shadcnPresetPreviewUrl = `https://ui.shadcn.com/create?preset=${encodeURIComponent(
-    normalizedConfig.shadcnPreset,
+    normalizedConfig.shadcnPreset || defaultTheme,
   )}`;
   const isPromptDirty =
     customPrompt !== null && customPrompt !== generatedPrompt;

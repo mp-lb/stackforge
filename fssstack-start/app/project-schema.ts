@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export const defaultTheme = "b1a1M7Tvs";
+
 const namePattern = /^[A-Za-z0-9 .,'&()/_:+#-]+$/;
 const slugPattern = /^[a-z]+(?:-[a-z]+)*$/;
 const npmOrgPattern = /^@[a-z0-9][a-z0-9-]*$/;
@@ -74,7 +76,7 @@ export const projectPromptSchema = z
         shadcnPresetPattern,
         "Use letters, numbers, underscores, and hyphens only.",
       )
-      .default("b1VlIttI"),
+      .default(defaultTheme),
     extensions: z.array(z.enum(extensionSlugs)).default([]),
     backendServices: z
       .array(
@@ -168,7 +170,7 @@ export const defaultProjectPromptConfig: ProjectPromptConfig = {
   emoji: "🚀",
   description: "",
   packagePrefix: "@fssstack",
-  shadcnPreset: "b1VlIttI",
+  shadcnPreset: defaultTheme,
   extensions: [],
   backendServices: ["backend"],
   frontendClients: [{ slug: "frontend", type: "react-vite" }],
