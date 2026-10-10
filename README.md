@@ -5,6 +5,7 @@ Stackforge is the workbench for FSS Stack: a thin wrapper around separate workin
 ## Folders
 
 - `fssstack-start/`: Next.js landing page and prompt builder.
+- `fssstack-cli/`: Publishable `@mp-lb/fssstack` command-line configurator; see [usage and validation](fssstack-cli/README.md).
 - `flatpack-shell/`: Minimal working target-repo shell monorepo.
 - `authoring-tools/`: npm project for building and testing generated Doctrine scripts.
 - `fssstack/`: Doctrine payload (store `mp-lb/fssstack`) for creating FSS Stack target projects.
