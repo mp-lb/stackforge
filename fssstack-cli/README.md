@@ -1,55 +1,80 @@
 # @mp-lb/fssstack
 
-Command-line equivalent of the FSS Stack web configurator. Generates a setup prompt for your coding agent, a `fssstack.yaml` manifest, or the web configurator's raw JSON values. It does not create repositories, install the generated stack, or deploy anything.
+Two commands: get a JSON Schema, or validate configuration JSON and get a setup prompt. The JSON is exactly what the FSS Stack website's **JSON → Copy JSON** action copies.
 
-Requires Node.js 20.19 or newer. Once published:
-
-```sh
-npx @mp-lb/fssstack --name "Atlas" --description "Team workspace" \
-  --clerk --mongodb \
-  --backend api --backend worker \
-  --frontend web:react-vite --frontend admin:react-nextjs \
-  --frontend docs:react-fumadocs --lib sdk
-```
-
-Arrays use repeated flags, one entry per flag, with no JSON escaping or comma parsing. Frontends use `NAME:TYPE`; supported types are `react-vite`, `react-nextjs`, and `react-fumadocs`. Explicit backend/frontend entries replace their defaults. Order is preserved. Duplicate extensions are removed; duplicate app/library slugs are errors, including collisions after normalization.
+Requires Node.js 20.19 or newer. Version 0.2.0 replaces the 0.1.x field-by-field flags.
 
 ```sh
-# Write a manifest to a new file; existing files are never overwritten.
-fssstack --name "Atlas" --description "Team workspace" \
-  --clerk --mongodb --format yaml --output fssstack.yaml
-
-# A frontend-only configuration, with the prompt's prerequisite text omitted.
-fssstack --name "Docs" --description "Product documentation" \
-  --no-backends --frontend docs:react-fumadocs --no-prerequisites
-
-# Raw values, matching the web configurator's JSON view.
-fssstack --description "Team workspace" --format json
-fssstack --help
+fssstack schema > schema.json
+fssstack prompt < project.json > prompt.md
 ```
 
-Defaults match a fresh web form: name `My App`, derived slug, emoji 🚀, package prefix `@fssstack`, the shared shadcn preset, backend `backend`, frontend `frontend:react-vite`, and no libraries or extensions. Description is required (1–200 characters). Names normalize using the web UI's slug rules; package prefixes normalize to lowercase. Use `--slug`, `--emoji`, `--package-prefix`, and `--shadcn-preset` to override project settings. `--no-backends` and `--no-frontends` explicitly select empty lists and cannot be mixed with entries for the same list.
+You can also pass the JSON as one argument:
 
-Use `--extension clerk|mongodb|s3|bull|playwright|redis` once per extension; `--clerk` and `--mongodb` are convenient aliases. The pipe notation lists alternatives, not literal argument syntax.
+```sh
+fssstack prompt '{"description":"My app"}'
+```
 
-Output defaults to the setup prompt with prerequisites enabled. `--format yaml` emits only the manifest; `--format json` emits normalized web config values. Stdout contains only the requested text, with one trailing newline. File confirmations and errors go to stderr. Invalid input exits with status 1 without generating output. No arguments shows help.
+Both the web app and CLI import the same Zod schema, defaults, normalization, and prompt renderer from `fssstack-start/app/`. The schema command generates draft 2020-12 JSON Schema directly from Zod. No CLI-specific field definitions, defaults, or prompt templates are maintained. Rebuilding the CLI picks up changes to those shared sources; installed npm versions receive them when a new version is released.
+
+Omitted optional fields use the web form's initial values; description is required. Supply `slug` explicitly when changing `name` in JSON: the default slug remains `my-app`. The CLI accepts normalized values such as the website copies and rejects invalid values instead of guessing. Unknown top-level fields are errors. App and library slugs must be unique across all three lists; this additional rule is checked by Zod because standard JSON Schema cannot express it. The generated prompt includes the shared default prerequisite paragraph.
+
+Output goes only to stdout, with one trailing newline. Errors go to stderr and exit with status 1. Shell redirection controls files. The CLI never scaffolds projects or installs anything. `--help` and `--version` are also available.
+
+## HelloWorld
+
+Save this as `project.json` (also available in `examples/hello-world.json`):
+
+```json
+{
+  "name": "HelloWorld",
+  "slug": "hello-world",
+  "emoji": "👋",
+  "description": "A workspace for sharing greetings around the world.",
+  "packagePrefix": "@hello-world",
+  "shadcnPreset": "b1a1M7Tvs",
+  "extensions": [
+    "clerk",
+    "mongodb"
+  ],
+  "backendServices": [
+    "api",
+    "worker"
+  ],
+  "frontendClients": [
+    {
+      "slug": "web",
+      "type": "react-vite"
+    },
+    {
+      "slug": "admin",
+      "type": "react-nextjs"
+    },
+    {
+      "slug": "docs",
+      "type": "react-fumadocs"
+    }
+  ],
+  "libraryPackages": [
+    "sdk",
+    "shared"
+  ]
+}
+```
+
+```sh
+fssstack prompt < project.json > prompt.md
+```
 
 ## Development
-
-From the Stackforge checkout:
 
 ```sh
 pnpm -C fssstack-cli install --frozen-lockfile
 pnpm -C fssstack-cli typecheck
 pnpm -C fssstack-cli test
 pnpm -C fssstack-cli pack --pack-destination /tmp
-node fssstack-cli/dist/cli.js --help
+node fssstack-cli/dist/cli.js schema
+node fssstack-cli/dist/cli.js prompt < fssstack-cli/examples/hello-world.json
 ```
 
-The build bundles the web configurator's schema, normalization, YAML renderer, and shared prompt renderer directly from `fssstack-start/app/`. There are no copied templates to drift. The published package includes `dist/cli.js` and installs only `yaml` and `zod`; it does not require the authoring checkout or Next.js. CLI dependency resolution for typechecking and parity tests is local to this package, so installing the web app is not required to build the CLI.
-
-Tests execute the built command and compare exact prompt/YAML/JSON output against the web functions, covering every frontend and extension, defaults, empty arrays, quoting, errors, and safe file output. To validate changes to shared sources, also run the web app's tests and lint.
-
-## Delivery
-
-Version `0.1.0` is prepared for an initial public scoped npm release. Before release, review the CLI interface, merge the validated change, and use an authorized npm publishing account to publish from this directory. Do not publish from the repository root. `prepack` rebuilds the executable. No publishing or authentication is performed by the CLI or its build.
+The build bundles the shared web sources. Published runtime dependencies are only `yaml` and `zod`; Next.js and the authoring checkout are not needed by consumers. Tests check exported JSON Schema using a standard validator, shared defaults, exact web prompt parity, stdin and argument input, and validation failures. Run the web tests, lint, and build when changing shared sources.

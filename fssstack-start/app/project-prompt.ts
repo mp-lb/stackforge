@@ -1,9 +1,11 @@
 import type { ProjectPromptConfig } from "./project-schema";
 import { buildManifestYaml } from "./project-manifest";
 
+export const defaultIncludePrerequisites = true;
+
 export const buildPrompt = (
   config: ProjectPromptConfig,
-  includePrerequisites: boolean,
+  includePrerequisites: boolean = defaultIncludePrerequisites,
 ) => `${
   includePrerequisites
     ? `Before starting, make sure the \`npx\`, \`git\`, \`docker\`, \`node\`, \`pnpm\`, and \`zap\` commands are available. Install anything missing before continuing. Default to installing with Homebrew on macOS. For Zap, install globally with npm using package name \`@mp-lb/zapper\`. Bootstrap Forum CLI with \`npx -y @mp-lb/forum-cli\`; the setup process installs it as a local project dev dependency and then uses \`pnpm exec fm\`.

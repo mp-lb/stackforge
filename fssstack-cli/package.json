@@ -1,7 +1,7 @@
 {
   "name": "@mp-lb/fssstack",
-  "version": "0.1.0",
-  "description": "Generate FSS Stack setup prompts and manifests from the command line.",
+  "version": "0.2.0",
+  "description": "Validate web configurator JSON and generate FSS Stack setup prompts.",
   "type": "module",
   "bin": {
     "fssstack": "dist/cli.js"
@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@types/node": "20.19.39",
+    "ajv": "8.17.1",
     "esbuild": "0.25.12",
     "typescript": "5.9.3",
     "vitest": "4.0.16"

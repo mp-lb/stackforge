@@ -1,231 +1,139 @@
-import { execFileSync, spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import Ajv2020 from "ajv/dist/2020";
 import { describe, expect, it } from "vitest";
-import { render } from "../src/configure";
+import example from "../examples/hello-world.json";
 import { buildPrompt } from "../../fssstack-start/app/project-prompt";
-import { buildManifestYaml } from "../../fssstack-start/app/project-manifest";
 import {
   defaultProjectPromptConfig,
   normalizeProjectPromptConfig,
-  type ProjectPromptConfig,
+  projectPromptSchema,
 } from "../../fssstack-start/app/project-schema";
 
 const binary = fileURLToPath(new URL("../dist/cli.js", import.meta.url));
-const base = ["--description", "Team workspace"];
-const selected = [
-  "--name",
-  "Atlas",
-  ...base,
-  "--emoji",
-  "🧭",
-  "--package-prefix",
-  "@MAP-LAB",
-  "--shadcn-preset",
-  "custom-preset",
-  "--backend",
-  "API",
-  "--backend",
-  "Job Worker",
-  "--frontend",
-  "Web:react-vite",
-  "--frontend",
-  "Admin:react-nextjs",
-  "--frontend",
-  "Docs:react-fumadocs",
-  "--lib",
-  "SDK",
-  "--lib",
-  "UI",
-  "--clerk",
-  "--extension",
-  "s3",
-  "--mongodb",
-  "--extension",
-  "clerk",
-  "--extension",
-  "bull",
-  "--extension",
-  "redis",
-  "--extension",
-  "playwright",
-];
-const selectedConfig = normalizeProjectPromptConfig({
-  ...defaultProjectPromptConfig,
-  name: "Atlas",
-  slug: "atlas",
-  description: "Team workspace",
-  emoji: "🧭",
-  packagePrefix: "@map-lab",
-  shadcnPreset: "custom-preset",
-  backendServices: ["API", "Job Worker"],
-  frontendClients: [
-    { slug: "Web", type: "react-vite" },
-    { slug: "Admin", type: "react-nextjs" },
-    { slug: "Docs", type: "react-fumadocs" },
-  ],
-  libraryPackages: ["SDK", "UI"],
-  extensions: [
-    "clerk",
-    "s3",
-    "mongodb",
-    "clerk",
-    "bull",
-    "redis",
-    "playwright",
-  ],
-});
+const run = (args: string[], input?: string) =>
+  spawnSync(process.execPath, [binary, ...args], { input, encoding: "utf8" });
+const schema = JSON.parse(run(["schema"]).stdout);
+const validate = new Ajv2020().compile(schema);
 
-describe("web parity through the built executable", () => {
-  for (const [label, args, config] of [
-    [
-      "defaults",
-      base,
-      { ...defaultProjectPromptConfig, description: "Team workspace" },
-    ],
-    ["all selections", selected, selectedConfig],
-    [
-      "empty arrays and YAML-sensitive description",
-      [
-        "--name",
-        "true",
-        "--description",
-        'Details: # "quote"\nSecond line',
-        "--no-backends",
-        "--no-frontends",
-      ],
-      {
-        ...defaultProjectPromptConfig,
-        name: "true",
-        slug: "true",
-        description: 'Details: # "quote"\nSecond line',
-        backendServices: [],
-        frontendClients: [],
-      },
-    ],
-  ] satisfies [string, string[], ProjectPromptConfig][]) {
-    it.each(["prompt", "yaml", "json"])(
-      `${label}: exact %s output`,
-      (format) => {
-        const actual = execFileSync(
-          process.execPath,
-          [binary, ...args, "--format", format],
-          { encoding: "utf8" },
-        );
-        const expected =
-          format === "prompt"
-            ? buildPrompt(config, true)
-            : format === "yaml"
-              ? buildManifestYaml(config)
-              : JSON.stringify(config, null, 2);
-        expect(actual).toBe(`${expected}\n`);
-      },
-    );
-  }
-  it("matches prompt with prerequisites disabled", () => {
-    expect(render([...selected, "--no-prerequisites"]).text).toBe(
-      `${buildPrompt(selectedConfig, false)}\n`,
-    );
+describe("JSON Schema", () => {
+  it("is usable draft 2020-12 and accepts the complete example", () => {
+    expect(schema.$schema).toBe("https://json-schema.org/draft/2020-12/schema");
+    expect(validate(example)).toBe(true);
   });
-  it("honors explicit slug and trims text like the UI", () => {
-    const config = JSON.parse(
-      render([
-        "--name",
-        " Another App ",
-        "--slug",
-        "Custom Name",
-        "--description",
-        " Details ",
-        "--format",
-        "json",
-      ]).text,
-    );
-    expect(config).toMatchObject({
-      name: "Another App",
-      slug: "custom-name",
-      description: "Details",
+  it("exposes exactly the defaults used by the web form", () => {
+    for (const [key, value] of Object.entries(defaultProjectPromptConfig)) {
+      if (key === "description") continue;
+      expect(schema.properties[key].default).toEqual(value);
+    }
+    expect(schema.required).toEqual(["description"]);
+    expect(projectPromptSchema.parse({ description: "Example" })).toEqual({
+      ...defaultProjectPromptConfig,
+      description: "Example",
     });
   });
-});
-
-describe("argument validation", () => {
   it.each([
-    [["--name", "Atlas"], "Description is required"],
-    [[...base, "--description", "x".repeat(201)], "200 characters"],
-    [[...base, "--unknown"], "Unknown option"],
-    [[...base, "extra"], "Unexpected argument"],
-    [[...base, "--backend"], "argument missing"],
-    [[...base, "--frontend", "web"], "NAME:TYPE"],
-    [[...base, "--frontend", "web:react-vite:extra"], "NAME:TYPE"],
-    [[...base, "--frontend", "web:angular"], "frontendClients.0.type"],
-    [[...base, "--extension", "unknown"], "extensions.0"],
-    [[...base, "--backend", "123"], "backendServices.0"],
-    [[...base, "--frontend", "123:react-vite"], "frontendClients.0.slug"],
-    [[...base, "--lib", ""], "libraryPackages.0"],
-    [[...base, "--backend", "api", "--lib", "API"], "must be unique"],
-    [[...base, "--frontend", "backend:react-vite"], "must be unique"],
-    [[...base, "--backend", "api", "--backend", "API"], "must be unique"],
-    [[...base, "--no-backends", "--backend", "api"], "cannot be combined"],
+    {},
+    { ...example, packagePrefix: "bad" },
+    { ...example, emoji: "no" },
+    { ...example, description: "x".repeat(201) },
+    { ...example, extra: true },
+    { ...example, frontendClients: [{ slug: "web", type: "angular" }] },
+    { ...example, extensions: ["unknown"] },
+  ])("rejects structurally invalid JSON %j", (value) => {
+    expect(validate(value)).toBe(false);
+    expect(projectPromptSchema.safeParse(value).success).toBe(false);
+  });
+});
+
+describe("prompt", () => {
+  it.each([
+    example,
+    { description: "Defaults" },
+    {
+      ...example,
+      backendServices: [],
+      frontendClients: [],
+      libraryPackages: [],
+      extensions: [],
+    },
+    {
+      ...example,
+      description: 'Details: # "hello"\nSecond line',
+      extensions: [
+        "clerk",
+        "clerk",
+        "mongodb",
+        "s3",
+        "bull",
+        "redis",
+        "playwright",
+      ],
+    },
+  ])(
+    "matches the web prompt byte-for-byte for argument and stdin: %j",
+    (value) => {
+      const config = normalizeProjectPromptConfig(
+        projectPromptSchema.parse(value),
+      );
+      const expected = `${buildPrompt(config)}\n`;
+      for (const result of [
+        run(["prompt", JSON.stringify(value)]),
+        run(["prompt"], JSON.stringify(value)),
+      ]) {
+        expect(result.status).toBe(0);
+        expect(result.stderr).toBe("");
+        expect(result.stdout).toBe(expected);
+      }
+    },
+  );
+  it.each([
+    ["{", "Invalid JSON"],
+    ["", "Invalid JSON"],
+    ["null", "config"],
+    ["[]", "config"],
+    ['{"description":""}', "description"],
     [
-      [...base, "--no-frontends", "--frontend", "web:react-vite"],
-      "cannot be combined",
+      JSON.stringify({ ...example, backendServices: ["api", "api"] }),
+      "must be unique",
     ],
-    [[...base, "--format", "toml"], "--format must"],
-    [[...base, "--output", ""], "nonempty path"],
-    [[...base, "--emoji", "hello"], "emoji"],
-    [[...base, "--package-prefix", "bad"], "packagePrefix"],
-  ])("rejects %j", (args, error) => {
-    expect(() => render(args)).toThrow(error);
-    const result = spawnSync(process.execPath, [binary, ...args], {
-      encoding: "utf8",
-    });
+    [
+      JSON.stringify({ ...example, libraryPackages: ["api"] }),
+      "must be unique",
+    ],
+    [
+      JSON.stringify({
+        ...example,
+        frontendClients: [{ slug: "api", type: "react-vite" }],
+      }),
+      "must be unique",
+    ],
+    [
+      JSON.stringify({ ...example, backendServices: [""] }),
+      "backendServices.0",
+    ],
+    [JSON.stringify({ ...example, unknown: true }), "Unrecognized"],
+  ])("rejects %s without stdout", (value, message) => {
+    const result = run(["prompt"], value);
     expect(result.status).toBe(1);
     expect(result.stdout).toBe("");
-    expect(result.stderr).toContain(error);
-  });
-  it("provides help and version without required fields", () => {
-    expect(render([]).text).toContain("Usage: fssstack");
-    expect(render(["-h"]).text).toContain("--frontend NAME:TYPE");
-    expect(render(["-v"]).text.trim()).toBe("0.1.0");
+    expect(result.stderr).toContain(message);
   });
 });
 
-describe("file output", () => {
-  it("writes exact output, refuses overwrite, and leaves existing bytes intact", () => {
-    const dir = mkdtempSync(join(tmpdir(), "fssstack-cli-"));
-    try {
-      const output = join(dir, "fssstack.yaml");
-      const args = [
-        binary,
-        ...selected,
-        "--format",
-        "yaml",
-        "--output",
-        output,
-      ];
-      const first = spawnSync(process.execPath, args, { encoding: "utf8" });
-      expect(first.status).toBe(0);
-      expect(first.stdout).toBe("");
-      expect(readFileSync(output, "utf8")).toBe(
-        `${buildManifestYaml(selectedConfig)}\n`,
-      );
-      const second = spawnSync(process.execPath, args, { encoding: "utf8" });
-      expect(second.status).toBe(1);
-      expect(second.stderr).toContain("EEXIST");
-      expect(readFileSync(output, "utf8")).toBe(
-        `${buildManifestYaml(selectedConfig)}\n`,
-      );
-      const invalid = spawnSync(
-        process.execPath,
-        [binary, "--name", "Atlas", "--output", join(dir, "invalid.yaml")],
-        { encoding: "utf8" },
-      );
-      expect(invalid.status).toBe(1);
-      expect(() => readFileSync(join(dir, "invalid.yaml"))).toThrow();
-    } finally {
-      rmSync(dir, { recursive: true, force: true });
-    }
+describe("command surface", () => {
+  it.each([[], ["--help"], ["-h"]])("shows help for %j", (...args: string[]) => {
+    expect(run(args).stdout).toContain("fssstack prompt [JSON]");
+  });
+  it("shows version", () => expect(run(["--version"]).stdout).toBe("0.2.0\n"));
+  it.each([
+    ["--name", "HelloWorld"],
+    ["schema", "extra"],
+    ["prompt", "{}", "extra"],
+    ["unknown"],
+  ])("rejects unsupported command %j", (...args: string[]) => {
+    const result = run(args);
+    expect(result.status).toBe(1);
+    expect(result.stdout).toBe("");
   });
 });

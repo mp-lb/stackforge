@@ -58,7 +58,7 @@ import {
   toSlug,
   type ProjectPromptConfig,
 } from "./project-schema";
-import { buildPrompt } from "./project-prompt";
+import { buildPrompt, defaultIncludePrerequisites } from "./project-prompt";
 
 type FrontendType = ProjectPromptConfig["frontendClients"][number]["type"];
 type ExtensionSlug = ProjectPromptConfig["extensions"][number];
@@ -142,8 +142,12 @@ export default function ProjectPromptBuilder() {
     () => new Set(),
   );
   const [includePrerequisites, setIncludePrerequisites] =
-    useLocalStorageBoolean(includePrerequisitesStorageKey, true);
+    useLocalStorageBoolean(
+      includePrerequisitesStorageKey,
+      defaultIncludePrerequisites,
+    );
   const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState("prompt");
   const [aboutOpen, setAboutOpen] = useState(false);
   const [servicesHelpOpen, setServicesHelpOpen] = useLocalStorageBoolean(
     servicesHelpOpenStorageKey,
@@ -295,12 +299,14 @@ export default function ProjectPromptBuilder() {
     });
   };
 
-  const copyPrompt = async () => {
-    if (!prompt) {
+  const copyOutput = async () => {
+    if (!isValid || (activeTab !== "raw" && !prompt)) {
       return;
     }
 
-    await navigator.clipboard.writeText(prompt);
+    await navigator.clipboard.writeText(
+      activeTab === "raw" ? rawValues : prompt,
+    );
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1600);
   };
@@ -755,7 +761,13 @@ export default function ProjectPromptBuilder() {
         </Card>
 
         <Card size="sm">
-          <Tabs defaultValue="prompt">
+          <Tabs
+            value={activeTab}
+            onValueChange={(value) => {
+              setActiveTab(value);
+              setCopied(false);
+            }}
+          >
             <CardHeader className="border-b max-sm:grid-cols-1">
               <div>
                 <CardTitle>Prompt</CardTitle>
@@ -766,7 +778,7 @@ export default function ProjectPromptBuilder() {
               <CardAction className="flex flex-wrap items-center gap-2 max-sm:col-start-1 max-sm:row-start-3 max-sm:mt-2 max-sm:justify-self-start">
                 <TabsList>
                   <TabsTrigger value="prompt">Prompt</TabsTrigger>
-                  <TabsTrigger value="raw">Raw values</TabsTrigger>
+                  <TabsTrigger value="raw">JSON</TabsTrigger>
                 </TabsList>
                 <div className="flex flex-wrap items-center gap-2">
                   {isPromptDirty && (
@@ -782,15 +794,19 @@ export default function ProjectPromptBuilder() {
                   <Button
                     type="button"
                     size="sm"
-                    disabled={!isValid || !prompt}
-                    onClick={copyPrompt}
+                    disabled={!isValid || (activeTab !== "raw" && !prompt)}
+                    onClick={copyOutput}
                   >
                     {copied ? (
                       <Check aria-hidden="true" />
                     ) : (
                       <Copy aria-hidden="true" />
                     )}
-                    {copied ? "Copied" : "Copy"}
+                    {copied
+                      ? "Copied"
+                      : activeTab === "raw"
+                        ? "Copy JSON"
+                        : "Copy prompt"}
                   </Button>
                 </div>
               </CardAction>

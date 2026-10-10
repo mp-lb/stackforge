@@ -1,0 +1,34 @@
+{
+  "name": "HelloWorld",
+  "slug": "hello-world",
+  "emoji": "👋",
+  "description": "A workspace for sharing greetings around the world.",
+  "packagePrefix": "@hello-world",
+  "shadcnPreset": "b1a1M7Tvs",
+  "extensions": [
+    "clerk",
+    "mongodb"
+  ],
+  "backendServices": [
+    "api",
+    "worker"
+  ],
+  "frontendClients": [
+    {
+      "slug": "web",
+      "type": "react-vite"
+    },
+    {
+      "slug": "admin",
+      "type": "react-nextjs"
+    },
+    {
+      "slug": "docs",
+      "type": "react-fumadocs"
+    }
+  ],
+  "libraryPackages": [
+    "sdk",
+    "shared"
+  ]
+}

@@ -2,6 +2,20 @@ import { z } from "zod";
 
 export const defaultTheme = "b1a1M7Tvs";
 
+// One source for initial web values and optional JSON input defaults.
+const defaults = {
+  name: "My App",
+  slug: "my-app",
+  emoji: "🚀",
+  description: "",
+  packagePrefix: "@fssstack",
+  shadcnPreset: defaultTheme,
+  extensions: [],
+  backendServices: ["backend"],
+  frontendClients: [{ slug: "frontend", type: "react-vite" }],
+  libraryPackages: [],
+} as const;
+
 const namePattern = /^[A-Za-z0-9 .,'&()/_:+#-]+$/;
 const slugPattern = /^[a-z]+(?:-[a-z]+)*$/;
 const npmOrgPattern = /^@[a-z0-9][a-z0-9-]*$/;
@@ -38,17 +52,20 @@ export const projectPromptSchema = z
       .regex(
         namePattern,
         "Use letters, numbers, spaces, and basic punctuation only.",
-      ),
+      )
+      .default(defaults.name),
     slug: z
       .string()
       .trim()
       .min(1, "Slug is required.")
-      .regex(slugPattern, "Use lowercase letters separated by single hyphens."),
+      .regex(slugPattern, "Use lowercase letters separated by single hyphens.")
+      .default(defaults.slug),
     emoji: z
       .string()
       .trim()
       .min(1, "Emoji is required.")
-      .regex(emojiPattern, "Use emoji characters only."),
+      .regex(emojiPattern, "Use emoji characters only.")
+      .default(defaults.emoji),
     description: z
       .string()
       .trim()
@@ -57,17 +74,10 @@ export const projectPromptSchema = z
     packagePrefix: z
       .string()
       .trim()
-      .default("@fssstack")
-      .pipe(
-        z
-          .string()
-          .min(2, "Package prefix is required.")
-          .max(214, "Package prefix is too long.")
-          .regex(
-            npmOrgPattern,
-            "Use a valid lowercase npm org, like @fssstack.",
-          ),
-      ),
+      .min(2, "Package prefix is required.")
+      .max(214, "Package prefix is too long.")
+      .regex(npmOrgPattern, "Use a valid lowercase npm org, like @fssstack.")
+      .default(defaults.packagePrefix),
     shadcnPreset: z
       .string()
       .trim()
@@ -76,8 +86,10 @@ export const projectPromptSchema = z
         shadcnPresetPattern,
         "Use letters, numbers, underscores, and hyphens only.",
       )
-      .default(defaultTheme),
-    extensions: z.array(z.enum(extensionSlugs)).default([]),
+      .default(defaults.shadcnPreset),
+    extensions: z
+      .array(z.enum(extensionSlugs))
+      .default([...defaults.extensions]),
     backendServices: z
       .array(
         z
@@ -89,7 +101,7 @@ export const projectPromptSchema = z
             "Use lowercase letters separated by single hyphens.",
           ),
       )
-      .default(["backend"]),
+      .default([...defaults.backendServices]),
     frontendClients: z
       .array(
         z.object({
@@ -104,7 +116,7 @@ export const projectPromptSchema = z
           type: z.enum(["react-vite", "react-nextjs", "react-fumadocs"]),
         }),
       )
-      .default([{ slug: "frontend", type: "react-vite" }]),
+      .default(defaults.frontendClients.map((client) => ({ ...client }))),
     libraryPackages: z
       .array(
         z
@@ -115,7 +127,7 @@ export const projectPromptSchema = z
             "Use lowercase letters separated by single hyphens.",
           ),
       )
-      .default([]),
+      .default([...defaults.libraryPackages]),
   })
   .strict()
   .superRefine((config, context) => {
@@ -165,17 +177,19 @@ export const projectPromptSchema = z
 export type ProjectPromptConfig = z.infer<typeof projectPromptSchema>;
 
 export const defaultProjectPromptConfig: ProjectPromptConfig = {
-  name: "My App",
-  slug: "my-app",
-  emoji: "🚀",
-  description: "",
-  packagePrefix: "@fssstack",
-  shadcnPreset: defaultTheme,
-  extensions: [],
-  backendServices: ["backend"],
-  frontendClients: [{ slug: "frontend", type: "react-vite" }],
-  libraryPackages: [],
+  ...defaults,
+  extensions: [...defaults.extensions],
+  backendServices: [...defaults.backendServices],
+  frontendClients: defaults.frontendClients.map((client) => ({ ...client })),
+  libraryPackages: [...defaults.libraryPackages],
 };
+
+export const projectPromptJsonSchema = () => ({
+  ...z.toJSONSchema(projectPromptSchema, { io: "input" }),
+  title: "FSS Stack project configuration",
+  description:
+    "The web configurator's JSON values. Omitted optional fields use the same defaults as the web form. App and library slugs must also be unique across all three lists; the CLI enforces this with Zod.",
+});
 
 export const normalizeProjectPromptConfig = (
   config: ProjectPromptConfig,
