@@ -106,13 +106,29 @@ target's own pinned pnpm, builds only selected sites, and uploads with
 `VERCEL_TOKEN` from the protected `arcnet-production` environment. No OIDC, GCP,
 Terraform, Cloudflare token or new state bucket is required.
 
-For InProduct, remaining inputs are the existing landing project ID/name and
-account type/ID; an existing docs reference or approval to create the one static
-docs project; and a decision on which production trigger owns deployments. Keep
-the current Vercel Git integration until an approved preview is verified, then
-avoid competing production pipelines. Using Actions needs approved CI access to
-an appropriate Vercel token; this work did not create credentials or set secrets.
-Custom docs domains are optional. Existing DNS and landing settings remain intact.
+InProduct now uses an independent docs project at
+https://inproduct-docs.vercel.app/docs. Its ArcNet selection contains only docs;
+the landing retains its existing Vercel Git trigger. The verified provider hostname
+was recorded as a public landing build value in the repo, without dashboard env
+changes. MyShop remains local-only. No new plan, seats, add-ons, credentials or DNS
+changes were required for that onboarding.
+
+The runner's VERCEL_TOKEN is a process interface, not a requirement to store that
+provider token directly in GitHub. InProduct uses its repo-owned encrypted-source
+loader and GitHub SECRETS_KEY, exporting only the selected token to the runner.
+That target wrapper and shared ciphertext refresh are separate from this generic
+workflow template; copying the template alone does not install encrypted-secret
+integration. Do not recommend direct provider-token setup for an existing target
+that already has an approved encrypted-secret workflow.
+
+Use a dedicated hostname as the docs location convention, initially the verified
+provider hostname. The docs app must build and deploy without a landing app, and
+a landing app must build without docs. A cross-app link is optional and should be
+derived from the verified hostname during onboarding. Custom docs.<project-domain>
+is optional and requires separately authorized ownership/DNS verification. A single
+location-to-project orchestration command, standard build/output/routing defaults,
+and reusable encrypted-source workflow integration remain separately scoped tooling
+gaps; this CLI does not yet claim to automate those steps from a URL alone.
 
 ## Ownership/import is separate
 
@@ -128,7 +144,14 @@ Local tests use fixtures, an injected HTTP transport and intercepted commands;
 they cover account/team scope, new/existing modes, no-mutation reference behavior,
 conflicts, idempotence, disabled CI creation, static output isolation and routing
 artifacts. The exact CLI setup and offline plan run on disposable directories.
-No live provider execution or production-route success is claimed.
+Initial qualification used only fixtures. On 2026-10-11 the InProduct docs-only
+workflow uploaded through the encrypted-source wrapper to the independent Vercel
+project. Public browser checks passed for the landing link, docs navigation/search,
+static assets, JSON search endpoint, Markdown/LLM resources and unknown-route 404.
+The complete push-to-main deployment, credential cleanup and post steps passed in
+[run 38113741096](https://github.com/mp-lb/inproduct/actions/runs/38113741096)
+at target commit `d83aeef`. Public browser checks passed again after that run.
+This live static-site evidence does not qualify the Terraform/GCP modules.
 
 Interfaces checked on 2026-10-11:
 [project lookup](https://vercel.com/docs/rest-api/projects/find-a-project-by-id-or-name),
