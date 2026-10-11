@@ -1,14 +1,20 @@
 # ArcNet onboarding
 
-ArcNet's network configuration and onboarding live here. The deployment engine
-and Terraform modules remain in **Zapper**, pinned to published `@mp-lb/zapper
+ArcNet's network configuration and onboarding live here. The Terraform engine
+and modules remain in **Zapper**, pinned to published `@mp-lb/zapper
 0.21.0`. This is an opt-in layer; the public FSS Stack shell stays deployment-free.
+The static Vercel-only adapter uses public Vercel APIs/CLI directly.
 MGR's existing installation, credentials and operator pointer are unchanged.
 
-## Install once, then set up a new managed deployment
+## Choose the deployment profile
 
-For the existing InProduct Vercel site, read the [adoption plan](INPRODUCT_ADOPTION.md)
-first. The current generator does not yet support minimal existing-site adoption.
+- **Existing Vercel landing/docs or new static sites:** use the [Vercel-only profile](VERCEL.md). It has explicit existing/new project modes and no GCP/WIF/Terraform dependencies.
+- **Terraform-managed infrastructure:** use the original profile below.
+
+## Install once, then set up Terraform-managed infrastructure
+
+For InProduct, use `arcnet.vercel.json` and the [Vercel-only instructions](VERCEL.md).
+The default backend selection below is not its deployment shape.
 
 Prerequisites for generation: Node 22+, pnpm 10.11.0 (for this tool), a GitHub
 repository with `zap.yaml`, `package.json` with an exact `packageManager`, and a
@@ -43,6 +49,14 @@ or an approved migration. Omit `frontend` to retain its independent Vercel pipel
 | Framework frontend/docs | `vercel-static`: `remote-build: true`, `params.framework`, `params.root-directory`; Vercel CLI builds locally then uploads prebuilt output |
 | Background container | `gce-worker`: GCE VM; review ongoing compute cost and region/zone |
 | Shared database / Redis / storage | `shared-mongo-atlas`, `upstash-redis`, `aws-s3` bindings; opt in explicitly |
+
+**Qualification boundary:** the table describes existing Terraform modules, not
+freshly qualified live deployment shapes. This change validates the Vercel-only
+adapter with local fixtures; it does not requalify worker/database/storage
+architecture. The separate infrastructure review flags deprecated
+`gce-container-declaration` in the worker module and bucket-wide state Storage
+Admin grants. Those remain planned work; no worker, database-account, DNS or IAM
+changes are part of this implementation.
 
 MyShop is local-only: its service name and references in selected blocks are
 rejected. Publishing the backend library remains a separate release workflow.
@@ -169,11 +183,11 @@ Vercel project adoption configuration. Do not generate or enable it in InProduct
 as if it were one. The bare slug command defaults to a backend and is also not the
 right InProduct selection.
 
-The current installer always generates GCP project/registry/WIF modules and its
-Vercel module creates projects/domains/DNS. Those are actual tool limitations,
-not owner prerequisites for two static sites. Existing-project lookup, account
-scope and an optional GCP-free workflow must be implemented before claiming a
-minimal ArcNet adoption path works. No live cutover has occurred.
+The Vercel-only adapter now implements reference-only adoption with explicit
+account/team scope and a separate opt-in creation step. It does not import or own
+project settings/DNS. See [the supported command and remaining inputs](VERCEL.md).
+The original Terraform profile still generates GCP bootstrap resources; choose
+it only when those resources are actually part of the target architecture.
 
 MGR migration remains additive: this repo owns the sanitized configuration
 and onboarding; real identifiers, credentials and operator pointers remain in

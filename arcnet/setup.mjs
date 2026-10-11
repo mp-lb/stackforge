@@ -11,6 +11,7 @@ import { dirname, join, resolve, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import { parse, parseDocument, stringify } from "yaml";
+import { setupVercel } from "./vercel-setup.mjs";
 import { serviceDeploySchema } from "@mp-lb/zapper/dist/arc/schemas.js";
 
 const home = dirname(fileURLToPath(import.meta.url));
@@ -20,7 +21,7 @@ const fail = (message) => {
 const read = (p) => readFileSync(p, "utf8");
 const json = (value) => JSON.stringify(value, null, 2) + "\n";
 const usage =
-  "node ~/Work/stackforge/arcnet/setup.mjs <slug> [--dry-run] [--service backend] [--dockerfile Dockerfile] [--repository owner/repo] [--services arcnet.services.json]";
+  "node ~/Work/stackforge/arcnet/setup.mjs <slug> [--dry-run] [--service backend] [--dockerfile Dockerfile] [--repository owner/repo] [--services arcnet.services.json] [--vercel arcnet.vercel.json]";
 
 export function setup(args, root = process.cwd()) {
   if (args.length === 1 && args[0] === "--help") return usage;
@@ -38,7 +39,9 @@ export function setup(args, root = process.cwd()) {
     }
     const key = args[i].slice(2);
     if (
-      !["service", "dockerfile", "repository", "services"].includes(key) ||
+      !["service", "dockerfile", "repository", "services", "vercel"].includes(
+        key,
+      ) ||
       !args[i].startsWith("--") ||
       !args[i + 1] ||
       args[i + 1].startsWith("--") ||
@@ -85,6 +88,35 @@ export function setup(args, root = process.cwd()) {
     fail(
       `Slug must equal zap.yaml project (${project.project}). No files changed.`,
     );
+  if (!options.vercel && existsSync(safe("arcnet.vercel.json")))
+    options.vercel = "arcnet.vercel.json";
+  if (options.vercel) {
+    if (
+      options.services ||
+      options["seen-service"] ||
+      options["seen-dockerfile"] ||
+      options["seen-repository"]
+    )
+      fail(
+        "Vercel-only input cannot be combined with Terraform/service flags or arcnet.services.json.",
+      );
+    if (
+      !existsSync(safe("pnpm-lock.yaml")) ||
+      !existsSync(safe("package.json"))
+    )
+      fail("A target pnpm package.json and lockfile are required.");
+    const pm = JSON.parse(read(safe("package.json"))).packageManager;
+    if (!/^pnpm@\d+\.\d+\.\d+(?:\+sha\d+\.[a-f0-9]+)?$/.test(pm ?? ""))
+      fail("Pin packageManager to an exact pnpm version.");
+    return setupVercel({
+      root,
+      slug,
+      safe,
+      file: options.vercel,
+      dry,
+      hasDeploy: Boolean(project.deploy),
+    });
+  }
   if (
     !/^[a-z][a-z0-9-]*$/.test(options.service) ||
     ["gcp", "registry", "ci"].includes(options.service) ||
@@ -354,7 +386,7 @@ export function setup(args, root = process.cwd()) {
 }
 if (
   process.argv[1] &&
-  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+  realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
   try {
     console.log(setup(process.argv.slice(2)));

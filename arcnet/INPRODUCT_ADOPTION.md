@@ -1,6 +1,8 @@
 # InProduct: offline Vercel adoption plan
 
-Status: local inspection and documentation only, 2026-10-11. No provider queries,
+Status: offline adoption/import plan, updated 2026-10-11. The
+[Vercel-only adapter](VERCEL.md) now implements reference-only deployment and
+explicit creation, tested with local fixtures only. No provider queries,
 Terraform import/plan/apply, Vercel changes, tokens, CI secrets or DNS edits were
 performed. The reported live landing page is preserved. Earlier guidance that
 InProduct required a backend Dockerfile was too broad and is superseded here.
@@ -32,9 +34,9 @@ Prefer an existing-project reference/lookup over importing ownership merely to
 upload a new build. Leave the current landing Git integration active until its
 replacement trigger is tested; don't allow both systems to race production builds.
 
-## What exists today versus what must change in tooling
+## Terraform ownership gaps (reference-only mode does not need these)
 
-Implemented: explicit service selection, static upload/build fields, repo-owned
+The original Terraform profile implements explicit service selection, static upload/build fields, repo-owned
 config, pinned JS tooling, local checks/rendering, disabled-by-default GitHub
 workflow and conflict-safe generation. The sites-only fixture renders no backend
 or MyShop; it still exposes the following starter limitations:
@@ -51,8 +53,8 @@ or MyShop; it still exposes the following starter limitations:
    Vercel provider 1.14.1 already supports that
    [read-only lookup](https://github.com/vercel/terraform-provider-vercel/blob/v1.14.1/docs/data-sources/project.md).
 3. The hook infers a personal organization via `/v2/user`; it needs explicit
-   account/team scope matching the selected existing project. The runner and
-   workflow also currently require gcloud/WIF. A Vercel-only profile must instead
+   account/team scope matching the selected existing project. The Terraform runner and
+   workflow still require gcloud/WIF. A Vercel-only profile must instead
    require only the selected Vercel authentication and app build tools.
 4. The existing managed-project module omits Git integration and fixes build and
    output settings to null. Importing a live project into it is not safe adoption:
@@ -63,9 +65,11 @@ or MyShop; it still exposes the following starter limitations:
    import workflow. A controlled import workspace/state handoff is still needed
    if Terraform ownership, rather than reference-only reuse, is chosen.
 
-These are implementation work, not requests for Felix to buy/configure GCP.
-The current one-command generator is verified for file generation, **not** as a
-working minimal adoption command for the existing InProduct site.
+These limitations remain in the Terraform ownership path. They are not
+prerequisites for the new Vercel-only reference profile: it uses explicit IDs and
+account-scoped reads, stages static output, and never requests ownership/import.
+Its one-command generation and offline plan are tested; live InProduct deployment
+is still not authorized or verified.
 
 ## Existing state that can be adopted, if ownership is later chosen
 

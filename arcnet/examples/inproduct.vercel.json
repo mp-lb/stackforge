@@ -1,0 +1,40 @@
+{
+  "repository": "mp-lb/inproduct",
+  "account": { "type": "team", "id": "team_REPLACE" },
+  "sites": {
+    "frontend": {
+      "mode": "existing",
+      "projectId": "prj_REPLACE",
+      "projectName": "replace-landing-name",
+      "build": ["pnpm", "--filter", "@mp-lb/inproduct-frontend", "build"],
+      "output": "apps/frontend/dist",
+      "outputConfig": {
+        "version": 3,
+        "routes": [
+          { "src": "/(.+)/", "headers": { "Location": "/$1" }, "status": 308 },
+          {
+            "src": "/(.+)\\.html",
+            "headers": { "Location": "/$1" },
+            "status": 308
+          },
+          { "handle": "filesystem" },
+          { "src": "/(.*)", "dest": "/index.html" }
+        ]
+      }
+    },
+    "docs": {
+      "mode": "new",
+      "projectName": "inproduct-docs",
+      "creationApproved": false,
+      "build": ["pnpm", "--filter", "@mp-lb/inproduct-docs", "build"],
+      "output": "apps/docs/build/client",
+      "outputConfig": {
+        "version": 3,
+        "routes": [
+          { "handle": "filesystem" },
+          { "src": "/(.+?)/?", "dest": "/$1/index.html", "check": true }
+        ]
+      }
+    }
+  }
+}
