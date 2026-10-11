@@ -20,3 +20,9 @@ tasks:
   worktree-setup:
     cmds:
       - pnpm -C flatpack-shell install
+  arcnet-setup:
+    cmds:
+      - pnpm -C arcnet install --frozen-lockfile
+  arcnet-test:
+    cmds:
+      - node --test arcnet/test/*.test.mjs

@@ -1,0 +1,28 @@
+{
+  "backend": {
+    "module": "cloud-run-web",
+    "dockerfile": "Dockerfile",
+    "domain": "inproduct-api.mp-lb.dev",
+    "env": ["BACKEND_PORT=8080"],
+    "params": {
+      "port": 8080,
+      "health-path": "/health",
+      "min-instances": 0,
+      "max-instances": 2
+    }
+  },
+  "frontend": {
+    "module": "vercel-static",
+    "domain": "inproduct-preview.mp-lb.dev",
+    "build": "pnpm --filter @mp-lb/inproduct-frontend build",
+    "deploy-path": "apps/frontend/dist",
+    "params": { "www-redirect": false }
+  },
+  "docs": {
+    "module": "vercel-static",
+    "domain": "inproduct-docs.mp-lb.dev",
+    "build": "pnpm --filter @mp-lb/inproduct-docs build",
+    "deploy-path": "apps/docs/build/client",
+    "params": { "www-redirect": false }
+  }
+}
