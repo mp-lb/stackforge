@@ -5,7 +5,10 @@ and Terraform modules remain in **Zapper**, pinned to published `@mp-lb/zapper
 0.21.0`. This is an opt-in layer; the public FSS Stack shell stays deployment-free.
 MGR's existing installation, credentials and operator pointer are unchanged.
 
-## Install once, then set up a project
+## Install once, then set up a new managed deployment
+
+For the existing InProduct Vercel site, read the [adoption plan](INPRODUCT_ADOPTION.md)
+first. The current generator does not yet support minimal existing-site adoption.
 
 Prerequisites for generation: Node 22+, pnpm 10.11.0 (for this tool), a GitHub
 repository with `zap.yaml`, `package.json` with an exact `packageManager`, and a
@@ -17,10 +20,10 @@ From StackForge run `zap t arcnet-setup` (or `pnpm -C arcnet install --frozen-lo
 **from the target repository root**, the setup command is:
 
 ```sh
-node ~/Work/stackforge/arcnet/setup.mjs inproduct
+node ~/Work/stackforge/arcnet/setup.mjs my-project
 ```
 
-Replace `inproduct` with the `project:` slug in `zap.yaml`. GitHub owner/repo is
+Replace `my-project` with the `project:` slug in `zap.yaml`. GitHub owner/repo is
 read from `origin`; use `--repository owner/repo` when no GitHub origin exists.
 Use `--dry-run` for a read-only preview. `--service` and `--dockerfile` override
 the default backend name/path. Slugs are lowercase, start with a letter and have
@@ -151,34 +154,36 @@ hook assumes the token's personal user account, not team-scoped project adoption
 These are deployment review items, not claims that this extraction fixed them.
 Official prerequisites were checked on 2026-10-11.
 
-## InProduct migration plan — no cutover yet
+## InProduct first adoption plan — sites only
 
-The reported Vercel landing page remains live and unchanged. The observed backend
-serves `/health` and reads `BACKEND_PORT` (not `PORT`); the example sets
-`BACKEND_PORT=8080`. No backend Dockerfile exists in the base checkout: author and
-locally verify one before onboarding that service. Coordinate with the InProduct
-worker rather than modifying its worktree. Its Fumadocs uses React Router static
-prerendering, with output `apps/docs/build/client`, not a Next.js assumption.
+InProduct needs its existing Vite landing page and prerendered Fumadocs site.
+`apps/backend` is a private health scaffold; the requested backend deliverable is
+an npm library. Neither belongs in its deployment selection. MyShop stays local.
+No Dockerfile, Cloud Run, GCP domain verification or database is required for this
+consumer. See the concrete [offline adoption plan](INPRODUCT_ADOPTION.md).
 
-First finish/merge the consumer's docs and library changes. Record the current
-Vercel project/account/domain/Git integration and a rollback route. Decide whether
-to retain Vercel's current pipeline, adopt its project via reviewed Terraform
-import, or create a separately named preview project; the module's default is to
-create a new project. Verify temporary hostnames, backend image, docs search and
-links before proposing any domain transfer. Keep the old Vercel project and DNS
-until an approved cutover has passed live checks. Never deploy `apps/myshop`.
+The [sites-only example](examples/inproduct.services.json) excludes both backend
+and MyShop and preserves the landing page's existing routing config. It exercises
+the current creator module using proposal hostnames; it is **not** an existing
+Vercel project adoption configuration. Do not generate or enable it in InProduct
+as if it were one. The bare slug command defaults to a backend and is also not the
+right InProduct selection.
 
-MGR migration is similarly additive: this repo now owns the sanitized configuration template
-and onboarding. Real MGR billing/Atlas identifiers were deliberately not copied
-into this public repository. Existing operators keep using MGR until the replacement is proven.
-Then review pointer/docs updates separately. Never move/delete the whole MGR
-folder or copy its credentials into Git.
+The current installer always generates GCP project/registry/WIF modules and its
+Vercel module creates projects/domains/DNS. Those are actual tool limitations,
+not owner prerequisites for two static sites. Existing-project lookup, account
+scope and an optional GCP-free workflow must be implemented before claiming a
+minimal ArcNet adoption path works. No live cutover has occurred.
+
+MGR migration remains additive: this repo owns the sanitized configuration
+and onboarding; real identifiers, credentials and operator pointers remain in
+MGR. Never move/delete the whole MGR folder or copy credentials into Git.
 
 ## Maintainer validation
 
 Run `zap t arcnet-setup` and `zap t arcnet-test` from StackForge, through the shared heavy-job
 queue when working alongside other agents. Tests exercise dry runs, safe failures,
 reruns and published-engine Terraform rendering, including an InProduct-shaped
-fixture; no Terraform apply, provider login or live deployment occurs. Root
-`zap t setup` currently references an absent `flatpack-shell/`; that unrelated
-baseline issue does not prevent this package's scoped setup/tests.
+fixture; no Terraform apply, provider login or live deployment occurs. Root `zap t setup` now targets the existing `fssstack/shell/` with a frozen
+lockfile. ArcNet onboarding remains independently reproducible with its scoped
+setup task.

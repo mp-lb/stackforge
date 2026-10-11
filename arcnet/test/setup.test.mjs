@@ -271,7 +271,7 @@ test("static-only setup needs no Dockerfile; local-only MyShop cannot be selecte
     /generated/,
   );
 });
-test("real InProduct service example renders backend, Vite and prerendered Fumadocs, never MyShop", (t) => {
+test("InProduct sites-only example renders no application backend or MyShop", (t) => {
   const root = fixture(t);
   writeFileSync(
     join(root, "arcnet.services.json"),
@@ -305,7 +305,8 @@ test("real InProduct service example renders backend, Vite and prerendered Fumad
     imageTag: "test",
   });
   t.after(() => rmSync(rendered.dir, { recursive: true, force: true }));
-  assert.equal(rendered.serviceEnv.backend.BACKEND_PORT, "8080");
+  assert.equal(rendered.containerBuilds.length, 0);
+  assert.equal(manifest.deploy.services.backend, undefined);
   assert.equal(
     rendered.hookParams.docs["deploy-path"],
     "apps/docs/build/client",
@@ -320,7 +321,6 @@ test("real InProduct service example renders backend, Vite and prerendered Fumad
     "prj_ci",
     "prj_gcp",
     "prj_registry",
-    "svc_backend",
     "svc_docs",
     "svc_frontend",
   ]);
