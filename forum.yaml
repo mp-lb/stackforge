@@ -3,5 +3,3 @@ git:
 sync:
   - target: fssstack
     store: mp-lb/fssstack
-  - target: mp-lb-run
-    store: mp-lb/mp-lb-run
