@@ -1,6 +1,6 @@
 # ArcNet setup guide
 
-This guide onboards a project into an existing environment. Starting a new company/network? Follow [environment setup](ENVIRONMENT.md) first.
+This guide onboards a project into an existing environment. Starting a new company/network? Follow [environment setup](environment/setup.md) first.
 
 Use this guide to add ArcNet deployment to an existing, locally validated project. **FSS Stack is not required.** ArcNet is MAP Lab's deployment conventions and onboarding around Zap Arc, the deployment engine in Zapper; the static Vercel adapter uses Vercel directly.
 

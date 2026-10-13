@@ -66,4 +66,4 @@ These are the provider accounts ArcNet uses, depending on what you deploy.
 3. **Project** — deployment files, service domains and isolated service bindings.
 4. **Delivery** — GitHub Actions builds and deploys on pushes to main.
 
-[Create a new ArcNet environment](ENVIRONMENT.md) · [Add a project](SETUP.md)
+[Create a new ArcNet environment](environment/setup.md) · [Add a project](SETUP.md)
