@@ -17,6 +17,8 @@ fssstack prompt '{"description":"My app"}'
 
 Both the web app and CLI import the same Zod schema, defaults, normalization, and prompt renderer from `fssstack-start/app/`. The schema command generates draft 2020-12 JSON Schema directly from Zod. No CLI-specific field definitions, defaults, or prompt templates are maintained. Rebuilding the CLI picks up changes to those shared sources; installed npm versions receive them when a new version is released.
 
+Extension slugs, labels, order, and visual metadata live in `fssstack-start/app/extension-registry.ts`. Add an entry there and a matching `fssstack/extensions/<slug>.md`: the landing page reads the registry, the schema and CLI accept its slugs, and a test checks that each entry has a source document. The published CLI still needs a new npm version before consumers receive a registry change.
+
 Omitted optional fields use the web form's initial values; description is required. Supply `slug` explicitly when changing `name` in JSON: the default slug remains `my-app`. The CLI accepts normalized values such as the website copies and rejects invalid values instead of guessing. Unknown top-level fields are errors. App and library slugs must be unique across all three lists; this additional rule is checked by Zod because standard JSON Schema cannot express it. The generated prompt includes the shared default prerequisite paragraph.
 
 Output goes only to stdout, with one trailing newline. Errors go to stderr and exit with status 1. Shell redirection controls files. The CLI never scaffolds projects or installs anything. `--help` and `--version` are also available.
