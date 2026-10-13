@@ -23,7 +23,7 @@ try {
   throw new Error("--stackforge-root must be a Git Stackforge checkout.");
 }
 
-const reference = resolve(root, "fssstack/audit-references/hello-world");
+const reference = resolve(root, "hello-world");
 const provenance = JSON.parse(
   await readFile(resolve(reference, "provenance/reference.json"), "utf8"),
 );

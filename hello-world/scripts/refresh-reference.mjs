@@ -7,7 +7,7 @@ import { resolve } from "node:path";
 const root = process.argv.at(process.argv.indexOf("--stackforge-root") + 1);
 if (!root?.startsWith("/"))
   throw new Error("Pass an absolute --stackforge-root.");
-const source = resolve(root, "fssstack/audit-references/hello-world");
+const source = resolve(root, "hello-world");
 const candidate = await mkdtemp(
   resolve(tmpdir(), "fssstack-hello-world-refresh-"),
 );

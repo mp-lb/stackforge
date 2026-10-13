@@ -1,0 +1,17 @@
+{
+  "format": 1,
+  "files": [
+    {
+      "path": "provenance/stackforge-inputs.json",
+      "sha256": "09fb56d8f1e6aa237d67ebdc0ab7dbcb84927c32b7ac3b3e2b4617b30b424b3c"
+    },
+    {
+      "path": "provenance/validation.json",
+      "sha256": "7a257b2380219a27e5c2b0a4b6b31e4fc193372d351cb2f44b5d2d6873a3e5f0"
+    },
+    {
+      "path": "scripts/refresh-reference.mjs",
+      "sha256": "0a82f1bf4ec715a459eb746a5fda3ce63aa068eeb2e6079d9a028c204da66941"
+    }
+  ]
+}
