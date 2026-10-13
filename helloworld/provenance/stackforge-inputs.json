@@ -71,7 +71,7 @@
     },
     {
       "path": "fssstack/shell/audit.md",
-      "sha256": "087fba5532e87b9b35f0fe4bd6ea88b0f8063508e3c3d3c2670c30db05f647a7"
+      "sha256": "c49d3ad21e14d6314abe7721f5fbbb456e8abc51d35b74e277206810cf2b0d16"
     },
     {
       "path": "fssstack/shell/docs/logging.md",
@@ -259,7 +259,7 @@
     },
     {
       "path": "fssstack/shell/pnpm-workspace.yaml",
-      "sha256": "7969a4ae72a320eadb96027b95800e393b587b29176897a4a368ebbbd4cc7b2b"
+      "sha256": "d812370478c0c1e6bd605df457911145c0ee0761452fbac9ec812e5816b7f8fb"
     },
     {
       "path": "fssstack/shell/scripts/context-files.mjs",

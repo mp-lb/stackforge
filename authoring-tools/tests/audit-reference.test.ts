@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const root = resolve(import.meta.dirname, "../..");
-const reference = resolve(root, "hello-world");
+const reference = resolve(root, "helloworld");
 const sha256 = (path: string) =>
   createHash("sha256").update(readFileSync(path)).digest("hex");
 const verify = (stackforgeRoot: string) =>

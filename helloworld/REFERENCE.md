@@ -1,7 +1,7 @@
 # HelloWorld FSS Stack audit reference
 
 This is a generated, buildable reference project for audits. It starts from
-[`fssstack-cli/examples/hello-world.json`](../../../fssstack-cli/examples/hello-world.json)
+[`fssstack-cli/examples/hello-world.json`](../fssstack-cli/examples/hello-world.json)
 and retains the selected Vite, Next.js, Fumadocs, backend, library, Clerk, and
 MongoDB surfaces. It contains no credentials or private source data.
 
@@ -13,7 +13,7 @@ comparing a target. The verifier compares current Stackforge source content, not
 Run this from `authoring-tools` to verify a checkout:
 
 ```bash
-node ../hello-world/scripts/verify-provenance.mjs \
+node ../helloworld/scripts/verify-provenance.mjs \
   --stackforge-root "$(dirname "$PWD")"
 ```
 

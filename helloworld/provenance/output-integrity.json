@@ -27,7 +27,7 @@
     },
     {
       "path": "REFERENCE.md",
-      "sha256": "89484feea7041a2ab1cae53555d0ea250bd284662ac554abf4bc2d1bcc29e7cc"
+      "sha256": "7d43c5e65ee172ea0bd645237c20e832bbee21d45c2bb2a7d37bfefdbbb2abb7"
     },
     {
       "path": "VALIDATION.md",
@@ -603,7 +603,7 @@
     },
     {
       "path": "provenance/stackforge-inputs.json",
-      "sha256": "9d8cc3898e0e994f5d784505cffb72742bcb8aa9cfe00930c23ee616fc7f4719"
+      "sha256": "c8add86e37aaf80f9b609abd181d59c5988dc687562e02377d24f5f1b95e3457"
     },
     {
       "path": "provenance/validation.json",
@@ -615,11 +615,11 @@
     },
     {
       "path": "scripts/refresh-reference.mjs",
-      "sha256": "0a82f1bf4ec715a459eb746a5fda3ce63aa068eeb2e6079d9a028c204da66941"
+      "sha256": "e9fd950a236f5663912e147ce86b556c9b557a293204f0ef621bf58e175ceb19"
     },
     {
       "path": "scripts/verify-provenance.mjs",
-      "sha256": "746a3e76772e5c3e6f4b86257ec47c45ee629f615e64d37856484d08d2dcecb7"
+      "sha256": "2c5b205dc06bb963479ddebd92ea0922d46613dfdc53ea816270637061e5bd4f"
     },
     {
       "path": "zap.yaml",
