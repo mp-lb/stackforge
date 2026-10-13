@@ -45,6 +45,20 @@ One workflow deploys the whole project. Most files live in `.arcnet/`; `zap.yaml
 
 Shared services use the project slug as the isolation boundary, with project-scoped namespaces and credentials.
 
+## Third-party services
+
+These are the provider accounts ArcNet uses, depending on what you deploy.
+
+| Provider | Used for | Needed when |
+| --- | --- | --- |
+| GitHub | Source and deployment workflows | All projects |
+| Google Cloud (GCP) | Compute, container registry, Terraform state and deployment identities | Terraform deployments |
+| Cloudflare | DNS records for custom domains | ArcNet manages service domains |
+| Vercel | Website hosting | Deploying Vercel sites |
+| MongoDB Atlas | Shared MongoDB cluster | Using MongoDB |
+| Upstash | Redis hosting | Using the Redis module |
+| AWS | S3 object storage | Using the S3 module |
+
 ## Layers
 
 1. **Accounts** — company accounts, billing, domain ownership and initial credentials.
