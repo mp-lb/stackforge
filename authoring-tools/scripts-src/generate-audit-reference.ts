@@ -2,6 +2,7 @@
  * Assemble shell-owned HelloWorld surfaces before framework scaffolders run.
  * This never reads the committed hello-world reference.
  */
+import { execFileSync } from "node:child_process";
 import {
   cpSync,
   existsSync,
@@ -176,4 +177,3 @@ if (process.argv.includes("--scaffold-frameworks")) {
   }
 }
 console.log(destination);
-import { execFileSync } from "node:child_process";
