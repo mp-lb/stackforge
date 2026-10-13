@@ -1,7 +1,9 @@
 # ArcNet onboarding
 
-Apply the FSS Stack [ArcNet extension](../fssstack/extensions/arcnet.md) to add this
-capability to a validated project.
+Start with the [ArcNet setup guide](SETUP.md). **FSS Stack is not required.**
+The current installer expects a Zap project using pnpm and GitHub; a `zap.yaml`
+alone is not enough. FSS Stack projects can use the thin
+[ArcNet extension](../fssstack/extensions/arcnet.md) to reach the same guide.
 
 ## What gets added to your project?
 
