@@ -1,8 +1,8 @@
 # Audit this FSS Stack project
 
-Use this process when asked to audit how this repository aligns with a new FSS
-Stack project. Build a fresh reference project from the current published
-Doctrine instructions, compare it with this project, and write
+Use this process when asked to audit how this repository aligns with the
+maintained FSS Stack reference project. Compare it with the committed,
+verified HelloWorld reference, then write
 `tmp/audit-report.md` in **this project's root**. Explain which differences serve
 the project and which are accidental drift. This is an assessment, not a request
 to replace working product code or apply fixes.
@@ -31,9 +31,52 @@ packages in the inventory and assess their placement and workspace integration;
 their absence from the reference is not itself drift. If a project type has no
 current scaffold, explicitly mark that comparison as unavailable.
 
-## 2. Read current Doctrine and assemble a separate reference
+## 2. Resolve and verify the maintained reference
 
-Create a unique temporary directory outside this repository. For example, from
+Do not assume Stackforge lives in a particular home-directory path. Resolve its
+absolute path from an explicit `FSSSTACK_ROOT` value, a documented project
+metadata field, or an already-known verified checkout. Confirm that it is a
+Stackforge Git checkout and record its revision. If its location is absent or
+ambiguous, ask the user where Stackforge is or whether it should be cloned.
+
+The default baseline is:
+
+```text
+<verified-stackforge>/fssstack/audit-references/hello-world/
+```
+
+Read `provenance/reference.json`, `fssstack.json`, and the materialized Forum
+source under `provenance/forum-content/`. Verify the reference's input hash,
+generator provenance, selected options, Stackforge revision, and every recorded
+source-content hash before comparing it. A reference does **not** become stale
+only because it was committed on an earlier date. It is stale only when its
+recorded inputs, generator provenance, or verified source content no longer
+match, or when its own validation record is missing or failed.
+
+If verification succeeds, audit against the committed reference read-only. Do
+not run current external scaffolders merely to obtain a moving baseline.
+
+If the reference is missing, stale, or unverifiable, stop the comparison and
+ask the user to choose one of these paths:
+
+1. **Temporary audit:** generate a one-off reference outside both repositories,
+   report its limitation, and do not treat it as the shared baseline.
+2. **Shared refresh:** delegate a separate worker a complete request containing
+   the verified Stackforge path, target branch, exact HelloWorld input, required
+   Forum-source materialization and review, generator/tool versions, validation
+   commands, commit instructions, and the requirement to preserve unrelated
+   changes. The worker must generate outside the existing reference first,
+   validate it, review the resulting diff, then replace the shared reference in
+   one focused commit.
+
+Before proposing a pull request, detect available Git hosting tooling instead
+of assuming `gh` exists. If PR submission is unavailable or not approved, push
+only when authorized and ask the user how they want the refresh submitted.
+
+## Historical temporary-generation procedure
+
+Use this only when the user selects the temporary-audit path. Create a unique
+temporary directory outside this repository. For example, from
 the real project root:
 
 ```bash
