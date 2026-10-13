@@ -34,7 +34,7 @@ your existing repo/
 └── pnpm-lock.yaml                   UPDATED — run pnpm install after setup
 ```
 
-The package owns the shared TypeScript CLI, runners and Terraform modules. Projects do not copy those files or maintain a second package manifest/lockfile. The workflow calls `pnpm exec arcnet`. [File details](SETUP.md#the-pieces-files-you-add-to-a-project).
+The package owns the shared TypeScript CLI, runners and Terraform modules. Its first npm release is awaiting a publishing-credential fix. Projects do not copy those files or maintain a second package manifest/lockfile. The workflow calls `pnpm exec arcnet`. [File details](SETUP.md#the-pieces-files-you-add-to-a-project).
 
 Static Vercel references use `.arcnet/vercel.json` as input and only generate `project.json`, `.gitignore` and the workflow; no network file or Dockerfile is needed. Both profiles install the same CLI package.
 

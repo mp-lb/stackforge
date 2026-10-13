@@ -20,6 +20,8 @@ For a project containing only static Vercel sites, the current implementation us
 
 ## Install and validate
 
+The TypeScript package is implemented in tools. Its initial npm publication is currently blocked by registry authentication; the `0.1.0` install commands below become available once that release succeeds.
+
 From the **target repository root**, preview and install the published CLI configuration. No Stackforge checkout is needed:
 
 ```sh
