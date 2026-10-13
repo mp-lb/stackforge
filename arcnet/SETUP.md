@@ -152,6 +152,8 @@ This repository owns sanitized configuration and onboarding. Keep real network i
 
 Install `@mp-lb/arcnet` in the project root, then use `arcnet secrets add` for the standard Forum encrypted JSON and `arcnet secrets init` when project-specific values are needed. Setup prompts for your Forum encryption password, creates a file-specific recipient, and sends its key directly to the chosen GitHub repository through `gh`. Reuse an existing GitHub secret with `--existing-key`. Local `fm` and `gh` sessions must already be authenticated.
 
+Store project-specific Forum files at `mp-lb/mp-lb:/projects/<project-slug>/secrets.json.enc`; the standard layer stays at `/admin/standard-secrets.json.enc`.
+
 `.arcnet/secrets.json` records ordered source references, snapshot provenance, key environment names and consumer mappings. Later sources override earlier ones. The `deploy` consumer selects operator credentials; application selection remains in each service's `zap.yaml` env list. Publishing can have its own `publish` consumer. `arcnet deploy` loads the configuration automatically.
 
 Run `arcnet secrets sync` after remote edits and commit the refreshed encrypted snapshots. CI does not need a Forum login: it decrypts these reviewed snapshots using each source's GitHub key. `arcnet env check` verifies decryption and mappings without printing values. For other commands, use `arcnet env run --consumer publish -- <command>`; only selected values reach the child. Setup/sync generate a validation workflow and add source-key references to existing ArcNet workflow steps.
