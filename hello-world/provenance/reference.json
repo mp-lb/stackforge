@@ -6,6 +6,7 @@
   },
   "sourceRevision": "0eeb61642c96365ac011d239dc9eb2deb4d473fb",
   "freshnessRule": "Current source files must match stackforge-inputs.json; a reference-only commit does not invalidate this baseline.",
+  "publishedSourceStatus": "Captured Forum source reflects the published payload at generation. Local Stackforge documentation changes after generation are prospective and are not represented as published Forum content.",
   "generator": {
     "fssstackCli": "0.2.0",
     "shadcn": "4.21.4",
