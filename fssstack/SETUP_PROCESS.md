@@ -71,6 +71,12 @@ logger, tRPC router) — keep that wiring; you are only renaming.
 
 If the project has multiple backends, repeat the copy + edit for every backend. Remove `apps/example-backend` after all requested backends exist, unless the requested backend slug is `example-backend`.
 
+When the selected extensions include Clerk or MongoDB, apply
+extensions/clerk.md and extensions/mongodb.md to each selected backend before
+validation. Those instructions are part of assembly: do not defer their package,
+route/provider, environment-placeholder, database-service, or reset-task wiring
+to a later hand edit of the finished project.
+
 **No backend at all?** The `core` / `server` / `trpc` packages exist to support tRPC backends. A project with no backend should remove `packages/server` and `packages/trpc` (and `packages/core` if nothing else uses it) so it carries no unused infra.
 
 ## Vite Frontends
@@ -79,7 +85,7 @@ For each React/Vite frontend client, generate the frontend with the shadcn CLI, 
 
 ```bash
 mkdir -p apps
-CI=1 npx shadcn@latest init --preset <shadcnPreset> --template vite --cwd apps --name <frontend slug>
+CI=1 npx shadcn@4.21.4 init --preset <shadcnPreset> --template vite --cwd apps --name <frontend slug> --yes
 ```
 
 The shadcn CLI creates each app at `apps/<client-name>` when run with `--cwd apps --name <client-name>`. Do not run it with `--cwd apps/<client-name> --name <client-name>`, because that creates an accidental nested `apps/<client-name>/<client-name>` scaffold.
@@ -149,7 +155,7 @@ For each React/Next.js frontend client, generate the frontend with the shadcn CL
 
 ```bash
 mkdir -p apps
-CI=1 npx shadcn@latest init --preset <shadcnPreset> --template next --cwd apps --name <frontend slug> --no-monorepo --base radix --yes
+CI=1 npx shadcn@4.21.4 init --preset <shadcnPreset> --template next --cwd apps --name <frontend slug> --no-monorepo --base radix --yes
 ```
 
 The shadcn CLI owns the generic Next.js, React, Tailwind, and shadcn/ui scaffold. The fssstack overlay:
@@ -185,7 +191,7 @@ deliberately leaves to you:
 
 ```bash
 mkdir -p apps
-(cd apps && CI=1 npm create fumadocs-app@latest <docs slug> --template react-router --search orama --pm pnpm --no-git)
+(cd apps && CI=1 npm create fumadocs-app@16.2.18 <docs slug> --template react-router --search orama --pm pnpm --no-git)
 node scripts/augment-docs-site.mjs . "<docs slug>"
 ```
 
