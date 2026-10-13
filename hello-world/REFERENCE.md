@@ -13,7 +13,7 @@ comparing a target. The verifier compares current Stackforge source content, not
 Run this from `authoring-tools` to verify a checkout:
 
 ```bash
-node ../fssstack/audit-references/hello-world/scripts/verify-provenance.mjs \
+node ../hello-world/scripts/verify-provenance.mjs \
   --stackforge-root "$(dirname "$PWD")"
 ```
 

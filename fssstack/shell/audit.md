@@ -42,7 +42,7 @@ ambiguous, ask the user where Stackforge is or whether it should be cloned.
 The default baseline is:
 
 ```text
-<verified-stackforge>/fssstack/audit-references/hello-world/
+<verified-stackforge>/hello-world/
 ```
 
 Read `provenance/reference.json`, `fssstack.json`, and the materialized Forum
