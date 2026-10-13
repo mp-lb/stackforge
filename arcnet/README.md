@@ -43,4 +43,4 @@ One workflow deploys the whole project. Most files live in `.arcnet/`; `zap.yaml
 | Bull workers | Per project |
 | S3 storage | Per project |
 
-MongoDB shares a cluster; each project has its own database namespace and scoped credentials.
+Shared services use the project slug as the isolation boundary, with project-scoped namespaces and credentials.
