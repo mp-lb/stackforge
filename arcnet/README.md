@@ -1,5 +1,75 @@
 # ArcNet onboarding
 
+## The pieces: files you add to a project
+
+The [templates](templates/) are the deployment files copied into a target repo.
+The [setup script](setup.mjs) combines them with your project configuration and
+generates the remaining files. You choose **one** of the two profiles below;
+they use the same destination filenames but different runners and workflows.
+
+ArcNet adds three things to an otherwise undeployed project: a declaration of
+**what to deploy and where**, a **runner that performs the deployment**, and a
+**GitHub Actions workflow that runs it on pushes to main**. Your application
+still supplies its own build command and, for container services, Dockerfile.
+
+### Static sites on Vercel
+
+| Source in ArcNet | File in your project | What it does |
+| --- | --- | --- |
+| [Vercel input example](examples/inproduct.vercel.json) | `arcnet.vercel.json` (you customize it) | Selects sites, Vercel account/project identities, build commands, output folders and routing. |
+| [Vercel setup](vercel-setup.mjs) | `.arcnet/project.json` (generated) | Stores those deployment settings plus approval state. This becomes the runner's authoritative configuration. |
+| [Vercel runner](templates/vercel-run.mjs) | `.arcnet/run.mjs` | Checks configuration and project identities, builds the selected sites, and uploads their static output through Vercel. Also supports a separate explicit project-creation command. |
+| [Vercel workflow](templates/deploy-vercel.yaml) | `.github/workflows/deploy-arc.yaml` | Checks configuration on main pushes; once enabled, installs app dependencies and runs the deployment with `VERCEL_TOKEN`. |
+| [Vercel setup](vercel-setup.mjs) | `.arcnet/.gitignore` (generated) | Ignores the temporary project-configuration write file. |
+
+This profile leaves `zap.yaml` and the root `package.json` unchanged. Setup
+requires `zap.yaml` for the project name, an exact pnpm `packageManager` in
+`package.json`, and `pnpm-lock.yaml`. The generated runner has no npm dependencies
+of its own. It deploys static output directly to Vercel; it does not use
+Terraform, provision GCP infrastructure, or manage DNS. See [Vercel setup](VERCEL.md).
+
+### Terraform-managed infrastructure through Zap Arc
+
+| Source in ArcNet | File/change in your project | What it does |
+| --- | --- | --- |
+| [Service-selection example](examples/inproduct.services.json) | Optional `arcnet.services.json` (you customize it) | Selects the services and infrastructure modules to deploy. Without this file, setup defaults to one HTTP backend. |
+| [Setup script](setup.mjs) | Adds `deploy:` to `zap.yaml` | Declares project infrastructure and selected services: modules, domains, Dockerfiles, build settings and allowed environment variables. |
+| [Network template](network.yaml) | `.arcnet/network.yaml` | Supplies network conventions: cloud regions, naming, Terraform state location, providers and module defaults. Setup copies a target-owned `arcnet.network.yaml` instead if supplied. |
+| [Setup script](setup.mjs) | `.arcnet/project.json` (generated) | Records project/repository identity, selected services, deployment approval and GitHub cloud-authentication settings. |
+| [Terraform runner](templates/run.mjs) | `.arcnet/run.mjs` | Checks configuration, gathers environment values, and invokes Zap Arc to plan or deploy the selected infrastructure and services. |
+| [Terraform workflow](templates/deploy-arc.yaml) | `.github/workflows/deploy-arc.yaml` | Checks configuration on main pushes; once enabled, authenticates to GCP, installs deployment/build tools and runs deployment. |
+| [Package manifest](package.json) and [lockfile](pnpm-lock.yaml) | `.arcnet/package.json` and `.arcnet/pnpm-lock.yaml` | Pin Zapper's deployment engine and YAML dependency separately from your application. |
+| [Setup script](setup.mjs) | `.arcnet/.npmrc` (generated) | Keeps deployment dependency installation separate from the target pnpm workspace. |
+| [Setup script](setup.mjs) | `.arcnet/env.production.json` (generated empty) | Holds public application environment values; secret values come through `ARCNET_ENV_JSON`. |
+| [Setup script](setup.mjs) | `.arcnet/operator.json` and `.arcnet/.gitignore` (generated) | Provides a project-local credentials-file pointer and excludes credentials, installed dependencies and Terraform state/plan files from Git. The runner requires operator tokens through the environment. |
+| [Vercel Terraform module](templates/vercel-static/main.tf) and [module manifest](templates/vercel-static/module.yaml) | `.arcnet/modules/vercel-static/main.tf` and `module.yaml` (only when selected) | Defines the Vercel resource and its build/upload hook, with a pinned Vercel CLI. Other module implementations come with Zapper. |
+
+The installer does not add dependencies or scripts to the root `package.json`;
+it requires an existing exact pnpm `packageManager` and lockfile. Container
+services need an application-specific Dockerfile, which ArcNet does not generate.
+
+### From these files to a live deployment
+
+1. **Describe the deployment.** Choose a profile and fill in its project/service
+   input, build outputs or Dockerfiles, and destination settings.
+2. **Generate the files.** Run [setup](setup.mjs) from the target repo. This writes
+   the selected workflow, runner and configuration; it does not contact a cloud
+   provider or deploy anything. Deployment starts disabled.
+3. **Connect the destination.** Configure provider access and GitHub's
+   `arcnet-production` environment. Vercel needs explicit project references
+   (or separately created projects); Terraform needs the network, state backend
+   and cloud permissions described below. Credentials are supplied outside Git.
+4. **Validate and enable.** Check configuration, review the deployment, complete
+   the profile's first-deployment steps, then commit the reviewed configuration
+   and approval. Subsequent main pushes run the workflow, which calls the runner,
+   which builds/uploads the app and, for Terraform, applies infrastructure.
+
+The setup tools stay here in Stackforge; the generated files live in the target
+repo and run there. FSS Stack is not required. The current installer does assume
+a Zap project using pnpm and GitHub; the Terraform engine itself lives in Zapper.
+
+## Where ArcNet lives
+
 ArcNet's network configuration and onboarding live here. The Terraform engine
 and modules remain in **Zapper**, pinned to published `@mp-lb/zapper
 0.21.0`. This is an opt-in layer; the public FSS Stack shell stays deployment-free.
