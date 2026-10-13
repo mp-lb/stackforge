@@ -3,29 +3,22 @@ import { createExampleBackend } from ".";
 
 describe("example backend", () => {
   it("serves a greeting on /health", async () => {
-    const server = createExampleBackend();
+    const server = await createExampleBackend();
+    const response = await server.inject({ method: "GET", url: "/health" });
+    const body = response.json() as unknown;
+    await server.close();
 
-    await new Promise<void>((resolve) => {
-      server.listen(0, "127.0.0.1", resolve);
-    });
-
-    const address = server.address();
-
-    if (address === null || typeof address === "string") {
-      throw new Error("Expected TCP server address");
-    }
-
-    const response = await fetch(`http://127.0.0.1:${address.port}/health`);
-    const body = (await response.json()) as unknown;
-
-    await new Promise<void>((resolve, reject) => {
-      server.close((error) => {
-        if (error) reject(error);
-        else resolve();
-      });
-    });
-
-    expect(response.status).toBe(200);
+    expect(response.statusCode).toBe(200);
     expect(body).toEqual({ ok: true, message: "Hello, api." });
+  });
+
+  it("reports an unconfigured Clerk protected route without a secret", async () => {
+    const server = await createExampleBackend();
+    const response = await server.inject({
+      method: "GET",
+      url: "/api/protected",
+    });
+    await server.close();
+    expect(response.statusCode).toBe(503);
   });
 });
