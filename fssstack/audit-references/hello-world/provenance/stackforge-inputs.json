@@ -1,0 +1,273 @@
+{
+  "format": 1,
+  "files": [
+    {
+      "path": "fssstack-cli/examples/hello-world.json",
+      "sha256": "2b67f0afc174976ffa40101628a1e732926c75c0b026373f5371327ee8c5b802"
+    },
+    {
+      "path": "fssstack/SETUP_PROCESS.md",
+      "sha256": "e76b57f5bddb6cd3743f973b5870533d6963e117e82571854d01662f9a117b91"
+    },
+    {
+      "path": "fssstack/extensions/clerk.md",
+      "sha256": "7b214101691fdf5b86389e9a6827495fe07191526c7a768ab7537ec1a1c12d8d"
+    },
+    {
+      "path": "fssstack/extensions/mongodb.md",
+      "sha256": "596e144a0ad18a76ac16f8a9ef5e81764f1a19a6c444b98096e7a33176d03605"
+    },
+    {
+      "path": "fssstack/forum.example.yaml",
+      "sha256": "51e3c674b24f55026436057ea1cc0d61da58b642cc782aabbccc0a11ab491985"
+    },
+    {
+      "path": "fssstack/shell/.changeset/config.json",
+      "sha256": "73dc321c715484984a79ce21457ca5c9b5760cfad11aa5510843ce402ecf2487"
+    },
+    {
+      "path": "fssstack/shell/.codex/environments/environment.toml",
+      "sha256": "2fe63117c3d90d70f9ad286159c9fa9341a6e98c51e673075adce34d6c4f1df4"
+    },
+    {
+      "path": "fssstack/shell/.github/workflows/release.yaml",
+      "sha256": "92c4fd871f9096c22efc2354a1f545e2f0ce733af12705026907b2fa210ef955"
+    },
+    {
+      "path": "fssstack/shell/.gitignore",
+      "sha256": "34e254e8448ed523037fc696ecb98813df5521dbe6401ce7e193a9e1aaa729c3"
+    },
+    {
+      "path": "fssstack/shell/.npmrc",
+      "sha256": "fe2b6bc6d4cbaea9e38b47ba3ae6baa5522ee9575f39e57460c554c372712021"
+    },
+    {
+      "path": "fssstack/shell/README.md",
+      "sha256": "4233024962841076da8f210240710101f93194bd111c74316d998083630ef7bc"
+    },
+    {
+      "path": "fssstack/shell/apps/example-backend/package.json",
+      "sha256": "760d5f46c2d692d58f551cdee7bead4a767f9b4d5da5d7cddabd08ddc9137b3b"
+    },
+    {
+      "path": "fssstack/shell/apps/example-backend/src/index.test.ts",
+      "sha256": "1b9feff55a68f8a1a567ed6b4432992bd1ed4b27f8089fdc09cc924c4ca456cf"
+    },
+    {
+      "path": "fssstack/shell/apps/example-backend/src/index.ts",
+      "sha256": "dc2b34ff503ac57f137b875521b0bb98b5d40da9358787f62d13d0fb0be8fbf7"
+    },
+    {
+      "path": "fssstack/shell/apps/example-backend/tsconfig.build.json",
+      "sha256": "9ca7d7cb85f39eb76d3f65193647a5915e5af838a70d2ad85d99d9bec78f3b35"
+    },
+    {
+      "path": "fssstack/shell/apps/example-backend/tsconfig.json",
+      "sha256": "83ada4949ec1a47062449ae5ad88c020c08e6ef5861e6103a0f1fc6fe16fa46f"
+    },
+    {
+      "path": "fssstack/shell/apps/example-backend/vitest.config.ts",
+      "sha256": "20d85b017258e04fc8050162f9d623723dbd14326573d935fec2bc3b7a56c36f"
+    },
+    {
+      "path": "fssstack/shell/audit.md",
+      "sha256": "5eb2bdcdcb189fda861bd34676fc6c0d548dd12a387655a3a9cb71e6be801775"
+    },
+    {
+      "path": "fssstack/shell/docs/logging.md",
+      "sha256": "433bc6f2f772b107502af329263420e71e293e385293f1d4bbb4a2916e61725f"
+    },
+    {
+      "path": "fssstack/shell/docs/web-request.md",
+      "sha256": "9d3c09bb1d0cacc5766d12fd93531510c46a378d8ba39aabb895cbe89c6781d3"
+    },
+    {
+      "path": "fssstack/shell/eslint.config.js",
+      "sha256": "4144aa11eeb11fd1430d84cfc2fdb27c68b449b2b790df77ca4f183a6a539289"
+    },
+    {
+      "path": "fssstack/shell/etc/tsconfig.base.json",
+      "sha256": "ccedb7f1d940853da64577f5f207f253cd77f2a34e4660b07634fc0c9b1218e3"
+    },
+    {
+      "path": "fssstack/shell/etc/vitest.base.config.ts",
+      "sha256": "a9504168d7bc94b6c091dec62878ac2141aae78464a335841c0997e6ec237bf4"
+    },
+    {
+      "path": "fssstack/shell/etc/vitest.node.config.ts",
+      "sha256": "3d50c3079abb4a6d03be04c4dab5004b64e5203b5a3a6da64690868045787d2f"
+    },
+    {
+      "path": "fssstack/shell/etc/vitest.react.config.ts",
+      "sha256": "b1271391721c2d20e56702398f175105a58dec79fae77cd049bafed5b60743a0"
+    },
+    {
+      "path": "fssstack/shell/package.json",
+      "sha256": "bedd2620911158d49632c3e5d53b3c8c39b5a7f76a32f2a7302e050597ef808a"
+    },
+    {
+      "path": "fssstack/shell/packages/core/package.json",
+      "sha256": "cedbefbb9ef06da8297cce08b45b479266186e33e7c010a51402b7a81e04fc8d"
+    },
+    {
+      "path": "fssstack/shell/packages/core/src/index.test.ts",
+      "sha256": "255b614b34f9aeeadadf1d5e5f367c4cf4dac70cce4fd3053fa3fe48aa4add3d"
+    },
+    {
+      "path": "fssstack/shell/packages/core/src/index.ts",
+      "sha256": "3f6ebd1b6b5d0b1ef82b5c1baa0cc2d9e36fc46d9c8426e12d68a4c4a527b844"
+    },
+    {
+      "path": "fssstack/shell/packages/core/tsconfig.build.json",
+      "sha256": "9ca7d7cb85f39eb76d3f65193647a5915e5af838a70d2ad85d99d9bec78f3b35"
+    },
+    {
+      "path": "fssstack/shell/packages/core/tsconfig.json",
+      "sha256": "448e747abe325aed6ecf2e93dddccdcac154cae90695f74dc792801fcd4bb273"
+    },
+    {
+      "path": "fssstack/shell/packages/core/vitest.config.ts",
+      "sha256": "20d85b017258e04fc8050162f9d623723dbd14326573d935fec2bc3b7a56c36f"
+    },
+    {
+      "path": "fssstack/shell/packages/example-cli/CHANGELOG.md",
+      "sha256": "ecd3c440d93bb6a51b808220c5e3315ff0f339f96f18aa53cb9e863c9e71a582"
+    },
+    {
+      "path": "fssstack/shell/packages/example-cli/README.md",
+      "sha256": "4e4fd3965b89bef429aff807894385f97ac83d8452df8026086c30af969fab1c"
+    },
+    {
+      "path": "fssstack/shell/packages/example-cli/package.json",
+      "sha256": "d6b9388dcf6ec4a64a97a8876cd079901a910f5b8dc1388dfd5af8790229b0a7"
+    },
+    {
+      "path": "fssstack/shell/packages/example-cli/src/index.test.ts",
+      "sha256": "677fe7b12227eef2799f123605cebd31a91595b15c388ac68afbe5a450f60b6e"
+    },
+    {
+      "path": "fssstack/shell/packages/example-cli/src/index.ts",
+      "sha256": "d6e7e2b6a51021af26c4981dd345b1376787b74507fec073397bd4dbd2967905"
+    },
+    {
+      "path": "fssstack/shell/packages/example-cli/tsconfig.build.json",
+      "sha256": "9ca7d7cb85f39eb76d3f65193647a5915e5af838a70d2ad85d99d9bec78f3b35"
+    },
+    {
+      "path": "fssstack/shell/packages/example-cli/tsconfig.json",
+      "sha256": "83ada4949ec1a47062449ae5ad88c020c08e6ef5861e6103a0f1fc6fe16fa46f"
+    },
+    {
+      "path": "fssstack/shell/packages/example-cli/vitest.config.ts",
+      "sha256": "20d85b017258e04fc8050162f9d623723dbd14326573d935fec2bc3b7a56c36f"
+    },
+    {
+      "path": "fssstack/shell/packages/example-lib/CHANGELOG.md",
+      "sha256": "e1c0c4b5e555ad7b98900511d4e88bc3ece663d1f16b50e318896660fdfe4270"
+    },
+    {
+      "path": "fssstack/shell/packages/example-lib/README.md",
+      "sha256": "0e2607db000ab2d64d7f8842491b9e3da1dbd02f8fe3ea1ec9378b5ed164a34e"
+    },
+    {
+      "path": "fssstack/shell/packages/example-lib/package.json",
+      "sha256": "549ece8eba74a3a613aef60f1372a019da81a1f2a98e857a19bde3530fda7efd"
+    },
+    {
+      "path": "fssstack/shell/packages/example-lib/src/index.test.ts",
+      "sha256": "54e750d238178288edee45f2930691cd5ae088caba2b9016b973a9788e954604"
+    },
+    {
+      "path": "fssstack/shell/packages/example-lib/src/index.ts",
+      "sha256": "706d123ef5debe76bc9e2ecdf982bac8475cdd5cd183da6da47ac7e8b7ae5875"
+    },
+    {
+      "path": "fssstack/shell/packages/example-lib/tsconfig.build.json",
+      "sha256": "9ca7d7cb85f39eb76d3f65193647a5915e5af838a70d2ad85d99d9bec78f3b35"
+    },
+    {
+      "path": "fssstack/shell/packages/example-lib/tsconfig.json",
+      "sha256": "83ada4949ec1a47062449ae5ad88c020c08e6ef5861e6103a0f1fc6fe16fa46f"
+    },
+    {
+      "path": "fssstack/shell/packages/example-lib/vitest.config.ts",
+      "sha256": "20d85b017258e04fc8050162f9d623723dbd14326573d935fec2bc3b7a56c36f"
+    },
+    {
+      "path": "fssstack/shell/packages/server/package.json",
+      "sha256": "9c7dfdf9f02cdc271f361d93c18ebb3276d0cebdcd68e6f160d24f1a16f7a68b"
+    },
+    {
+      "path": "fssstack/shell/packages/server/src/context.ts",
+      "sha256": "4c19dc674c8d610e6cd5387b49a2303e30b94c3b2631a275c701912fa16a6430"
+    },
+    {
+      "path": "fssstack/shell/packages/server/src/errors.ts",
+      "sha256": "783a01c1baca29e2eff3d7279f1bd45b50ebc60a1c3487f687bc9c8d1eaeea6a"
+    },
+    {
+      "path": "fssstack/shell/packages/server/src/index.test.ts",
+      "sha256": "641c56fe481da08926b45c1c1ff675ab22f79ef432cd5653b68691e51f26f792"
+    },
+    {
+      "path": "fssstack/shell/packages/server/src/index.ts",
+      "sha256": "6da70b6122848e826011e0f4c0cc5e74d0c705a1a5ef0d92328f3b46d692a1c6"
+    },
+    {
+      "path": "fssstack/shell/packages/server/src/trpc.ts",
+      "sha256": "e87d83fe1a37b673356c4aab291149e340127f8341cdb50180f4b4bba4b478d4"
+    },
+    {
+      "path": "fssstack/shell/packages/server/tsconfig.build.json",
+      "sha256": "9ca7d7cb85f39eb76d3f65193647a5915e5af838a70d2ad85d99d9bec78f3b35"
+    },
+    {
+      "path": "fssstack/shell/packages/server/tsconfig.json",
+      "sha256": "448e747abe325aed6ecf2e93dddccdcac154cae90695f74dc792801fcd4bb273"
+    },
+    {
+      "path": "fssstack/shell/packages/server/vitest.config.ts",
+      "sha256": "20d85b017258e04fc8050162f9d623723dbd14326573d935fec2bc3b7a56c36f"
+    },
+    {
+      "path": "fssstack/shell/packages/trpc/package.json",
+      "sha256": "66fe3fa3b6ada6e7aee09d422a856b13a4b68c063dba957b11a402b73f0f1e2e"
+    },
+    {
+      "path": "fssstack/shell/packages/trpc/src/index.test.ts",
+      "sha256": "dda737002f83148c8f5c729926ee2b8a05e8685d61c5c19194d5896a391ff63f"
+    },
+    {
+      "path": "fssstack/shell/packages/trpc/src/index.ts",
+      "sha256": "592dbe805e46364cb519bbba0c4a21798e0c5a9293647caa06b1b739383bfe7f"
+    },
+    {
+      "path": "fssstack/shell/packages/trpc/tsconfig.build.json",
+      "sha256": "9ca7d7cb85f39eb76d3f65193647a5915e5af838a70d2ad85d99d9bec78f3b35"
+    },
+    {
+      "path": "fssstack/shell/packages/trpc/tsconfig.json",
+      "sha256": "448e747abe325aed6ecf2e93dddccdcac154cae90695f74dc792801fcd4bb273"
+    },
+    {
+      "path": "fssstack/shell/packages/trpc/vitest.config.ts",
+      "sha256": "20d85b017258e04fc8050162f9d623723dbd14326573d935fec2bc3b7a56c36f"
+    },
+    {
+      "path": "fssstack/shell/pnpm-lock.yaml",
+      "sha256": "bacea67100f4dca63eef50c6cfe4f3e3209a18f38156fdf9c40756fae6ff9b1c"
+    },
+    {
+      "path": "fssstack/shell/pnpm-workspace.yaml",
+      "sha256": "7969a4ae72a320eadb96027b95800e393b587b29176897a4a368ebbbd4cc7b2b"
+    },
+    {
+      "path": "fssstack/shell/scripts/context-files.mjs",
+      "sha256": "ebe58c24c4114906935c741096b59c7fa2bb51519256d9cb16c3a698f3db0968"
+    },
+    {
+      "path": "fssstack/shell/zap.yaml",
+      "sha256": "42582783b42c916644e05277a56ea5af7553f961db3ca3086d5de156b4777edb"
+    }
+  ]
+}
