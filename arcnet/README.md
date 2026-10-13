@@ -34,19 +34,13 @@ One workflow deploys the whole project. Most files live in `.arcnet/`; `zap.yaml
 
 ## What does ArcNet support?
 
-| Capability | Current implementation | Shared or per project? |
-| --- | --- | --- |
-| **Vercel** — landing pages and frontends | Static uploads; framework builds through the Terraform module | Separate site projects/deployments |
-| **HTTP backend** — APIs | Cloud Run containers (`cloud-run-web`) | Separate service per project |
-| **MongoDB** | Database binding on an existing Atlas cluster (`shared-mongo-atlas`) | **Shared cluster**, with a database namespace and scoped user per project |
-| **Redis** — cache and queues | Creates an Upstash database (`upstash-redis`) | **Per project today; shared instance planned** |
-| **Bull** — background jobs | Generic container hosting (`gce-worker`), not a Bull-specific pool | **Separate worker VM today; shared Bull worker pool planned** |
-| **S3** — object storage | Bucket and scoped credentials (`aws-s3`) | Separate bucket per project |
+| Service | Shared or per project? |
+| --- | --- |
+| Vercel websites | Per project |
+| Cloud Run backends | Per project |
+| MongoDB | Shared |
+| Redis | Per project |
+| Bull workers | Per project |
+| S3 storage | Per project |
 
-## Shared services and project isolation
-
-The intended model is **one shared MongoDB cluster, one shared Redis instance, and one shared Bull worker host/pool** to reduce cost. Projects use their own database, key and queue namespaces. Each project's Bull workers run its own code and consume its own queues on the shared hosting.
-
-A shared-service binding supplies **a connection string + a project namespace + project-scoped credentials**. Namespaces prevent collisions; access controls must enforce isolation. Shared infrastructure is provisioned once outside project deployments; project Terraform only manages bindings/access where needed, not another copy of the shared instance.
-
-**Only MongoDB sharing is implemented today.** Shared Redis, the Bull pool and their namespace/access enforcement are planned. [Shared-service design](SETUP.md#shared-services-intended-model)
+MongoDB shares a cluster; each project has its own database namespace and scoped credentials.
