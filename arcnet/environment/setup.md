@@ -6,7 +6,7 @@ An ArcNet environment is the company-owned infrastructure and configuration that
 
 ## Location and ownership
 
-`stackforge/arcnet/environment/` owns this guide and all future environment bootstrap, setup, health-check, inventory/analysis and teardown scripts, along with their infrastructure definitions and tests. These are environment-level operations, not application Zap tasks. Project installation remains in `arcnet/setup.mjs` and [the project setup guide](../SETUP.md).
+This folder owns the environment setup guide. Reusable executable tooling belongs in [`@mp-lb/tools-arcnet`](https://github.com/mp-lb/tools/tree/main/packages/arcnet); environment bootstrap, health checks, inventory and teardown remain to be implemented there. These are environment operations, not application Zap tasks. Project installation uses the published CLI described in [project setup](../SETUP.md).
 
 Only this guide exists here today; the environment scripts have not been implemented. Keep actual credentials and private company configuration outside this public source folder and pass their locations explicitly. New tooling must not depend on an implicit `~/.config/zap-arc` pointer. The existing Zap bootstrap is described below as legacy behavior, not the intended entry point.
 
@@ -55,7 +55,7 @@ Create the accounts and choose billing/owners before running provisioning tools.
 | Upstash | Account email and Developer API key, if Redis is selected | Current per-project Redis provisioning |
 | AWS | Account and scoped provisioning access, only if S3 is selected | Object storage |
 
-Copy [network.yaml](../network.yaml) into an environment-owned configuration location. Replace all company-specific values, not just `REPLACE_` entries: name, GCP project prefix, network project, billing account, regions, DNS zone, state bucket, registry pattern and Atlas facts. Decide backup/retention policy and who owns the environment. The template's `mp-lb` names are not defaults for another company.
+Copy [network.yaml](https://github.com/mp-lb/tools/blob/main/packages/arcnet/templates/network.yaml) into an environment-owned configuration location. Replace all company-specific values, not just `REPLACE_` entries: name, GCP project prefix, network project, billing account, regions, DNS zone, state bucket, registry pattern and Atlas facts. Decide backup/retention policy and who owns the environment. The template's `mp-lb` names are not defaults for another company.
 
 Install Node 22+, the pinned ArcNet dependencies, Terraform 1.15.6, gcloud and Docker where container builds are required. Vercel CLI is pinned by the deployment templates. Cloudflare/Atlas/Upstash provisioning can use Terraform providers or their APIs; a separate CLI for every provider is not necessary.
 
@@ -188,7 +188,7 @@ Use an encrypted JSON document as the environment's secret source if that is the
 
 A single centrally maintained JSON source is compatible with this model; giving every project its decrypted contents is not the isolation model. Deliver project-specific subsets/credentials. If every repo holds the same encrypted file and a key that decrypts all of it, filtering variables afterward does not prevent that repo from reading the other secrets.
 
-Current interfaces: Terraform Vercel uses `VERCEL_API_TOKEN`; the static Vercel adapter uses `VERCEL_TOKEN`. Other provider names are in [network.yaml](../network.yaml) and the [workflow](../templates/deploy-arc.yaml). `ARCNET_ENV_JSON` is a JSON object of **application** secret values, not a universal provider-credentials loader. `.arcnet/env.production.json` contains public app values. The proposed JSON-to-project-secret distribution layer still needs implementation; use an existing approved loader where available. The current GCP CI workflow uses OIDC/WIF; the planned service-account-key JSON handoff above is not wired into it yet.
+Current interfaces: Terraform Vercel uses `VERCEL_API_TOKEN`; the static Vercel adapter uses `VERCEL_TOKEN`. Other provider names are in [network.yaml](https://github.com/mp-lb/tools/blob/main/packages/arcnet/templates/network.yaml) and the [workflow](https://github.com/mp-lb/tools/blob/main/packages/arcnet/templates/deploy-arc.yaml). `ARCNET_ENV_JSON` is a JSON object of **application** secret values, not a universal provider-credentials loader. `.arcnet/env.production.json` contains public app values. The proposed JSON-to-project-secret distribution layer still needs implementation; use an existing approved loader where available. The current GCP CI workflow uses OIDC/WIF; the planned service-account-key JSON handoff above is not wired into it yet.
 
 ## 6. Onboard a project and enable push-to-deploy
 

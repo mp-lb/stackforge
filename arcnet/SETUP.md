@@ -14,50 +14,30 @@ Read `zap.yaml`, workspace packages, build scripts and existing workflows. Ident
 
 For Terraform-managed services, write **`.arcnet/services.json`**, a map of service names to Arc module blocks. Use `cloud-run-web` for HTTP containers, `vercel-static` for Vercel sites, and the relevant database/storage binding modules from the README. Supply explicit paths, domains and environment keys. Place a backend Dockerfile at **`.arcnet/Dockerfile`**; multiple containers can use `.arcnet/<service>.Dockerfile`. Set each block's `dockerfile` to that repo-relative path. Docker builds use the **repo root** as context: `COPY` instructions refer to app/workspace paths from there. Build the actual app and make it listen on the configured port with the configured health endpoint. Do not invent a generic Dockerfile that cannot build the target workspace.
 
-For a project containing only static Vercel sites, the current implementation uses `arcnet.vercel.json` instead; follow the [Vercel adapter instructions](#vercel-adapter-details). The installer selects that adapter automatically. It requires explicit account and project identities, build commands, static output paths and routing. Do not use it for SSR/functions. Hello-world's `apps/web` is a static Vite example; its current docs app uses SSR and is not a static deployment example.
+For a project containing only static Vercel sites, the current implementation uses `.arcnet/vercel.json` instead; follow the [Vercel adapter instructions](#vercel-adapter-details). The installer selects that adapter automatically. It requires explicit account and project identities, build commands, static output paths and routing. Do not use it for SSR/functions. Hello-world's `apps/web` is a static Vite example; its current docs app uses SSR and is not a static deployment example.
 
 **Current boundary:** existing Vercel project references cannot yet be combined with Terraform services through this installer. The Terraform Vercel module creates/manages projects. Do not recreate an existing site or claim mixed adoption works; report the specific unsupported combination. The setup guide does not remove this engine limitation.
 
-## Obtain the installer and generate target files
+## Install and validate
 
-Do not assume Stackforge exists inside the target repo or at a particular home directory. From the **target repository root**, fetch the authoring tools into a temporary directory outside the project:
-
-```sh
-arcnetSource="$(mktemp -d)/stackforge"
-git clone --depth 1 https://github.com/mp-lb/stackforge.git "$arcnetSource"
-git -C "$arcnetSource" rev-parse HEAD
-npx -y pnpm@10.11.0 -C "$arcnetSource/arcnet" install --frozen-lockfile
-```
-
-Record the source commit in the target's deployment notes. Read the downloaded README/templates before running them. Node 22+ is required; the target must have an exact pnpm `packageManager` and a committed `pnpm-lock.yaml`.
-
-Replace `<project-slug>` with `project:` from the target's `zap.yaml`. The Terraform path reads the GitHub repository from `origin`; pass `--repository owner/repo` if needed. Preview, inspect, then generate:
+From the **target repository root**, preview and install the published CLI configuration. No Stackforge checkout is needed:
 
 ```sh
-node "$arcnetSource/arcnet/setup.mjs" <project-slug> --dry-run
-node "$arcnetSource/arcnet/setup.mjs" <project-slug>
+pnpm dlx @mp-lb/tools-arcnet@0.1.0 setup <project-slug> --dry-run
+pnpm dlx @mp-lb/tools-arcnet@0.1.0 setup <project-slug>
+pnpm install
+pnpm exec arcnet check
 ```
 
-The installer preserves local configuration and refuses conflicting deployment files. Do not bypass that by deleting existing files. Review/adapt an existing installation explicitly; rerunning setup is not an upgrade mechanism.
+The slug must match `project:` in `zap.yaml`. Setup pins its own package version in your existing root `package.json`; `pnpm install` updates the application lockfile. Commit both. The [command reference](https://github.com/mp-lb/tools/blob/main/packages/arcnet/docs/public/commands.md) describes overrides and other commands.
 
-Terraform setup adds `.arcnet/` runtime/configuration files and `.github/workflows/deploy-arc.yaml`, and appends `deploy:` to `zap.yaml`. Vercel-only setup adds a smaller `.arcnet/` runtime and the same workflow path, leaving `zap.yaml` unchanged. No root npm deployment scripts are needed. The target owns the generated files; the temporary source checkout is not a runtime dependency. Keep credentials and Terraform state out of Git.
+Setup preserves local configuration and refuses conflicting deployment files. Rerunning it is not an upgrade mechanism. It never contacts providers or provisions resources; deployment starts disabled.
 
-## Validate and enable deployment
+Complete the selected profile's provider setup and first deployment within the user's authorized scope. Configure GitHub's `arcnet-production` environment and credentials through the project's secret mechanism. Resolve network placeholders and cloud authentication where applicable. Enable `approved` in `.arcnet/project.json` only when the destination and production trigger are ready. Explicit Vercel project creation remains a separate initial step.
 
-For Terraform, install the isolated deployment dependencies and check config:
+Validate app builds and container behavior using the project's normal checks. `check` is offline; Terraform `plan` contacts providers, while static Vercel `plan` is offline. Installation alone does not prove live deployment. After onboarding, main pushes run the workflow. Verify Actions and service health when deployment is authorized.
 
-```sh
-pnpm -C .arcnet install --ignore-workspace --frozen-lockfile
-node .arcnet/run.mjs check
-```
-
-For Vercel-only, no deployment dependency install is needed; run the same `node .arcnet/run.mjs check`. Validate the selected app builds and routing or container behavior using the project's normal checks. Offline checks do not prove provider access or a live deployment. Terraform `plan` contacts providers; the Vercel adapter's `plan` is offline.
-
-Complete the selected adapter's documented provider setup and first deployment within the user's authorized scope. Configure GitHub's `arcnet-production` environment and the required credentials through the project's existing secret mechanism. Resolve network placeholders and cloud-authentication settings where applicable. Enable `approved` in `.arcnet/project.json` only when those settings and the production trigger are ready. Explicit Vercel project creation, when needed, is a separate initial step described in the adapter guide.
-
-Commit the reviewed deployment files. After onboarding, pushes to main run the workflow and deploy the selected services. When deployment is authorized, verify the actual Actions run and service health; otherwise report precisely which setup or access inputs remain. Distinguish **files installed**, **CI enabled**, and **live deployment verified** rather than claiming installation alone makes the app live.
-
-Add a short deployment section to the target README linking `.arcnet/` and the workflow, listing the selected services, commands and remaining prerequisites.
+Keep deployment notes under `.arcnet/`, with only a short pointer in the target README.
 
 ## Shared services: intended model
 
@@ -71,54 +51,34 @@ A namespace prevents naming collisions; it is not by itself an authorization bou
 
 ## The pieces: files you add to a project
 
-The [templates](templates/) are the deployment files copied into a target repo. The [setup script](setup.mjs) combines them with your project configuration and generates the remaining files. You choose **one** of the two profiles below; they use the same destination filenames but different runners and workflows.
+The [TypeScript package](https://github.com/mp-lb/tools/tree/main/packages/arcnet) owns the implementation. Its [templates](https://github.com/mp-lb/tools/tree/main/packages/arcnet/templates) contain the workflows, network defaults and Vercel module. Only configuration and the selected workflow are installed into the project.
 
-ArcNet adds three things to an otherwise undeployed project: a declaration of **what to deploy and where**, a **runner that performs the deployment**, and a **GitHub Actions workflow that runs it on pushes to main**. Your application still supplies its own build command and, for container services, Dockerfile.
+| Project file | Purpose |
+| --- | --- |
+| `.arcnet/services.json` | Your Terraform service selection, including domains, builds and Dockerfile paths. |
+| `.arcnet/vercel.json` | Alternative input for static Vercel project references. |
+| `.arcnet/Dockerfile` | Your container build; use one per container when needed. |
+| `.arcnet/project.json` | Generated identity, selected services, approval and CI authentication. |
+| `.arcnet/network.yaml` | Generated environment/network snapshot for Terraform deployments. Review before use. |
+| `.arcnet/env.production.json` | Optional public app environment values. Omit when unused. |
+| `.arcnet/.gitignore` | Generated exclusions for local secret/state files or temporary receipt files. |
+| `.github/workflows/deploy-arc.yaml` | Generated delivery workflow calling the installed CLI. |
+| `zap.yaml` | Existing file; Terraform setup adds the deployment declaration. |
+| Root `package.json` and `pnpm-lock.yaml` | Existing files; pin the CLI alongside the application's dependencies. |
 
-Example project details come from the [hello-world reference project](../helloworld/README.md). Both examples select its Vite app, `apps/web`, using package `@hello-world/hello-world-web` and output `apps/web/dist`. Its docs app currently uses server rendering and is not included in these static examples. Repository, provider IDs and domains must be set for the actual deployment; these examples do not represent a live deployment of hello-world.
-
-### Static sites on Vercel
-
-| Source in ArcNet | File in your project | What it does |
-| --- | --- | --- |
-| [Vercel input example](examples/static-sites.vercel.json) | `arcnet.vercel.json` (you customize it) | Selects sites, Vercel account/project identities, build commands, output folders and routing. |
-| [Vercel setup](vercel-setup.mjs) | `.arcnet/project.json` (generated) | Stores those deployment settings plus approval state. This becomes the runner's authoritative configuration. |
-| [Vercel runner](templates/vercel-run.mjs) | `.arcnet/run.mjs` | Checks configuration and project identities, builds the selected sites, and uploads their static output through Vercel. Also supports a separate explicit project-creation command. |
-| [Vercel workflow](templates/deploy-vercel.yaml) | `.github/workflows/deploy-arc.yaml` | Checks configuration on main pushes; once enabled, installs app dependencies and runs the deployment with `VERCEL_TOKEN`. |
-| [Vercel setup](vercel-setup.mjs) | `.arcnet/.gitignore` (generated) | Ignores the temporary project-configuration write file. |
-
-This profile leaves `zap.yaml` and the root `package.json` unchanged. Setup requires `zap.yaml` for the project name, an exact pnpm `packageManager` in `package.json`, and `pnpm-lock.yaml`. The generated runner has no npm dependencies of its own. It deploys static output directly to Vercel; it does not use Terraform, provision GCP infrastructure, or manage DNS. See [Vercel setup](#vercel-adapter-details).
-
-### Terraform-managed infrastructure through Zap Arc
-
-| Source in ArcNet | File/change in your project | What it does |
-| --- | --- | --- |
-| [Service-selection example](examples/static-sites.services.json) | Optional `.arcnet/services.json` (you customize it) | Selects the services and infrastructure modules to deploy. Without this file, setup defaults to one HTTP backend. |
-| [Setup script](setup.mjs) | Adds `deploy:` to `zap.yaml` | Declares project infrastructure and selected services: modules, domains, Dockerfiles, build settings and allowed environment variables. |
-| [Network template](network.yaml) | `.arcnet/network.yaml` | Supplies network conventions: cloud regions, naming, Terraform state location, providers and module defaults. Setup copies a target-owned `arcnet.network.yaml` instead if supplied. |
-| [Setup script](setup.mjs) | `.arcnet/project.json` (generated) | Records project/repository identity, selected services, deployment approval and GitHub cloud-authentication settings. |
-| [Terraform runner](templates/run.mjs) | `.arcnet/run.mjs` | Checks configuration, gathers environment values, and invokes Zap Arc to plan or deploy the selected infrastructure and services. |
-| [Terraform workflow](templates/deploy-arc.yaml) | `.github/workflows/deploy-arc.yaml` | Checks configuration on main pushes; once enabled, authenticates to GCP, installs deployment/build tools and runs deployment. |
-| [Package manifest](package.json) and [lockfile](pnpm-lock.yaml) | `.arcnet/package.json` and `.arcnet/pnpm-lock.yaml` | Pin Zapper's deployment engine and YAML dependency separately from your application. |
-| [Setup script](setup.mjs) | `.arcnet/.npmrc` (generated) | Keeps deployment dependency installation separate from the target pnpm workspace. |
-| [Setup script](setup.mjs) | `.arcnet/env.production.json` (generated empty) | Holds public application environment values; secret values come through `ARCNET_ENV_JSON`. |
-| [Setup script](setup.mjs) | `.arcnet/operator.json` and `.arcnet/.gitignore` (generated) | Provides a project-local credentials-file pointer and excludes credentials, installed dependencies and Terraform state/plan files from Git. The runner requires operator tokens through the environment. |
-| [Vercel Terraform module](templates/vercel-static/main.tf) and [module manifest](templates/vercel-static/module.yaml) | `.arcnet/modules/vercel-static/main.tf` and `module.yaml` (only when selected) | Defines the Vercel resource and its build/upload hook, with a pinned Vercel CLI. Other module implementations come with Zapper. |
-
-The installer does not add dependencies or scripts to the root `package.json`; it requires an existing exact pnpm `packageManager` and lockfile. Container services need an application-specific Dockerfile, which ArcNet does not generate.
-
-### From these files to a live deployment
-
-1. **Describe the deployment.** Choose a profile and fill in its project/service input, build outputs or Dockerfiles, and destination settings.
-2. **Generate the files.** Run [setup](setup.mjs) from the target repo. This writes the selected workflow, runner and configuration; it does not contact a cloud provider or deploy anything. Deployment starts disabled.
-3. **Connect the destination.** Configure provider access and GitHub's `arcnet-production` environment. Vercel needs explicit project references (or separately created projects); Terraform needs the network, state backend and cloud permissions described below. Credentials are supplied outside Git.
-4. **Validate and enable.** Check configuration, review the deployment, complete the profile's first-deployment steps, then commit the reviewed configuration and approval. Subsequent main pushes run the workflow, which calls the runner, which builds/uploads the app and, for Terraform, applies infrastructure.
-
-The setup tools stay here in Stackforge; the generated files live in the target repo and run there. FSS Stack is not required. The current installer does assume a Zap project using pnpm and GitHub; the Terraform engine itself lives in Zapper.
+`services.json` and `vercel.json` are setup inputs, not two inputs required together. After setup, `zap.yaml` owns Terraform service declarations and `project.json` owns static Vercel references. Keep retained input files consistent with intentional configuration changes.
 
 ## Where ArcNet lives
 
-ArcNet's network configuration and onboarding live here. The Terraform engine and modules remain in **Zapper**, pinned to published `@mp-lb/zapper 0.21.0`. This is an opt-in layer; the public FSS Stack shell stays deployment-free. The static Vercel-only adapter uses public Vercel APIs/CLI directly. Operator credentials and local configuration remain outside Git.
+[Tools](https://github.com/mp-lb/tools/tree/main/packages/arcnet) owns the CLI, validation, installers, workflows and bundled Vercel module. Stackforge owns these onboarding guides and the FSS Stack entry point. Zapper supplies the pinned Terraform engine (`@mp-lb/zapper 0.21.0`) and other modules. The public shell stays deployment-free.
+
+## Upgrade an existing copied installation
+
+Audit first and compare local runner/module/workflow modifications against the package. Install `@mp-lb/tools-arcnet` at an exact reviewed version in the root manifest and update the root lockfile. Replace workflow runner calls with `pnpm exec arcnet` using the package's matching workflow template; preserve project-specific credentials and build requirements.
+
+For bundled Vercel Terraform services, change the module reference in `zap.yaml` from `./.arcnet/modules/vercel-static` to `./node_modules/@mp-lb/tools-arcnet/templates/vercel-static`. This changes the local module source, not the service key or remote identity. Review a Terraform plan before applying.
+
+Once the packaged CLI passes checks and every consumer has moved, remove the old `.arcnet/run.mjs`, deployment-only `package.json`, `pnpm-lock.yaml`, `.npmrc`, `node_modules/`, `operator.json` and unmodified bundled module copies. Preserve custom modules and actual project configuration. Supply operator tokens through the environment: the CLI disables the engine's machine-global credential fallback using a temporary configuration that it removes afterward. Do not delete a credentials source until its consumers are accounted for. This is a reviewed migration, not something setup silently does.
 
 ## Choose the deployment profile
 
@@ -127,17 +87,17 @@ ArcNet's network configuration and onboarding live here. The Terraform engine an
 
 ## Install once, then set up Terraform-managed infrastructure
 
-Prerequisites for generation: Node 22+, pnpm 10.11.0 (for this tool), a GitHub repository with `zap.yaml`, `package.json` with an exact `packageManager`, and a committed `pnpm-lock.yaml`. The default service is `backend`; its `.arcnet/Dockerfile` must already exist, listen on the configured port (8080 by default), and serve `/health`. Setup does not invent an application's image build or run a cloud command.
+Prerequisites for generation: Node 22+, a pinned pnpm version, a GitHub repository with `zap.yaml`, `package.json` with an exact `packageManager`, and a committed `pnpm-lock.yaml`. The default service is `backend`; its `.arcnet/Dockerfile` must already exist, listen on the configured port (8080 by default), and serve `/health`. Setup does not invent an application's image build or run a cloud command.
 
-From StackForge run `zap t arcnet-setup` (or `pnpm -C arcnet install --frozen-lockfile`). Then, **from the target repository root**, the setup command is:
+From the target repository root:
 
 ```sh
-node ~/Work/stackforge/arcnet/setup.mjs my-project
+pnpm dlx @mp-lb/tools-arcnet@0.1.0 setup my-project
 ```
 
 Replace `my-project` with the `project:` slug in `zap.yaml`. GitHub owner/repo is read from `origin`; use `--repository owner/repo` when no GitHub origin exists. Use `--dry-run` for a read-only preview. `--service` and `--dockerfile` override the default backend name/path (`backend` and `.arcnet/Dockerfile`). An existing root `Dockerfile` is accepted as a compatibility fallback. Docker builds use the repository root as their context, so `COPY` paths stay relative to the repo. Slugs are lowercase, start with a letter and have at most 23 characters, fitting the `arcnet-<slug>` GCP project convention.
 
-For a whole project, commit **`.arcnet/services.json`** first. The same one-command setup automatically reads it. It is a map of service names to Arc service blocks; `--services path.json` selects a different file. The legacy root `arcnet.services.json` remains supported; if both files exist, select one explicitly. No services are auto-discovered for deployment. See [the static-sites example](examples/static-sites.services.json). That example selects hello-world’s web app and uses a placeholder domain. Replace it with an approved domain before deployment.
+For a whole project, commit **`.arcnet/services.json`** first. The same one-command setup automatically reads it. It is a map of service names to Arc service blocks; `--services path.json` selects a different file. The legacy root `arcnet.services.json` remains supported; if both files exist, select one explicitly. No services are auto-discovered for deployment. See [the static-sites example](https://github.com/mp-lb/tools/blob/main/packages/arcnet/examples/static-sites.services.json). That example selects hello-world’s web app and uses a placeholder domain. Replace it with an approved domain before deployment.
 
 | Selection | Existing module / behavior |
 | --- | --- |
@@ -156,16 +116,16 @@ MyShop is local-only: its service name and references in selected blocks are rej
 
 Setup appends `deploy:` to `zap.yaml`, preserving local services/comments, and adds `.arcnet/` plus `.github/workflows/deploy-arc.yaml`. Existing deployment blocks or conflicting files stop setup before writes. Identical reruns preserve all edits; incomplete installations fail with a restore instruction. Reruns are not upgrades: review and update committed files explicitly.
 
-The target owns its network snapshot, service definitions, public environment JSON, exact JS dependency lock, runner and approval/WIF settings. No external operator paths or credentials are copied. Selected Vercel services receive a small local copy of the upstream module with its CLI pinned to `63.1.2` (the only module change). Unused provider settings are omitted. The committed network template preserves the network conventions but replaces its real billing/Atlas identifiers with `REPLACE_` placeholders because StackForge is public. Setup reads an optional target-owned `arcnet.network.yaml`; otherwise it copies this template. Review and fill the generated `.arcnet/network.yaml` before planning; the runner rejects remaining placeholders. Never publish private network facts without reviewing the target repository visibility.
+The target owns its network snapshot, service definitions, optional public environment JSON and approval/WIF settings. Shared executable code and modules come from the pinned package. The [network template](https://github.com/mp-lb/tools/tree/main/packages/arcnet/templates/network.yaml) replaces private billing/Atlas identifiers with `REPLACE_` placeholders. Setup reads an optional target-owned `arcnet.network.yaml`; otherwise it copies the template. Review and fill `.arcnet/network.yaml` before planning. The CLI rejects remaining placeholders. Review repository visibility before committing private network facts.
 
 ```sh
-pnpm -C .arcnet install --ignore-workspace --frozen-lockfile
-node .arcnet/run.mjs check
+pnpm install
+pnpm exec arcnet check
 ```
 
-The dependency installation is isolated from the target pnpm workspace. The workflow installs the target's own pnpm version separately for app builds. `check` is offline: it validates config, selected services and image paths. It does not build images, authenticate, plan Terraform or prove deployment.
+The CLI and app share the root package manifest, lockfile and pinned pnpm version. `check` is offline: it validates config, selected services and image paths. It does not build images, authenticate, plan Terraform or prove deployment.
 
-Keep public values in `.arcnet/env.production.json`, secret app values in the `ARCNET_ENV_JSON` environment variable (a JSON object of strings), and whitelist service keys under `env:` in `zap.yaml`. Operator tokens stay in environment variables. `.arcnet/operator.json` provides an explicit project-local operator configuration; its optional credentials file is ignored, but the runner requires environment tokens for explicit preflight. Do not commit that file, state, plans, ADC or app secrets.
+Optionally keep public values in `.arcnet/env.production.json`, secret app values in `ARCNET_ENV_JSON` (a JSON object of strings), and whitelist service keys under `env:` in `zap.yaml`. Operator tokens come from environment variables. No persistent operator pointer file is needed. Do not commit credentials, state, plans, ADC or app secrets.
 
 ## Before the first live deployment
 
@@ -176,8 +136,8 @@ These are human/operator prerequisites, not actions performed by setup. No provi
 3. Obtain only the provider credentials selected modules require. Cloudflare needs zone-read and DNS-edit permissions on the selected zone; Vercel needs the correct account access; bindings need their respective Atlas/Upstash/AWS credentials. Do not populate CI secrets until specifically approved.
 4. For Cloud Run domains, verify the **base domain** using Search Console. Keep its verification DNS record, and add the deploying service account as a verified owner when created. Verification belongs to an identity, not just a project. [Cloud Run ownership](https://cloud.google.com/run/docs/mapping-custom-domains#add-verified-owners), [Search Console DNS verification](https://support.google.com/webmasters/answer/9008080).
 5. Review DNS ownership/records before applying: current modules can overwrite matching records. Cloud Run's module records only the first returned DNS record, so apex/multiple-record mappings require module review. Use DNS-only records for this existing route. [Cloudflare proxy behavior](https://developers.cloudflare.com/dns/proxy-status/). For Vercel, compare its currently requested records and domain verification with the module's fixed A/CNAME values; do not blindly reuse those values or transfer an existing site's domain. [Vercel domain setup](https://vercel.com/docs/domains/working-with-domains/add-a-domain).
-6. After approval, run `node .arcnet/run.mjs plan` using the operator credentials and app env pool. This contacts cloud APIs and state; it is not the dry run. A brand-new project's first plan can fail while APIs/resources do not yet exist. Do not turn that failure into permission to apply. Review staged bootstrap with the operator. Arc deploy applies project modules first, then builds/pushes images, then applies services; a later failure can leave partial infrastructure. It is not an atomic transaction.
-7. Only after that approval, set `approved: true` locally and run `node .arcnet/run.mjs deploy` for the first deployment. This creates project, registry and GitHub WIF trust. Populate `workloadIdentityProvider` using the actual numeric project number and verify `serviceAccount`. Do not commit the approval until CI prerequisites and the live smoke test are complete.
+6. After approval, run `pnpm exec arcnet plan` using the operator credentials and app env pool. This contacts cloud APIs and state; it is not the dry run. A brand-new project's first plan can fail while APIs/resources do not yet exist. Do not turn that failure into permission to apply. Review staged bootstrap with the operator. Arc deploy applies project modules first, then builds/pushes images, then applies services; a later failure can leave partial infrastructure. It is not an atomic transaction.
+7. Only after that approval, set `approved: true` locally and run `pnpm exec arcnet deploy` for the first deployment. This creates project, registry and GitHub WIF trust. Populate `workloadIdentityProvider` using the actual numeric project number and verify `serviceAccount`. Do not commit the approval until CI prerequisites and the live smoke test are complete.
 8. Configure GitHub's `arcnet-production` environment, main-branch restriction, protection rules and selected provider/app secrets. The generated workflow requests OIDC only in the deploy job and serializes deploys without cancelling an in-progress apply. [GitHub environments](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments). Commit reviewed configuration to main. Subsequent pushes run Arc. Verify the actual Actions run, service health, TLS and DNS; a generated workflow alone is not evidence of a successful deployment.
 
 The existing `github-ci` module grants project Editor, bucket-scoped Storage Admin, quota-project service usage and billing-cost permissions. Its trust is repository-name scoped, not branch scoped. Review effective refresh/apply permissions and protect the environment before enabling it. Google's current [WIF guidance](https://cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines) recommends numeric repository/owner IDs to avoid name-reuse risk; this extraction does not silently change existing IAM policy.
@@ -188,7 +148,7 @@ This repository owns sanitized configuration and onboarding. Keep real network i
 
 ## Maintainer validation
 
-Run `zap t arcnet-setup` and `zap t arcnet-test` from StackForge, through the shared heavy-job queue when working alongside other agents. Tests exercise dry runs, safe failures, reruns and published-engine Terraform rendering, including a multi-service fixture; no Terraform apply, provider login or live deployment occurs. Root `zap t setup` now targets the existing `fssstack/shell/` with a frozen lockfile. ArcNet onboarding remains independently reproducible with its scoped setup task.
+Development and release happen in the tools repo under `packages/arcnet`. Run its typecheck, tests and build there. Tests cover dry runs, conflict handling, reruns, package layout, Vercel identity checks and published-engine Terraform rendering without applying infrastructure. The package release follows the tools repo’s Changesets workflow.
 
 ## Vercel adapter details
 
@@ -196,18 +156,18 @@ This profile implements existing-project references and explicit new-project cre
 
 ### One-command setup
 
-Install StackForge's authoring dependencies once with `zap t arcnet-setup`. In the target repo, commit `arcnet.vercel.json`: start from [the static-sites example](examples/static-sites.vercel.json), replace the repository, account and web project identifiers with actual values. It selects only the hello-world reference project’s Vite web app; choose existing/new mode for your destination. The example rejects its `REPLACE` values rather than guessing a live target.
+In the target repo, add `.arcnet/vercel.json`: start from [the static-sites example](https://github.com/mp-lb/tools/blob/main/packages/arcnet/examples/static-sites.vercel.json), replace the repository, account and web project identifiers with actual values. It selects only the hello-world reference project’s Vite web app; choose existing/new mode for your destination. The example rejects its `REPLACE` values rather than guessing a live target.
 
 From the target repository root:
 
 ```sh
-node ~/Work/stackforge/arcnet/setup.mjs hello-world
+pnpm dlx @mp-lb/tools-arcnet@0.1.0 setup hello-world
 ```
 
-The slug must match `zap.yaml`. `--dry-run` writes nothing; `--vercel path.json` selects another input file. Mixed Terraform/Vercel profiles and existing workflow conflicts fail without overwrites. No backend Dockerfile is needed. Setup leaves `zap.yaml` unchanged and writes only `.arcnet/project.json`, a dependency-free runner, an ignore file and `.github/workflows/deploy-arc.yaml`.
+The slug must match `zap.yaml`. `--dry-run` writes nothing; `--vercel path.json` selects another input file. Mixed Terraform/Vercel profiles and existing workflow conflicts fail without overwrites. No backend Dockerfile is needed. Setup leaves `zap.yaml` unchanged and generates `.arcnet/project.json`, an ignore file and `.github/workflows/deploy-arc.yaml`. It pins the CLI in the root manifest; run `pnpm install` and commit the updated lockfile. The legacy root `arcnet.vercel.json` is still accepted, but if both inputs exist you must select one explicitly.
 
 ```sh
-node .arcnet/run.mjs plan
+pnpm exec arcnet plan
 ```
 
 `plan` and `check` are **offline**. They render selected identities, build commands, static output and routing; no provider queries or mutations occur. This is an ArcNet deployment plan, not a Terraform plan. The plan explicitly records that project settings and DNS are not owned. Repeated setup preserves config edits and creation receipts; conflicting identities fail for review. After generation, `.arcnet/project.json` is authoritative. Keep the input in sync when intentionally changing the selection; setup is not an upgrade command.
@@ -229,7 +189,7 @@ Builds do not receive the deployment token or other `VERCEL_*` variables. Provid
 A new site uses `mode: new`, `projectName`, and `creationApproved: false`, with no project ID. It is visible in the offline plan but cannot be deployed by CI. Only after specific creation/cost approval, set that site's `creationApproved` to true and run locally:
 
 ```sh
-node .arcnet/run.mjs create web
+pnpm exec arcnet create web
 ```
 
 This is a **mutating command**, not part of setup or the offline checks. It first checks the scoped name for conflicts. Personal-account creation also verifies the token's user ID before the POST. It creates only a named static project with `framework: null`: no Git link, custom domain, DNS, env or paid feature is requested. Existing names fail rather than being silently adopted. A network failure is not automatically retried; inspect the account before retrying an uncertain outcome.

@@ -4,27 +4,27 @@ Check whether an existing installation matches what [project setup](SETUP.md) wo
 
 ## Establish the baseline
 
-1. Record the target repository commit and any uncommitted changes. Record the Stackforge commit used for the setup guide, installer and templates.
+1. Record the target repository commit and any uncommitted changes. Record the Stackforge guide commit and both the installed and current supported `@mp-lb/tools-arcnet` versions; use the current supported package’s installer and templates as the baseline.
 2. Identify the actual deployable services from the app packages, build scripts, Dockerfiles, Zap configuration and workflows. Confirm intended destinations and existing provider identities. Local services and package publishing do not automatically need ArcNet.
 3. Follow the current setup guide as a comparison checklist. Compare the installed files with the installer and templates for the same selected services. If generating reference output helps, use a disposable copy with placeholder credentials; never rerun setup over the real installation just to inspect differences.
 4. Check every setup requirement: service selection, build commands and outputs, container context and entry points, ports and health endpoints, domain mappings, environment bindings, dependency versions, CI authentication, approval state and workflow triggers.
 5. Check project and environment identities consistently across configuration. Shared services use the project slug as the isolation boundary, with project-scoped namespaces and credentials. Confirm bindings agree with those identities; do not infer credential permissions from a namespace alone.
 
-Use the current supported deployment profile as the baseline. Planned shared Redis/Bull infrastructure, environment automation and a published ArcNet CLI are not requirements until implemented. A repo with no deployment installation should be reported as **not installed**, not treated as a broken installation.
+Use the current supported deployment profile as the baseline. Planned shared Redis/Bull infrastructure and environment automation are not requirements until implemented. A repo with no deployment installation should be reported as **not installed**, not treated as a broken installation.
 
 ## Allowed locations
 
 | Location | Allowed contents |
 | --- | --- |
-| `.arcnet/` | Deployment configuration, Dockerfiles, required generated tooling, project-specific deployment notes and audit reports. |
+| `.arcnet/` | Deployment configuration, Dockerfiles, project-specific deployment notes and audit reports. |
 | `.github/workflows/deploy-arc.yaml` | The project's ArcNet workflow. |
 | `zap.yaml` | The deployment declaration alongside existing local configuration. |
 | Existing root manifests and lockfiles | Application dependencies and package-manager settings required by setup. |
 | Existing README or agent instructions | A short pointer to ArcNet's central guides or project-specific notes under `.arcnet/`. |
 
-The current Vercel adapter requires root `arcnet.vercel.json`; allow it until that installer changes. Root `arcnet.services.json`, `arcnet.network.yaml` and Dockerfiles are supported compatibility inputs, but report migration to the documented `.arcnet/` layout where applicable. Provider-required application files and tooling also used for local development or releases need individual review; they are not automatically ArcNet clutter.
+The current Vercel adapter prefers `.arcnet/vercel.json`; report root `arcnet.vercel.json` as a compatibility input to migrate. Root `arcnet.services.json`, `arcnet.network.yaml` and Dockerfiles are supported compatibility inputs, but report migration to the documented `.arcnet/` layout where applicable. Provider-required application files and tooling also used for local development or releases need individual review; they are not automatically ArcNet clutter.
 
-Copied runners, deployment dependency manifests/lockfiles and the Vercel module are currently required installer output. Do not remove them on the assumption that a published package already replaces them.
+New installations use the root `@mp-lb/tools-arcnet` dependency and lockfile. Copied runners, separate deployment manifests/lockfiles, `.npmrc`, `operator.json` and bundled module copies are legacy files. For an older installation, compare modifications and migrate every consumer before removing them; follow [the migration steps](SETUP.md#upgrade-an-existing-copied-installation).
 
 ## Things that should not be there
 
