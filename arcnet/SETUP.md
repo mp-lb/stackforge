@@ -25,8 +25,8 @@ The TypeScript package is implemented in tools. Its initial npm publication is c
 From the **target repository root**, preview and install the published CLI configuration. No Stackforge checkout is needed:
 
 ```sh
-pnpm dlx @mp-lb/tools-arcnet@0.1.0 setup <project-slug> --dry-run
-pnpm dlx @mp-lb/tools-arcnet@0.1.0 setup <project-slug>
+pnpm dlx @mp-lb/arcnet@0.1.0 setup <project-slug> --dry-run
+pnpm dlx @mp-lb/arcnet@0.1.0 setup <project-slug>
 pnpm install
 pnpm exec arcnet check
 ```
@@ -76,9 +76,9 @@ The [TypeScript package](https://github.com/mp-lb/tools/tree/main/packages/arcne
 
 ## Upgrade an existing copied installation
 
-Audit first and compare local runner/module/workflow modifications against the package. Install `@mp-lb/tools-arcnet` at an exact reviewed version in the root manifest and update the root lockfile. Replace workflow runner calls with `pnpm exec arcnet` using the package's matching workflow template; preserve project-specific credentials and build requirements.
+Audit first and compare local runner/module/workflow modifications against the package. Install `@mp-lb/arcnet` at an exact reviewed version in the root manifest and update the root lockfile. Replace workflow runner calls with `pnpm exec arcnet` using the package's matching workflow template; preserve project-specific credentials and build requirements.
 
-For bundled Vercel Terraform services, change the module reference in `zap.yaml` from `./.arcnet/modules/vercel-static` to `./node_modules/@mp-lb/tools-arcnet/templates/vercel-static`. This changes the local module source, not the service key or remote identity. Review a Terraform plan before applying.
+For bundled Vercel Terraform services, change the module reference in `zap.yaml` from `./.arcnet/modules/vercel-static` to `./node_modules/@mp-lb/arcnet/templates/vercel-static`. This changes the local module source, not the service key or remote identity. Review a Terraform plan before applying.
 
 Once the packaged CLI passes checks and every consumer has moved, remove the old `.arcnet/run.mjs`, deployment-only `package.json`, `pnpm-lock.yaml`, `.npmrc`, `node_modules/`, `operator.json` and unmodified bundled module copies. Preserve custom modules and actual project configuration. Supply operator tokens through the environment: the CLI disables the engine's machine-global credential fallback using a temporary configuration that it removes afterward. Do not delete a credentials source until its consumers are accounted for. This is a reviewed migration, not something setup silently does.
 
@@ -94,7 +94,7 @@ Prerequisites for generation: Node 22+, a pinned pnpm version, a GitHub reposito
 From the target repository root:
 
 ```sh
-pnpm dlx @mp-lb/tools-arcnet@0.1.0 setup my-project
+pnpm dlx @mp-lb/arcnet@0.1.0 setup my-project
 ```
 
 Replace `my-project` with the `project:` slug in `zap.yaml`. GitHub owner/repo is read from `origin`; use `--repository owner/repo` when no GitHub origin exists. Use `--dry-run` for a read-only preview. `--service` and `--dockerfile` override the default backend name/path (`backend` and `.arcnet/Dockerfile`). An existing root `Dockerfile` is accepted as a compatibility fallback. Docker builds use the repository root as their context, so `COPY` paths stay relative to the repo. Slugs are lowercase, start with a letter and have at most 23 characters, fitting the `arcnet-<slug>` GCP project convention.
@@ -163,7 +163,7 @@ In the target repo, add `.arcnet/vercel.json`: start from [the static-sites exam
 From the target repository root:
 
 ```sh
-pnpm dlx @mp-lb/tools-arcnet@0.1.0 setup hello-world
+pnpm dlx @mp-lb/arcnet@0.1.0 setup hello-world
 ```
 
 The slug must match `zap.yaml`. `--dry-run` writes nothing; `--vercel path.json` selects another input file. Mixed Terraform/Vercel profiles and existing workflow conflicts fail without overwrites. No backend Dockerfile is needed. Setup leaves `zap.yaml` unchanged and generates `.arcnet/project.json`, an ignore file and `.github/workflows/deploy-arc.yaml`. It pins the CLI in the root manifest; run `pnpm install` and commit the updated lockfile. The legacy root `arcnet.vercel.json` is still accepted, but if both inputs exist you must select one explicitly.

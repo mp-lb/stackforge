@@ -30,7 +30,7 @@ your existing repo/
 │   ├── .gitignore                   GENERATED — excludes local secrets and Terraform files
 │   └── env.production.json          OPTIONAL — public application environment values
 ├── zap.yaml                        UPDATED — deployment declaration
-├── package.json                    UPDATED — pins @mp-lb/tools-arcnet
+├── package.json                    UPDATED — pins @mp-lb/arcnet
 └── pnpm-lock.yaml                   UPDATED — run pnpm install after setup
 ```
 

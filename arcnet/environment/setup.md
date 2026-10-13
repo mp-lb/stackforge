@@ -6,7 +6,7 @@ An ArcNet environment is the company-owned infrastructure and configuration that
 
 ## Location and ownership
 
-This folder owns the environment setup guide. Reusable executable tooling belongs in [`@mp-lb/tools-arcnet`](https://github.com/mp-lb/tools/tree/main/packages/arcnet); environment bootstrap, health checks, inventory and teardown remain to be implemented there. These are environment operations, not application Zap tasks. Project installation uses the published CLI described in [project setup](../SETUP.md).
+This folder owns the environment setup guide. Reusable executable tooling belongs in [`@mp-lb/arcnet`](https://github.com/mp-lb/tools/tree/main/packages/arcnet); environment bootstrap, health checks, inventory and teardown remain to be implemented there. These are environment operations, not application Zap tasks. Project installation uses the published CLI described in [project setup](../SETUP.md).
 
 Only this guide exists here today; the environment scripts have not been implemented. Keep actual credentials and private company configuration outside this public source folder and pass their locations explicitly. New tooling must not depend on an implicit `~/.config/zap-arc` pointer. The existing Zap bootstrap is described below as legacy behavior, not the intended entry point.
 
