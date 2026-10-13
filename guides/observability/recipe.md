@@ -156,4 +156,4 @@ Confirm Sentry still gets errors. (To prove the path before deploying, you can
 
 Shared packages are on npm (`@mp-lb/fssstack-observability`,
 `@mp-lb/fssstack-platform`). Changes go through changesets + CI; a brand-new
-package's first publish is manual (`~/Code/mgr/processes/first-publish.md`).
+package's first publish is manual and follows the package’s release instructions.

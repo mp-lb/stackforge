@@ -1,4 +1,4 @@
-# Network template extracted from MGR, 2026-10-11. Private identifiers are placeholders; operator credentials remain outside Git.
+# Shared network template. Private identifiers are placeholders; operator credentials remain outside Git.
 name: mp-lb
 
 # Template vars. gcp-project encodes our convention: one GCP project per code

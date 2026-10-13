@@ -118,7 +118,7 @@ The setup tools stay here in Stackforge; the generated files live in the target 
 
 ## Where ArcNet lives
 
-ArcNet's network configuration and onboarding live here. The Terraform engine and modules remain in **Zapper**, pinned to published `@mp-lb/zapper 0.21.0`. This is an opt-in layer; the public FSS Stack shell stays deployment-free. The static Vercel-only adapter uses public Vercel APIs/CLI directly. MGR's existing installation, credentials and operator pointer are unchanged.
+ArcNet's network configuration and onboarding live here. The Terraform engine and modules remain in **Zapper**, pinned to published `@mp-lb/zapper 0.21.0`. This is an opt-in layer; the public FSS Stack shell stays deployment-free. The static Vercel-only adapter uses public Vercel APIs/CLI directly. Operator credentials and local configuration remain outside Git.
 
 ## Choose the deployment profile
 
@@ -156,7 +156,7 @@ MyShop is local-only: its service name and references in selected blocks are rej
 
 Setup appends `deploy:` to `zap.yaml`, preserving local services/comments, and adds `.arcnet/` plus `.github/workflows/deploy-arc.yaml`. Existing deployment blocks or conflicting files stop setup before writes. Identical reruns preserve all edits; incomplete installations fail with a restore instruction. Reruns are not upgrades: review and update committed files explicitly.
 
-The target owns its network snapshot, service definitions, public environment JSON, exact JS dependency lock, runner and approval/WIF settings. No MGR paths or credentials are copied. Selected Vercel services receive a small local copy of the upstream module with its CLI pinned to `63.1.2` (the only module change). Unused provider settings are omitted. The committed network template preserves MGR conventions but replaces its real billing/Atlas identifiers with `REPLACE_` placeholders because StackForge is public. Setup reads an optional target-owned `arcnet.network.yaml`; otherwise it copies this template. Review and fill the generated `.arcnet/network.yaml` before planning; the runner rejects remaining placeholders. Never publish private network facts without reviewing the target repository visibility.
+The target owns its network snapshot, service definitions, public environment JSON, exact JS dependency lock, runner and approval/WIF settings. No external operator paths or credentials are copied. Selected Vercel services receive a small local copy of the upstream module with its CLI pinned to `63.1.2` (the only module change). Unused provider settings are omitted. The committed network template preserves the network conventions but replaces its real billing/Atlas identifiers with `REPLACE_` placeholders because StackForge is public. Setup reads an optional target-owned `arcnet.network.yaml`; otherwise it copies this template. Review and fill the generated `.arcnet/network.yaml` before planning; the runner rejects remaining placeholders. Never publish private network facts without reviewing the target repository visibility.
 
 ```sh
 pnpm -C .arcnet install --ignore-workspace --frozen-lockfile
@@ -165,7 +165,7 @@ node .arcnet/run.mjs check
 
 The dependency installation is isolated from the target pnpm workspace. The workflow installs the target's own pnpm version separately for app builds. `check` is offline: it validates config, selected services and image paths. It does not build images, authenticate, plan Terraform or prove deployment.
 
-Keep public values in `.arcnet/env.production.json`, secret app values in the `ARCNET_ENV_JSON` environment variable (a JSON object of strings), and whitelist service keys under `env:` in `zap.yaml`. Operator tokens stay in environment variables. `.arcnet/operator.json` avoids silently reading the MGR pointer; its optional credentials file is ignored, but the runner requires environment tokens for explicit preflight. Do not commit that file, state, plans, ADC or app secrets.
+Keep public values in `.arcnet/env.production.json`, secret app values in the `ARCNET_ENV_JSON` environment variable (a JSON object of strings), and whitelist service keys under `env:` in `zap.yaml`. Operator tokens stay in environment variables. `.arcnet/operator.json` provides an explicit project-local operator configuration; its optional credentials file is ignored, but the runner requires environment tokens for explicit preflight. Do not commit that file, state, plans, ADC or app secrets.
 
 ## Before the first live deployment
 
@@ -184,7 +184,7 @@ The existing `github-ci` module grants project Editor, bucket-scoped Storage Adm
 
 **Architecture limits:** Google's current docs mark Cloud Run domain mappings as preview and not recommended for production; Singapore is a supported mapping region. Choosing a load balancer instead requires a separate cost/architecture approval. The workflow pins JS tools and Terraform; upstream Terraform provider constraints remain ranges and Arc creates a fresh temporary working directory, so provider selections are not yet locked across deployments. Vercel's existing hook assumes the token's personal user account, not team-scoped project adoption. These are deployment review items, not claims that this extraction fixed them. Official prerequisites were checked on 2026-10-11.
 
-MGR migration remains additive: this repo owns the sanitized configuration and onboarding; real identifiers, credentials and operator pointers remain in MGR. Never move/delete the whole MGR folder or copy credentials into Git.
+This repository owns sanitized configuration and onboarding. Keep real network identifiers in the appropriate private configuration and operator credentials outside Git.
 
 ## Maintainer validation
 

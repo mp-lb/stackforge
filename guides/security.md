@@ -10,7 +10,7 @@ here so the concern has a home and shows up when we plan work.
 - **Vulnerability scanning** — dependency/SCA (npm audit / Dependabot), container
   image scanning, IaC/Terraform scanning, SAST.
 - **Secrets hygiene** — repo/CI secret scanning; ties into our secrets model
-  (encrypted file + bootstrap token; `mgr/processes/secrets.md`).
+  (encrypted file + bootstrap token).
 - **Auth & access** — Clerk/RBAC review, least-privilege cloud IAM.
 - **Incident response** — what to do when something is found or exploited.
 

@@ -62,7 +62,7 @@ Keep this repo out of pnpm workspaces unless there is a specific React Native ex
 
 Make sure exactly one lockfile exists. A stray `pnpm-lock.yaml` or `yarn.lock` next to `package-lock.json` (common when files are copied from the main monorepo) can make EAS detect the wrong package manager.
 
-Add a small project manifest so mgr/dash can identify the standalone mobile repo:
+Add a small project manifest to describe the standalone mobile repo:
 
 ```json5
 {

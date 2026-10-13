@@ -2,7 +2,7 @@
 
 Per-project status of the OTel → Axiom rollout. Recipe: [recipe.md](./recipe.md).
 
-Scope the fleet from data, not memory: `zap task projects -- --tag fssstack --tag tf`
+Scope the fleet from data, not memory: `factory project list`
 (FSS Stack apps that Terraform-deploy — the ones this applies to).
 
 ## Shared boundary — DONE
@@ -15,11 +15,11 @@ The reusable pieces are all shipped on npm (from the `tools` repo):
   `child`, `LOG_PRETTY`) and the open `source.env` event schema.
 
 Per-project work is now just *consuming* these — see [recipe.md](./recipe.md).
-Rollout across the fleet is driven by an RFW to mgr (`rfw/mgr/`).
+Track per-project rollout work in Factory.
 
 ## Status
 
-Scope the fleet from data: `zap task projects -- --tag fssstack --tag tf`.
+Scope the fleet from data: `factory project list`.
 
 | Project   | Status | Notes |
 |-----------|--------|-------|
