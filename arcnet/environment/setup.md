@@ -23,7 +23,7 @@ Collect these before provisioning. Organization slugs identify provider accounts
 | Location | GCP region and any required worker zone; other provider regions as applicable |
 | DNS | Owned base domain (for example `arc.mp-lb.dev`) and the authoritative Cloudflare zone |
 | External MongoDB and Redis | Manually provisioned cluster/instance identifiers, connection details and scoped access; these remain outside environment creation/destruction |
-| Secrets source | Explicit path to the company's encrypted JSON credential source and its approved loader; no real tokens in committed examples |
+| Secrets source | Explicit input/output path for a JSON secrets document populated manually and by setup; encrypted storage and an approved delivery mechanism |
 | State and recovery | Globally unique state-bucket name, state locations and backup/retention choices |
 | Project access | GitHub repositories allowed to deploy, project slugs and required provider scopes |
 
@@ -142,6 +142,42 @@ A domain change also needs corresponding application URLs, CORS/auth callbacks a
 
 ## 5. Secrets: environment source, project delivery, app runtime
 
+### Partly manual input, completed environment output
+
+The intended setup script first prints the required JSON shape, where to obtain each provider key, and which fields it will generate. The operator creates the file outside the public checkout and fills in existing account API keys and MongoDB/Redis connection details. Only selected providers are required. The script validates required fields without printing their values, configures GCP, and merges its generated credentials into the same document, preserving operator-supplied fields.
+
+The outputs are:
+
+- **Non-secret environment configuration:** environment slug/GCP project ID, organization and account IDs, region, base domain, state bucket and resource references.
+- **Completed secrets JSON:** the manually supplied provider keys plus the generated GCP service-account key JSON. Store it privately and encrypt it for persistence/distribution.
+- **Setup/check report:** what exists, which checks passed, and any manual steps still required.
+
+Illustrative secrets shape for the planned tool (not a schema supported by today's runner):
+
+```json
+{
+  "providers": {
+    "cloudflare": { "apiToken": "REPLACE" },
+    "vercel": { "apiToken": "REPLACE" },
+    "mongodb": { "publicKey": "REPLACE", "privateKey": "REPLACE" },
+    "upstash": { "email": "REPLACE", "apiKey": "REPLACE" },
+    "gcp": { "serviceAccountKey": null }
+  },
+  "connections": {
+    "mongodb": "REPLACE",
+    "redis": "REPLACE"
+  }
+}
+```
+
+For the requested key-based flow, setup creates a dedicated infrastructure service account, assigns its deployment permissions, creates a JSON key, and stores the complete parsed key object under `providers.gcp.serviceAccountKey`. `null` means pending setup, not an empty usable credential. Reruns reuse the recorded key; they must not create another key on every invocation. Rotation/revocation is explicit. If organization policy prohibits key creation, setup reports that constraint and requires the supported federation path rather than changing policy automatically.
+
+This environment credential file is an operator/deployment artifact, not app runtime configuration. Project onboarding must deliver the required deployment values through protected GitHub secrets or the company's encrypted-secret loader, and inject only app connection credentials into application services. The adapter maps JSON fields to provider environment variables and configures GCP authentication; simply assigning a JSON file to an arbitrary environment variable does not do this. Connection URLs handed to apps must use the project's namespace and scoped credentials, not a cluster administrator login.
+
+**Not implemented yet:** the interactive/manual input instructions, key generation/merge, JSON adapter and GitHub handoff above. Today's generated Terraform workflow uses WIF and does not consume this GCP key field. Supporting the key-based flow requires an explicit workflow/authentication change as part of the environment tooling, not just generating a key file.
+
+### Storage and delivery boundaries
+
 Use an encrypted JSON document as the environment's secret source if that is the company's secret-management convention. Decrypt outside Git into the deployment process. Do not put plaintext provider keys in `network.yaml`, `.arcnet/services.json` or the repository. Encryption and delivery are supplied by the company's secret loader; the generic ArcNet workflow does not install such a loader.
 
 | Secret class | Consumer | Examples |
@@ -152,7 +188,7 @@ Use an encrypted JSON document as the environment's secret source if that is the
 
 A single centrally maintained JSON source is compatible with this model; giving every project its decrypted contents is not the isolation model. Deliver project-specific subsets/credentials. If every repo holds the same encrypted file and a key that decrypts all of it, filtering variables afterward does not prevent that repo from reading the other secrets.
 
-Current interfaces: Terraform Vercel uses `VERCEL_API_TOKEN`; the static Vercel adapter uses `VERCEL_TOKEN`. Other provider names are in [network.yaml](../network.yaml) and the [workflow](../templates/deploy-arc.yaml). `ARCNET_ENV_JSON` is a JSON object of **application** secret values, not a universal provider-credentials loader. `.arcnet/env.production.json` contains public app values. The proposed JSON-to-project-secret distribution layer still needs implementation; use an existing approved loader where available. GCP CI uses OIDC/WIF, not a shared long-lived service-account key in this JSON.
+Current interfaces: Terraform Vercel uses `VERCEL_API_TOKEN`; the static Vercel adapter uses `VERCEL_TOKEN`. Other provider names are in [network.yaml](../network.yaml) and the [workflow](../templates/deploy-arc.yaml). `ARCNET_ENV_JSON` is a JSON object of **application** secret values, not a universal provider-credentials loader. `.arcnet/env.production.json` contains public app values. The proposed JSON-to-project-secret distribution layer still needs implementation; use an existing approved loader where available. The current GCP CI workflow uses OIDC/WIF; the planned service-account-key JSON handoff above is not wired into it yet.
 
 ## 6. Onboard a project and enable push-to-deploy
 

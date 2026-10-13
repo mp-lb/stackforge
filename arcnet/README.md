@@ -2,6 +2,16 @@
 
 ArcNet adds cloud deployment to a project: **push to GitHub → build → deploy** after initial setup. It does not require FSS Stack; the current installer expects Zap, pnpm and GitHub. [Setup guide](SETUP.md) · [FSS Stack extension](../fssstack/extensions/arcnet.md)
 
+## Getting deployed
+
+1. **Create the accounts** and choose the environment slug, organizations and base domain.
+2. **Fill in a secrets JSON file** with the manually obtained provider API keys and connection details.
+3. **Set up GCP** using the environment tooling, which configures infrastructure and adds generated service-account credentials to the secrets file.
+4. **Install ArcNet in a project** and supply its environment configuration and deployment secrets to GitHub Actions.
+5. **Push to GitHub** to build and deploy.
+
+This is the intended partly manual setup flow; the complete environment script and secrets-file handoff are still to be implemented. [Environment setup and outputs](environment/setup.md)
+
 ## What gets added?
 
 For two Vercel sites, a Cloud Run backend and a MongoDB binding, the current installer produces this layout:
