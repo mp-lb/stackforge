@@ -1,12 +1,12 @@
 {
-  "repository": "mp-lb/inproduct",
+  "repository": "mp-lb/example-app",
   "account": { "type": "team", "id": "team_REPLACE" },
   "sites": {
     "frontend": {
       "mode": "existing",
       "projectId": "prj_REPLACE",
       "projectName": "replace-landing-name",
-      "build": ["pnpm", "--filter", "@mp-lb/inproduct-frontend", "build"],
+      "build": ["pnpm", "--filter", "@mp-lb/example-app-frontend", "build"],
       "output": "apps/frontend/dist",
       "outputConfig": {
         "version": 3,
@@ -24,9 +24,9 @@
     },
     "docs": {
       "mode": "new",
-      "projectName": "inproduct-docs",
+      "projectName": "example-app-docs",
       "creationApproved": false,
-      "build": ["pnpm", "--filter", "@mp-lb/inproduct-docs", "build"],
+      "build": ["pnpm", "--filter", "@mp-lb/example-app-docs", "build"],
       "output": "apps/docs/build/client",
       "outputConfig": {
         "version": 3,

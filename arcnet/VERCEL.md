@@ -9,14 +9,14 @@ API or package release is needed. The Terraform-managed profile remains separate
 
 Install StackForge's authoring dependencies once with `zap t arcnet-setup`.
 In the target repo, commit `arcnet.vercel.json`: start from
-[the InProduct example](examples/inproduct.vercel.json), replace account and landing
+[the static-sites example](examples/static-sites.vercel.json), replace account and landing
 project identifiers with actual values, and choose existing/new mode for docs.
 The example rejects its `REPLACE` values rather than guessing a live target.
 
 From the target repository root:
 
 ```sh
-node ~/Work/stackforge/arcnet/setup.mjs inproduct
+node ~/Work/stackforge/arcnet/setup.mjs example-app
 ```
 
 The slug must match `zap.yaml`. `--dry-run` writes nothing; `--vercel path.json`
@@ -47,8 +47,8 @@ ID and name must match. Personal references are checked against the same explici
 owner ID. Vercel response bodies and secret values are not printed.
 
 `inspect` is a read-only remote identity check, requiring an already-approved
-`VERCEL_TOKEN`; it performs no settings, domain or environment writes. It was not
-run against InProduct. Existing mode never calls the project-creation endpoint.
+`VERCEL_TOKEN`; it performs no settings, domain or environment writes.
+Existing mode never calls the project-creation endpoint.
 
 Build commands are explicit pnpm argument arrays. Only `output` is copied into a
 temporary `.vercel/output/static`; no repository source, `.git`, environment files,
@@ -70,8 +70,7 @@ successful deployments in place and is reported without automatic retries.
 
 Builds do not receive the deployment token or other `VERCEL_*` variables. Provide
 any genuinely needed public/build values explicitly in your own build setup;
-prebuilt output does not inherit Vercel's remote build/system environment. The
-inspected InProduct static source currently needs no custom secret values.
+prebuilt output does not inherit Vercel's remote build/system environment.
 
 ## New projects: separate operator step
 
@@ -106,20 +105,9 @@ target's own pinned pnpm, builds only selected sites, and uploads with
 `VERCEL_TOKEN` from the protected `arcnet-production` environment. No OIDC, GCP,
 Terraform, Cloudflare token or new state bucket is required.
 
-InProduct now uses an independent docs project at
-https://inproduct-docs.vercel.app/docs. Its ArcNet selection contains only docs;
-the landing retains its existing Vercel Git trigger. The verified provider hostname
-was recorded as a public landing build value in the repo, without dashboard env
-changes. MyShop remains local-only. No new plan, seats, add-ons, credentials or DNS
-changes were required for that onboarding.
-
-The runner's VERCEL_TOKEN is a process interface, not a requirement to store that
-provider token directly in GitHub. InProduct uses its repo-owned encrypted-source
-loader and GitHub SECRETS_KEY, exporting only the selected token to the runner.
-That target wrapper and shared ciphertext refresh are separate from this generic
-workflow template; copying the template alone does not install encrypted-secret
-integration. Do not recommend direct provider-token setup for an existing target
-that already has an approved encrypted-secret workflow.
+The runner's `VERCEL_TOKEN` is a process interface. Projects with an existing
+secret loader can export the selected token to the runner through that loader;
+the generic workflow does not install encrypted-secret integration.
 
 Use a dedicated hostname as the docs location convention, initially the verified
 provider hostname. The docs app must build and deploy without a landing app, and
@@ -133,8 +121,7 @@ gaps; this CLI does not yet claim to automate those steps from a URL alone.
 ## Ownership/import is separate
 
 Reference mode does not import Terraform state. If Terraform should later own
-project settings or domains, use the separate
-[adoption/import planning document](INPRODUCT_ADOPTION.md) and a reviewed migration.
+project settings or domains, plan a separate reviewed migration.
 No automated import command is implemented or claimed verified. The existing
 Terraform profile is still for explicitly managed infrastructure.
 
@@ -144,15 +131,6 @@ Local tests use fixtures, an injected HTTP transport and intercepted commands;
 they cover account/team scope, new/existing modes, no-mutation reference behavior,
 conflicts, idempotence, disabled CI creation, static output isolation and routing
 artifacts. The exact CLI setup and offline plan run on disposable directories.
-Initial qualification used only fixtures. On 2026-10-11 the InProduct docs-only
-workflow uploaded through the encrypted-source wrapper to the independent Vercel
-project. Public browser checks passed for the landing link, docs navigation/search,
-static assets, JSON search endpoint, Markdown/LLM resources and unknown-route 404.
-The complete push-to-main deployment, credential cleanup and post steps passed in
-[run 38113741096](https://github.com/mp-lb/inproduct/actions/runs/38113741096)
-at target commit `d83aeef`. Public browser checks passed again after that run.
-This live static-site evidence does not qualify the Terraform/GCP modules.
-
 Interfaces checked on 2026-10-11:
 [project lookup](https://vercel.com/docs/rest-api/projects/find-a-project-by-id-or-name),
 [project creation](https://vercel.com/docs/rest-api/projects/create-a-new-project),

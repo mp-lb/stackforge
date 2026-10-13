@@ -16,7 +16,7 @@ still supplies its own build command and, for container services, Dockerfile.
 
 | Source in ArcNet | File in your project | What it does |
 | --- | --- | --- |
-| [Vercel input example](examples/inproduct.vercel.json) | `arcnet.vercel.json` (you customize it) | Selects sites, Vercel account/project identities, build commands, output folders and routing. |
+| [Vercel input example](examples/static-sites.vercel.json) | `arcnet.vercel.json` (you customize it) | Selects sites, Vercel account/project identities, build commands, output folders and routing. |
 | [Vercel setup](vercel-setup.mjs) | `.arcnet/project.json` (generated) | Stores those deployment settings plus approval state. This becomes the runner's authoritative configuration. |
 | [Vercel runner](templates/vercel-run.mjs) | `.arcnet/run.mjs` | Checks configuration and project identities, builds the selected sites, and uploads their static output through Vercel. Also supports a separate explicit project-creation command. |
 | [Vercel workflow](templates/deploy-vercel.yaml) | `.github/workflows/deploy-arc.yaml` | Checks configuration on main pushes; once enabled, installs app dependencies and runs the deployment with `VERCEL_TOKEN`. |
@@ -32,7 +32,7 @@ Terraform, provision GCP infrastructure, or manage DNS. See [Vercel setup](VERCE
 
 | Source in ArcNet | File/change in your project | What it does |
 | --- | --- | --- |
-| [Service-selection example](examples/inproduct.services.json) | Optional `arcnet.services.json` (you customize it) | Selects the services and infrastructure modules to deploy. Without this file, setup defaults to one HTTP backend. |
+| [Service-selection example](examples/static-sites.services.json) | Optional `arcnet.services.json` (you customize it) | Selects the services and infrastructure modules to deploy. Without this file, setup defaults to one HTTP backend. |
 | [Setup script](setup.mjs) | Adds `deploy:` to `zap.yaml` | Declares project infrastructure and selected services: modules, domains, Dockerfiles, build settings and allowed environment variables. |
 | [Network template](network.yaml) | `.arcnet/network.yaml` | Supplies network conventions: cloud regions, naming, Terraform state location, providers and module defaults. Setup copies a target-owned `arcnet.network.yaml` instead if supplied. |
 | [Setup script](setup.mjs) | `.arcnet/project.json` (generated) | Records project/repository identity, selected services, deployment approval and GitHub cloud-authentication settings. |
@@ -83,9 +83,6 @@ MGR's existing installation, credentials and operator pointer are unchanged.
 
 ## Install once, then set up Terraform-managed infrastructure
 
-For InProduct, use `arcnet.vercel.json` and the [Vercel-only instructions](VERCEL.md).
-The default backend selection below is not its deployment shape.
-
 Prerequisites for generation: Node 22+, pnpm 10.11.0 (for this tool), a GitHub
 repository with `zap.yaml`, `package.json` with an exact `packageManager`, and a
 committed `pnpm-lock.yaml`. The default service is `backend`; its Dockerfile must
@@ -108,7 +105,7 @@ at most 23 characters, fitting the `arcnet-<slug>` GCP project convention.
 For a whole project, commit **`arcnet.services.json`** first. The same one-command
 setup automatically reads it. It is a map of service names to Arc service blocks;
 `--services path.json` selects a different file. No services are auto-discovered
-for deployment. See [the InProduct-shaped example](examples/inproduct.services.json).
+for deployment. See [the static-sites example](examples/static-sites.services.json).
 That example is a proposal using separate hostnames, not a deployed application
 or an approved migration. Omit `frontend` to retain its independent Vercel pipeline.
 
@@ -238,27 +235,6 @@ hook assumes the token's personal user account, not team-scoped project adoption
 These are deployment review items, not claims that this extraction fixed them.
 Official prerequisites were checked on 2026-10-11.
 
-## InProduct first adoption plan — sites only
-
-InProduct needs its existing Vite landing page and prerendered Fumadocs site.
-`apps/backend` is a private health scaffold; the requested backend deliverable is
-an npm library. Neither belongs in its deployment selection. MyShop stays local.
-No Dockerfile, Cloud Run, GCP domain verification or database is required for this
-consumer. See the concrete [offline adoption plan](INPRODUCT_ADOPTION.md).
-
-The [sites-only example](examples/inproduct.services.json) excludes both backend
-and MyShop and preserves the landing page's existing routing config. It exercises
-the current creator module using proposal hostnames; it is **not** an existing
-Vercel project adoption configuration. Do not generate or enable it in InProduct
-as if it were one. The bare slug command defaults to a backend and is also not the
-right InProduct selection.
-
-The Vercel-only adapter now implements reference-only adoption with explicit
-account/team scope and a separate opt-in creation step. It does not import or own
-project settings/DNS. See [the supported command and remaining inputs](VERCEL.md).
-The original Terraform profile still generates GCP bootstrap resources; choose
-it only when those resources are actually part of the target architecture.
-
 MGR migration remains additive: this repo owns the sanitized configuration
 and onboarding; real identifiers, credentials and operator pointers remain in
 MGR. Never move/delete the whole MGR folder or copy credentials into Git.
@@ -267,7 +243,7 @@ MGR. Never move/delete the whole MGR folder or copy credentials into Git.
 
 Run `zap t arcnet-setup` and `zap t arcnet-test` from StackForge, through the shared heavy-job
 queue when working alongside other agents. Tests exercise dry runs, safe failures,
-reruns and published-engine Terraform rendering, including an InProduct-shaped
+reruns and published-engine Terraform rendering, including a multi-service
 fixture; no Terraform apply, provider login or live deployment occurs. Root `zap t setup` now targets the existing `fssstack/shell/` with a frozen
 lockfile. ArcNet onboarding remains independently reproducible with its scoped
 setup task.

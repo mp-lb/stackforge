@@ -23,10 +23,10 @@ const home = dirname(dirname(fileURLToPath(import.meta.url)));
 function fixture(t) {
   const root = mkdtempSync(join(tmpdir(), "arcnet-test-"));
   t.after(() => rmSync(root, { recursive: true, force: true }));
-  // InProduct-shaped: backend, Vercel frontend, Fumadocs and private local MyShop.
+  // Multi-service: backend, Vercel frontend, Fumadocs and private local MyShop.
   writeFileSync(
     join(root, "zap.yaml"),
-    "# Keep local services\nproject: inproduct\nnative:\n  backend:\n    cmd: pnpm --filter @mp-lb/inproduct-backend dev\n  frontend:\n    cmd: pnpm frontend\n  docs:\n    cmd: pnpm docs\n  myshop:\n    cmd: pnpm myshop\n",
+    "# Keep local services\nproject: example-app\nnative:\n  backend:\n    cmd: pnpm --filter @mp-lb/example-app-backend dev\n  frontend:\n    cmd: pnpm frontend\n  docs:\n    cmd: pnpm docs\n  myshop:\n    cmd: pnpm myshop\n",
   );
   writeFileSync(
     join(root, "Dockerfile"),
@@ -39,7 +39,7 @@ function fixture(t) {
   writeFileSync(join(root, "pnpm-lock.yaml"), "lockfileVersion: 9.0\n");
   return root;
 }
-const args = ["inproduct", "--repository", "mp-lb/inproduct"];
+const args = ["example-app", "--repository", "mp-lb/example-app"];
 test("dry-run is read-only and shows selected scope", (t) => {
   const root = fixture(t);
   const before = readFileSync(join(root, "zap.yaml"), "utf8");
@@ -47,7 +47,7 @@ test("dry-run is read-only and shows selected scope", (t) => {
   assert.equal(readFileSync(join(root, "zap.yaml"), "utf8"), before);
   assert.equal(existsSync(join(root, ".arcnet")), false);
 });
-test("InProduct generation renders using published engine without cloud or shell commands", (t) => {
+test("Example project generation renders using published engine without cloud or shell commands", (t) => {
   const root = fixture(t);
   setup(args, root);
   assert.match(
@@ -97,17 +97,17 @@ test("InProduct generation renders using published engine without cloud or shell
   assert.equal(rendered.containerBuilds[0].service, "backend");
   assert.match(
     rendered.containerBuilds[0].image,
-    /arcnet-inproduct\/inproduct\/backend:test$/,
+    /arcnet-example-app\/example-app\/backend:test$/,
   );
-  assert.equal(tf.terraform.backend.gcs.prefix, "terraform/state/inproduct");
+  assert.equal(tf.terraform.backend.gcs.prefix, "terraform/state/example-app");
   assert.deepEqual(Object.keys(tf.module).sort(), [
     "prj_ci",
     "prj_gcp",
     "prj_registry",
     "svc_backend",
   ]);
-  assert.equal(tf.module.prj_ci.repository, "mp-lb/inproduct");
-  assert.equal(tf.module.svc_backend.domain, "inproduct-api.mp-lb.dev");
+  assert.equal(tf.module.prj_ci.repository, "mp-lb/example-app");
+  assert.equal(tf.module.svc_backend.domain, "example-app-api.mp-lb.dev");
   assert.equal(tf.module.svc_backend.min_instances, 0);
   assert.equal(tf.module.svc_backend.max_instances, 2);
 });
@@ -165,7 +165,7 @@ test("symlink destinations and existing deployment are rejected", (t) => {
   rmSync(join(root, ".arcnet"));
   writeFileSync(
     join(root, "zap.yaml"),
-    "project: inproduct\nnative: {backend: {cmd: node}}\ndeploy: {services: {}}",
+    "project: example-app\nnative: {backend: {cmd: node}}\ndeploy: {services: {}}",
   );
   assert.throws(() => setup(args, root), /Existing deploy/);
 });
@@ -196,17 +196,17 @@ test("explicit frontend/docs and backend selection renders existing modules with
     backend: {
       module: "cloud-run-web",
       dockerfile: "Dockerfile",
-      domain: "inproduct-api.mp-lb.dev",
+      domain: "example-app-api.mp-lb.dev",
     },
     frontend: {
       module: "vercel-static",
-      domain: "inproduct-preview.mp-lb.dev",
+      domain: "example-app-preview.mp-lb.dev",
       build: "pnpm --filter frontend build",
       "deploy-path": "apps/frontend/dist",
     },
     docs: {
       module: "vercel-static",
-      domain: "inproduct-docs.mp-lb.dev",
+      domain: "example-app-docs.mp-lb.dev",
       "remote-build": true,
       params: { framework: "nextjs", "root-directory": "apps/docs" },
     },
@@ -271,11 +271,11 @@ test("static-only setup needs no Dockerfile; local-only MyShop cannot be selecte
     /generated/,
   );
 });
-test("InProduct sites-only example renders no application backend or MyShop", (t) => {
+test("Example project sites-only example renders no application backend or MyShop", (t) => {
   const root = fixture(t);
   writeFileSync(
     join(root, "arcnet.services.json"),
-    readFileSync(join(home, "examples/inproduct.services.json")),
+    readFileSync(join(home, "examples/static-sites.services.json")),
   );
   setup(args, root);
   const manifest = loadManifest(root);

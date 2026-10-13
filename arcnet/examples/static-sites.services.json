@@ -1,8 +1,8 @@
 {
   "frontend": {
     "module": "vercel-static",
-    "domain": "inproduct-preview.mp-lb.dev",
-    "build": "pnpm --filter @mp-lb/inproduct-frontend build",
+    "domain": "example-app-preview.mp-lb.dev",
+    "build": "pnpm --filter @mp-lb/example-app-frontend build",
     "deploy-path": "apps/frontend/dist",
     "params": {
       "www-redirect": false
@@ -11,8 +11,8 @@
   },
   "docs": {
     "module": "vercel-static",
-    "domain": "inproduct-docs.mp-lb.dev",
-    "build": "pnpm --filter @mp-lb/inproduct-docs build",
+    "domain": "example-app-docs.mp-lb.dev",
+    "build": "pnpm --filter @mp-lb/example-app-docs build",
     "deploy-path": "apps/docs/build/client",
     "params": {
       "www-redirect": false
