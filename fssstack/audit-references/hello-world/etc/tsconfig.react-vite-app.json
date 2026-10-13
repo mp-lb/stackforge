@@ -1,0 +1,1 @@
+{ "extends": "@mp-lb/fssstack-config/tsconfig/react-vite-app.json" }
