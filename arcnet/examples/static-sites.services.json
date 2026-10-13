@@ -1,19 +1,9 @@
 {
-  "frontend": {
+  "web": {
     "module": "vercel-static",
-    "domain": "example-app-preview.mp-lb.dev",
-    "build": "pnpm --filter @mp-lb/example-app-frontend build",
-    "deploy-path": "apps/frontend/dist",
-    "params": {
-      "www-redirect": false
-    },
-    "local-config": "apps/frontend/vercel.json"
-  },
-  "docs": {
-    "module": "vercel-static",
-    "domain": "example-app-docs.mp-lb.dev",
-    "build": "pnpm --filter @mp-lb/example-app-docs build",
-    "deploy-path": "apps/docs/build/client",
+    "domain": "hello-world.example.com",
+    "build": "pnpm --filter @hello-world/hello-world-web build",
+    "deploy-path": "apps/web/dist",
     "params": {
       "www-redirect": false
     }

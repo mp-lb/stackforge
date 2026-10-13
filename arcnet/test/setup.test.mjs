@@ -23,10 +23,10 @@ const home = dirname(dirname(fileURLToPath(import.meta.url)));
 function fixture(t) {
   const root = mkdtempSync(join(tmpdir(), "arcnet-test-"));
   t.after(() => rmSync(root, { recursive: true, force: true }));
-  // Multi-service: backend, Vercel frontend, Fumadocs and private local MyShop.
+  // Synthetic cases extend hello-world names to exercise backend defaults and exclusions.
   writeFileSync(
     join(root, "zap.yaml"),
-    "# Keep local services\nproject: example-app\nnative:\n  backend:\n    cmd: pnpm --filter @mp-lb/example-app-backend dev\n  frontend:\n    cmd: pnpm frontend\n  docs:\n    cmd: pnpm docs\n  myshop:\n    cmd: pnpm myshop\n",
+    "# Keep local services\nproject: hello-world\nnative:\n  backend:\n    cmd: pnpm --filter @hello-world/hello-world-api dev\n  web:\n    cmd: pnpm web\n  docs:\n    cmd: pnpm docs\n  myshop:\n    cmd: pnpm myshop\n",
   );
   writeFileSync(
     join(root, "Dockerfile"),
@@ -39,7 +39,7 @@ function fixture(t) {
   writeFileSync(join(root, "pnpm-lock.yaml"), "lockfileVersion: 9.0\n");
   return root;
 }
-const args = ["example-app", "--repository", "mp-lb/example-app"];
+const args = ["hello-world", "--repository", "mp-lb/hello-world"];
 test("dry-run is read-only and shows selected scope", (t) => {
   const root = fixture(t);
   const before = readFileSync(join(root, "zap.yaml"), "utf8");
@@ -47,7 +47,7 @@ test("dry-run is read-only and shows selected scope", (t) => {
   assert.equal(readFileSync(join(root, "zap.yaml"), "utf8"), before);
   assert.equal(existsSync(join(root, ".arcnet")), false);
 });
-test("Example project generation renders using published engine without cloud or shell commands", (t) => {
+test("Hello-world generation renders using published engine without cloud or shell commands", (t) => {
   const root = fixture(t);
   setup(args, root);
   assert.match(
@@ -57,7 +57,7 @@ test("Example project generation renders using published engine without cloud or
   const local = parse(readFileSync(join(root, "zap.yaml"), "utf8"));
   assert.deepEqual(Object.keys(local.native), [
     "backend",
-    "frontend",
+    "web",
     "docs",
     "myshop",
   ]);
@@ -97,17 +97,17 @@ test("Example project generation renders using published engine without cloud or
   assert.equal(rendered.containerBuilds[0].service, "backend");
   assert.match(
     rendered.containerBuilds[0].image,
-    /arcnet-example-app\/example-app\/backend:test$/,
+    /arcnet-hello-world\/hello-world\/backend:test$/,
   );
-  assert.equal(tf.terraform.backend.gcs.prefix, "terraform/state/example-app");
+  assert.equal(tf.terraform.backend.gcs.prefix, "terraform/state/hello-world");
   assert.deepEqual(Object.keys(tf.module).sort(), [
     "prj_ci",
     "prj_gcp",
     "prj_registry",
     "svc_backend",
   ]);
-  assert.equal(tf.module.prj_ci.repository, "mp-lb/example-app");
-  assert.equal(tf.module.svc_backend.domain, "example-app-api.mp-lb.dev");
+  assert.equal(tf.module.prj_ci.repository, "mp-lb/hello-world");
+  assert.equal(tf.module.svc_backend.domain, "hello-world-api.mp-lb.dev");
   assert.equal(tf.module.svc_backend.min_instances, 0);
   assert.equal(tf.module.svc_backend.max_instances, 2);
 });
@@ -144,7 +144,7 @@ test("invalid arguments fail before writes", (t) => {
 test("missing Dockerfile and conflicting workflow fail safely", (t) => {
   const root = fixture(t);
   rmSync(join(root, "Dockerfile"));
-  assert.throws(() => setup(args, root), /Missing Dockerfile/);
+  assert.throws(() => setup(args, root), /Missing \.arcnet\/Dockerfile/);
   writeFileSync(join(root, "Dockerfile"), "FROM node:22");
   mkdirSync(join(root, ".github/workflows"), { recursive: true });
   writeFileSync(
@@ -158,6 +158,73 @@ test("missing Dockerfile and conflicting workflow fail safely", (t) => {
     undefined,
   );
 });
+test("self-contained service input and Dockerfile survive setup and reruns", (t) => {
+  const root = fixture(t);
+  mkdirSync(join(root, ".arcnet"));
+  rmSync(join(root, "Dockerfile"));
+  const dockerfile = "FROM node:22\nCOPY apps ./apps\n";
+  writeFileSync(join(root, ".arcnet/Dockerfile"), dockerfile);
+  const services = JSON.stringify({
+    api: {
+      module: "cloud-run-web",
+      dockerfile: ".arcnet/Dockerfile",
+      domain: "hello-world-api.example.com",
+    },
+  });
+  writeFileSync(join(root, ".arcnet/services.json"), services);
+  assert.match(setup([...args, "--dry-run"], root), /deploy.services \(api\)/);
+  assert.equal(existsSync(join(root, ".arcnet/project.json")), false);
+  setup(args, root);
+  assert.equal(
+    loadManifest(root).deploy.services.api.dockerfile,
+    ".arcnet/Dockerfile",
+  );
+  assert.equal(
+    readFileSync(join(root, ".arcnet/services.json"), "utf8"),
+    services,
+  );
+  assert.equal(
+    readFileSync(join(root, ".arcnet/Dockerfile"), "utf8"),
+    dockerfile,
+  );
+  assert.match(setup(args, root), /Already configured/);
+  symlinkSync(join(home, "node_modules"), join(root, ".arcnet/node_modules"));
+  const checked = spawnSync(
+    process.execPath,
+    [join(root, ".arcnet/run.mjs"), "check"],
+    { encoding: "utf8" },
+  );
+  assert.equal(checked.status, 0, checked.stderr);
+});
+test("default Dockerfile lives in .arcnet and duplicate service inputs require a choice", (t) => {
+  const root = fixture(t);
+  mkdirSync(join(root, ".arcnet"));
+  writeFileSync(join(root, ".arcnet/Dockerfile"), "FROM node:22\n");
+  setup(args, root);
+  assert.equal(
+    loadManifest(root).deploy.services.backend.dockerfile,
+    ".arcnet/Dockerfile",
+  );
+  assert.match(setup(args, root), /Already configured/);
+
+  const other = fixture(t);
+  mkdirSync(join(other, ".arcnet"));
+  const services = JSON.stringify({
+    backend: {
+      module: "cloud-run-web",
+      dockerfile: "Dockerfile",
+      domain: "hello-world-api.example.com",
+    },
+  });
+  writeFileSync(join(other, ".arcnet/services.json"), services);
+  writeFileSync(join(other, "arcnet.services.json"), services);
+  assert.throws(() => setup(args, other), /Both .* exist/);
+  assert.equal(existsSync(join(other, ".arcnet/project.json")), false);
+  assert.match(
+    setup([...args, "--services", ".arcnet/services.json", "--dry-run"], other),
+    /Dry run/,
+  );
+});
 test("symlink destinations and existing deployment are rejected", (t) => {
   const root = fixture(t);
   symlinkSync(tmpdir(), join(root, ".arcnet"));
@@ -165,7 +232,7 @@ test("symlink destinations and existing deployment are rejected", (t) => {
   rmSync(join(root, ".arcnet"));
   writeFileSync(
     join(root, "zap.yaml"),
-    "project: example-app\nnative: {backend: {cmd: node}}\ndeploy: {services: {}}",
+    "project: hello-world\nnative: {backend: {cmd: node}}\ndeploy: {services: {}}",
   );
   assert.throws(() => setup(args, root), /Existing deploy/);
 });
@@ -190,23 +257,23 @@ test("generated runner checks offline and refuses unapproved deployment without 
   assert.equal(pool.status, 1);
   assert.match(pool.stderr, /JSON objects/);
 });
-test("explicit frontend/docs and backend selection renders existing modules with pinned upload CLI", (t) => {
+test("explicit web/docs and backend selection renders existing modules with pinned upload CLI", (t) => {
   const root = fixture(t);
   const selection = {
     backend: {
       module: "cloud-run-web",
       dockerfile: "Dockerfile",
-      domain: "example-app-api.mp-lb.dev",
+      domain: "hello-world-api.mp-lb.dev",
     },
-    frontend: {
+    web: {
       module: "vercel-static",
-      domain: "example-app-preview.mp-lb.dev",
-      build: "pnpm --filter frontend build",
-      "deploy-path": "apps/frontend/dist",
+      domain: "hello-world-preview.mp-lb.dev",
+      build: "pnpm --filter web build",
+      "deploy-path": "apps/web/dist",
     },
     docs: {
       module: "vercel-static",
-      domain: "example-app-docs.mp-lb.dev",
+      domain: "hello-world-docs.mp-lb.dev",
       "remote-build": true,
       params: { framework: "nextjs", "root-directory": "apps/docs" },
     },
@@ -216,7 +283,7 @@ test("explicit frontend/docs and backend selection renders existing modules with
   const manifest = loadManifest(root);
   assert.deepEqual(Object.keys(manifest.deploy.services), [
     "backend",
-    "frontend",
+    "web",
     "docs",
   ]);
   assert.equal(
@@ -226,7 +293,7 @@ test("explicit frontend/docs and backend selection renders existing modules with
   const modulesDir = join(home, "node_modules/@mp-lb/zapper/arc");
   const instances = resolveModules(manifest, modulesDir, root);
   assert.equal(
-    instances.find((i) => i.key === "frontend").manifest["service-env"],
+    instances.find((i) => i.key === "web").manifest["service-env"],
     true,
   );
   assert.match(
@@ -271,7 +338,7 @@ test("static-only setup needs no Dockerfile; local-only MyShop cannot be selecte
     /generated/,
   );
 });
-test("Example project sites-only example renders no application backend or MyShop", (t) => {
+test("Hello-world sites-only example renders no application backend or MyShop", (t) => {
   const root = fixture(t);
   writeFileSync(
     join(root, "arcnet.services.json"),
@@ -307,10 +374,7 @@ test("Example project sites-only example renders no application backend or MySho
   t.after(() => rmSync(rendered.dir, { recursive: true, force: true }));
   assert.equal(rendered.containerBuilds.length, 0);
   assert.equal(manifest.deploy.services.backend, undefined);
-  assert.equal(
-    rendered.hookParams.docs["deploy-path"],
-    "apps/docs/build/client",
-  );
+  assert.equal(rendered.hookParams.web["deploy-path"], "apps/web/dist");
   assert.deepEqual(Object.keys(raw.providers).sort(), [
     "cloudflare",
     "google",
@@ -321,8 +385,7 @@ test("Example project sites-only example renders no application backend or MySho
     "prj_ci",
     "prj_gcp",
     "prj_registry",
-    "svc_docs",
-    "svc_frontend",
+    "svc_web",
   ]);
 });
 test("malformed secret JSON never appears in error output", (t) => {

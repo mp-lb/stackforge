@@ -1,5 +1,73 @@
 # ArcNet onboarding
 
+Apply the FSS Stack [ArcNet extension](../fssstack/extensions/arcnet.md) to add this
+capability to a validated project.
+
+## What gets added to your project?
+
+For **a landing page, a frontend, a backend and a database**, the current
+Terraform installer produces the tree below. Assume both websites use Vercel,
+the backend uses Cloud Run, and the database is a project-specific binding on
+an existing shared MongoDB Atlas cluster.
+
+```text
+your existing repo/
+├── .github/workflows/
+│   └── deploy-arc.yaml              NEW — one deployment workflow for all services
+├── .arcnet/
+│   ├── services.json                YOU ADD — selection of the four services
+│   ├── Dockerfile                   YOU SUPPLY — builds/runs the backend container
+│   ├── run.mjs                      NEW — runs checks, plans and deployment
+│   ├── project.json                 NEW — repo identity, service list, approval and CI auth
+│   ├── network.yaml                 NEW — regions, state storage, providers and shared resources
+│   ├── env.production.json          NEW — public app environment values
+│   ├── operator.json                NEW — project-local credentials-file pointer
+│   ├── package.json                 NEW — deployment tool dependencies
+│   ├── pnpm-lock.yaml               NEW — exact deployment dependency versions
+│   ├── .npmrc                       NEW — isolates these dependencies from your app workspace
+│   ├── .gitignore                   NEW — excludes credentials, state and installed tools
+│   └── modules/vercel-static/
+│       ├── main.tf                  NEW — Vercel project/domain/environment resources
+│       └── module.yaml              NEW — Vercel build/upload instructions
+├── zap.yaml                        MODIFIED — setup adds the deploy: declaration
+├── package.json                    EXISTING — must already pin the pnpm version
+└── pnpm-lock.yaml                   EXISTING — your application's dependency lockfile
+```
+
+**That is one workflow and one `.arcnet/` directory for the whole project.**
+There is no deployment folder per app and no separate database workflow.
+Both Vercel sites reuse the same two module files. Backend and database modules
+come from the pinned Zapper dependency rather than being copied into your repo.
+The Dockerfile can live elsewhere if its path is specified in the service input.
+
+The four entries in `.arcnet/services.json` describe each service's module and
+settings: Vercel build commands/output paths/domains for the two sites, a
+Dockerfile/domain/environment selection for the backend, and the Atlas binding
+for the database. Setup turns that input into `deploy.services` in `zap.yaml`
+and adds the GCP project, image registry and GitHub authentication resources
+under `deploy.project`. After setup, the runner reads the generated configuration;
+it does not read `.arcnet/services.json` on each deployment.
+
+The [file-by-file source inventory below](#the-pieces-files-you-add-to-a-project)
+links to every copied template and the code that generates the other files.
+You do **not** copy this repo's `templates/` directory or installer into your
+project. Once generated, the project and CI run from their own committed files
+and installed tools; they do not need the Stackforge checkout.
+
+To make those files deploy, configure the destination/provider access and the
+GitHub `arcnet-production` environment, complete the first-deployment setup,
+and enable deployment in `.arcnet/project.json`. Then the normal flow is:
+**push to main → GitHub workflow → `.arcnet/run.mjs` → build and deploy the
+selected services**. Secret credentials are external inputs, not extra files
+to commit. The Atlas binding uses an existing cluster; it does not create one.
+
+**Current limitation:** this mixed-service path creates/manages Vercel projects.
+It cannot simply attach an already-deployed Vercel landing page. Existing-project
+references currently use the separate Vercel adapter, and the installer rejects
+combining the two inputs. One installation process that freely combines those
+references with a backend/database is the intended direction, not an implemented
+capability. The smaller Vercel-only file set is listed below.
+
 ## The pieces: files you add to a project
 
 The [templates](templates/) are the deployment files copied into a target repo.
@@ -11,6 +79,13 @@ ArcNet adds three things to an otherwise undeployed project: a declaration of
 **what to deploy and where**, a **runner that performs the deployment**, and a
 **GitHub Actions workflow that runs it on pushes to main**. Your application
 still supplies its own build command and, for container services, Dockerfile.
+
+Example project details come from the [hello-world reference project](../helloworld/README.md).
+Both examples select its Vite app, `apps/web`, using package
+`@hello-world/hello-world-web` and output `apps/web/dist`. Its docs app currently
+uses server rendering and is not included in these static examples. Repository,
+provider IDs and domains must be set for the actual deployment; these examples
+do not represent a live deployment of hello-world.
 
 ### Static sites on Vercel
 
@@ -32,7 +107,7 @@ Terraform, provision GCP infrastructure, or manage DNS. See [Vercel setup](VERCE
 
 | Source in ArcNet | File/change in your project | What it does |
 | --- | --- | --- |
-| [Service-selection example](examples/static-sites.services.json) | Optional `arcnet.services.json` (you customize it) | Selects the services and infrastructure modules to deploy. Without this file, setup defaults to one HTTP backend. |
+| [Service-selection example](examples/static-sites.services.json) | Optional `.arcnet/services.json` (you customize it) | Selects the services and infrastructure modules to deploy. Without this file, setup defaults to one HTTP backend. |
 | [Setup script](setup.mjs) | Adds `deploy:` to `zap.yaml` | Declares project infrastructure and selected services: modules, domains, Dockerfiles, build settings and allowed environment variables. |
 | [Network template](network.yaml) | `.arcnet/network.yaml` | Supplies network conventions: cloud regions, naming, Terraform state location, providers and module defaults. Setup copies a target-owned `arcnet.network.yaml` instead if supplied. |
 | [Setup script](setup.mjs) | `.arcnet/project.json` (generated) | Records project/repository identity, selected services, deployment approval and GitHub cloud-authentication settings. |
@@ -85,7 +160,7 @@ MGR's existing installation, credentials and operator pointer are unchanged.
 
 Prerequisites for generation: Node 22+, pnpm 10.11.0 (for this tool), a GitHub
 repository with `zap.yaml`, `package.json` with an exact `packageManager`, and a
-committed `pnpm-lock.yaml`. The default service is `backend`; its Dockerfile must
+committed `pnpm-lock.yaml`. The default service is `backend`; its `.arcnet/Dockerfile` must
 already exist, listen on the configured port (8080 by default), and serve `/health`.
 Setup does not invent an application's image build or run a cloud command.
 
@@ -99,15 +174,18 @@ node ~/Work/stackforge/arcnet/setup.mjs my-project
 Replace `my-project` with the `project:` slug in `zap.yaml`. GitHub owner/repo is
 read from `origin`; use `--repository owner/repo` when no GitHub origin exists.
 Use `--dry-run` for a read-only preview. `--service` and `--dockerfile` override
-the default backend name/path. Slugs are lowercase, start with a letter and have
+the default backend name/path (`backend` and `.arcnet/Dockerfile`). An existing
+root `Dockerfile` is accepted as a compatibility fallback. Docker builds use the
+repository root as their context, so `COPY` paths stay relative to the repo. Slugs are lowercase, start with a letter and have
 at most 23 characters, fitting the `arcnet-<slug>` GCP project convention.
 
-For a whole project, commit **`arcnet.services.json`** first. The same one-command
+For a whole project, commit **`.arcnet/services.json`** first. The same one-command
 setup automatically reads it. It is a map of service names to Arc service blocks;
-`--services path.json` selects a different file. No services are auto-discovered
+`--services path.json` selects a different file. The legacy root
+`arcnet.services.json` remains supported; if both files exist, select one explicitly. No services are auto-discovered
 for deployment. See [the static-sites example](examples/static-sites.services.json).
-That example is a proposal using separate hostnames, not a deployed application
-or an approved migration. Omit `frontend` to retain its independent Vercel pipeline.
+That example selects hello-world’s web app and uses a placeholder domain.
+Replace it with an approved domain before deployment.
 
 | Selection | Existing module / behavior |
 | --- | --- |

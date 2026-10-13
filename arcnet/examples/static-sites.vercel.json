@@ -1,38 +1,31 @@
 {
-  "repository": "mp-lb/example-app",
-  "account": { "type": "team", "id": "team_REPLACE" },
+  "repository": "REPLACE_OWNER/hello-world",
+  "account": {
+    "type": "team",
+    "id": "team_REPLACE"
+  },
   "sites": {
-    "frontend": {
+    "web": {
       "mode": "existing",
       "projectId": "prj_REPLACE",
-      "projectName": "replace-landing-name",
-      "build": ["pnpm", "--filter", "@mp-lb/example-app-frontend", "build"],
-      "output": "apps/frontend/dist",
+      "projectName": "hello-world-web",
+      "build": [
+        "pnpm",
+        "--filter",
+        "@hello-world/hello-world-web",
+        "build"
+      ],
+      "output": "apps/web/dist",
       "outputConfig": {
         "version": 3,
         "routes": [
-          { "src": "/(.+)/", "headers": { "Location": "/$1" }, "status": 308 },
           {
-            "src": "/(.+)\\.html",
-            "headers": { "Location": "/$1" },
-            "status": 308
+            "handle": "filesystem"
           },
-          { "handle": "filesystem" },
-          { "src": "/(.*)", "dest": "/index.html" }
-        ]
-      }
-    },
-    "docs": {
-      "mode": "new",
-      "projectName": "example-app-docs",
-      "creationApproved": false,
-      "build": ["pnpm", "--filter", "@mp-lb/example-app-docs", "build"],
-      "output": "apps/docs/build/client",
-      "outputConfig": {
-        "version": 3,
-        "routes": [
-          { "handle": "filesystem" },
-          { "src": "/(.+?)/?", "dest": "/$1/index.html", "check": true }
+          {
+            "src": "/(.*)",
+            "dest": "/index.html"
+          }
         ]
       }
     }

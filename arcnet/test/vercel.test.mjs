@@ -25,19 +25,20 @@ import {
   deploy,
 } from "../templates/vercel-run.mjs";
 const home = dirname(dirname(fileURLToPath(import.meta.url)));
+// Synthetic multi-site cases exercise behavior beyond the web-only reference example.
 function fixture(t) {
   const root = mkdtempSync(join(tmpdir(), "arcnet-vercel-test-"));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   writeFileSync(
     join(root, "zap.yaml"),
-    "project: example-app\nnative:\n  backend: {cmd: node server.js}\n  myshop: {cmd: local-only}\n",
+    "project: hello-world\nnative:\n  backend: {cmd: node server.js}\n  myshop: {cmd: local-only}\n",
   );
   writeFileSync(
     join(root, "package.json"),
     '{"packageManager":"pnpm@11.1.3"}\n',
   );
   writeFileSync(join(root, "pnpm-lock.yaml"), "lockfileVersion: 9.0\n");
-  for (const site of ["frontend", "docs"]) {
+  for (const site of ["web", "docs"]) {
     mkdirSync(join(root, `apps/${site}/dist`), { recursive: true });
     writeFileSync(
       join(root, `apps/${site}/dist/index.html`),
@@ -50,17 +51,17 @@ function config(type = "team") {
   return {
     version: 1,
     mode: "vercel",
-    slug: "example-app",
-    repository: "mp-lb/example-app",
+    slug: "hello-world",
+    repository: "mp-lb/hello-world",
     approved: false,
     account: { type, id: type === "team" ? "team_fixture" : "user_fixture" },
     sites: {
-      frontend: {
+      web: {
         mode: "existing",
-        projectId: "prj_frontend",
-        projectName: "example-app",
-        build: ["pnpm", "--filter", "@mp-lb/example-app-frontend", "build"],
-        output: "apps/frontend/dist",
+        projectId: "prj_web",
+        projectName: "hello-world",
+        build: ["pnpm", "--filter", "@hello-world/hello-world-web", "build"],
+        output: "apps/web/dist",
         outputConfig: {
           version: 3,
           routes: [
@@ -72,8 +73,8 @@ function config(type = "team") {
       docs: {
         mode: "existing",
         projectId: "prj_docs",
-        projectName: "example-app-docs",
-        build: ["pnpm", "--filter", "@mp-lb/example-app-docs", "build"],
+        projectName: "hello-world-docs",
+        build: ["pnpm", "--filter", "@hello-world/hello-world-docs", "build"],
         output: "apps/docs/dist",
         outputConfig: { version: 3 },
       },
@@ -111,25 +112,25 @@ test("Vercel-only slug CLI generates no Terraform/GCP and preserves zap, reruns 
     c = config();
   input(root, c);
   const before = readFileSync(join(root, "zap.yaml"), "utf8");
-  assert.match(setup(["example-app", "--dry-run"], root), /Vercel-only/);
+  assert.match(setup(["hello-world", "--dry-run"], root), /Vercel-only/);
   assert.equal(existsSync(join(root, ".arcnet")), false);
   const result = spawnSync(
     process.execPath,
-    [join(home, "setup.mjs"), "example-app"],
+    [join(home, "setup.mjs"), "hello-world"],
     { cwd: root, encoding: "utf8" },
   );
   assert.equal(result.status, 0, result.stderr);
   assert.equal(readFileSync(join(root, "zap.yaml"), "utf8"), before);
   assert.equal(existsSync(join(root, ".arcnet/network.yaml")), false);
   assert.equal(existsSync(join(root, ".arcnet/package.json")), false);
-  assert.match(setup(["example-app"], root), /Already configured/);
+  assert.match(setup(["hello-world"], root), /Already configured/);
   const savedPath = join(root, ".arcnet/project.json");
   const saved = JSON.parse(readFileSync(savedPath));
   writeFileSync(
     savedPath,
     JSON.stringify(Object.fromEntries(Object.entries(saved).reverse())),
   );
-  assert.match(setup(["example-app"], root), /Already configured/);
+  assert.match(setup(["hello-world"], root), /Already configured/);
   const raw = readFileSync(
     join(root, ".github/workflows/deploy-arc.yaml"),
     "utf8",
@@ -159,23 +160,23 @@ test("setup rejects mixed profiles, existing workflow, changed target IDs and lo
     c = config();
   input(root, c);
   assert.throws(
-    () => setup(["example-app", "--service", "backend"], root),
+    () => setup(["hello-world", "--service", "backend"], root),
     /cannot be combined/,
   );
-  c.sites.frontend.output = "apps/myshop/dist";
+  c.sites.web.output = "apps/myshop/dist";
   input(root, c);
-  assert.throws(() => setup(["example-app"], root), /local-only/);
+  assert.throws(() => setup(["hello-world"], root), /local-only/);
   input(root, config());
   mkdirSync(join(root, ".github/workflows"), { recursive: true });
   writeFileSync(join(root, ".github/workflows/deploy-arc.yaml"), "existing");
-  assert.throws(() => setup(["example-app"], root), /overwrite/);
+  assert.throws(() => setup(["hello-world"], root), /overwrite/);
   assert.equal(existsSync(join(root, ".arcnet")), false);
   rmSync(join(root, ".github/workflows/deploy-arc.yaml"));
-  setup(["example-app"], root);
+  setup(["hello-world"], root);
   const changed = config();
-  changed.sites.frontend.projectId = "prj_other";
+  changed.sites.web.projectId = "prj_other";
   input(root, changed);
-  assert.throws(() => setup(["example-app"], root), /differs/);
+  assert.throws(() => setup(["hello-world"], root), /differs/);
 });
 test("offline plan includes new and existing intent, no implicit ownership", (t) => {
   const root = fixture(t),
@@ -206,13 +207,13 @@ test("team and personal HTTP reads use explicit account scope; errors never echo
         ok: true,
         status: 200,
         json: async () => ({
-          id: "prj_frontend",
-          name: "example-app",
+          id: "prj_web",
+          name: "hello-world",
           accountId: c.account.id,
         }),
       };
     });
-    await api("GET", "/v9/projects/prj_frontend", c.account);
+    await api("GET", "/v9/projects/prj_web", c.account);
     assert.equal(
       urls[0].searchParams.get("teamId"),
       type === "team" ? "team_fixture" : null,
@@ -224,7 +225,7 @@ test("team and personal HTTP reads use explicit account scope; errors never echo
     json: async () => ({ secret: "PRIVATE_TOKEN" }),
   }));
   await assert.rejects(
-    api("GET", "/v9/projects/prj_frontend", config().account),
+    api("GET", "/v9/projects/prj_web", config().account),
     (e) => /HTTP 403/.test(e.message) && !e.message.includes("PRIVATE_TOKEN"),
   );
 });
@@ -234,8 +235,8 @@ test("every existing identity is verified before any build/upload; scope/name/mi
   c.approved = true;
   for (const wrong of [
     null,
-    { id: "prj_frontend", name: "example-app", accountId: "team_wrong" },
-    { id: "prj_frontend", name: "wrong", accountId: c.account.id },
+    { id: "prj_web", name: "hello-world", accountId: "team_wrong" },
+    { id: "prj_web", name: "wrong", accountId: c.account.id },
   ]) {
     let runs = 0;
     await assert.rejects(
@@ -325,7 +326,7 @@ test("new project is explicit, scoped, conflict-safe and promotes to idempotent 
         ? null
         : {
             id: "prj_created",
-            name: "example-app-docs",
+            name: "hello-world-docs",
             accountId: c.account.id,
           };
     },
@@ -334,14 +335,14 @@ test("new project is explicit, scoped, conflict-safe and promotes to idempotent 
     calls.map((c) => c.method),
     ["GET", "POST"],
   );
-  assert.deepEqual(calls[1].body, { name: "example-app-docs", framework: null });
+  assert.deepEqual(calls[1].body, { name: "hello-world-docs", framework: null });
   assert.equal(next.sites.docs.mode, "existing");
   assert.equal(next.approved, false);
   assert.equal(await createProject(next, "docs", reads(next)), next);
   input(root, c);
-  setup(["example-app"], root);
+  setup(["hello-world"], root);
   writeFileSync(join(root, ".arcnet/project.json"), JSON.stringify(next));
-  assert.match(setup(["example-app"], root), /Already configured/);
+  assert.match(setup(["hello-world"], root), /Already configured/);
 });
 test("personal creation cannot target the token owner implicitly", async () => {
   const c = config("personal");
@@ -360,7 +361,7 @@ test("personal creation cannot target the token owner implicitly", async () => {
 test("static staging rejects symlinks/secrets and preserves explicit routing configuration", (t) => {
   const root = fixture(t),
     c = config();
-  const site = c.sites.frontend;
+  const site = c.sites.web;
   writeFileSync(join(root, site.output, ".env"), "PRIVATE");
   assert.throws(() => stageSite(root, site, c.account), /unsafe static/);
   rmSync(join(root, site.output, ".env"));
@@ -396,7 +397,7 @@ test("preview uploads never request production; new selections cannot deploy or 
   c.sites.docs.creationApproved = true;
   await assert.rejects(inspectReferences(c, reads(c)), /Create it explicitly/);
   input(root, c);
-  setup(["example-app"], root);
+  setup(["hello-world"], root);
   const ci = spawnSync(
     process.execPath,
     [join(root, ".arcnet/run.mjs"), "create", "docs"],
@@ -416,7 +417,7 @@ test("new personal project verifies user before creation and uncertain POST is n
     if (path === "/v2/user") return { user: { id: c.account.id } };
     return method === "GET"
       ? null
-      : { id: "prj_created", name: "example-app-docs", accountId: c.account.id };
+      : { id: "prj_created", name: "hello-world-docs", accountId: c.account.id };
   });
   assert.equal(next.sites.docs.projectId, "prj_created");
   assert.equal(requests.length, 3);
@@ -431,24 +432,25 @@ test("new personal project verifies user before creation and uncertain POST is n
   );
   assert.equal(calls, 1);
 });
-test("Example project reference template plans only landing/docs with no backend or project factory", (t) => {
+test("Hello-world reference template plans only web with no backend or project factory", (t) => {
   const root = fixture(t);
   const example = JSON.parse(
     readFileSync(join(home, "examples/static-sites.vercel.json")),
   );
+  example.repository = "mp-lb/hello-world";
   example.account.id = "team_fixture";
-  example.sites.frontend.projectId = "prj_frontend";
-  example.sites.frontend.projectName = "example-app";
+  example.sites.web.projectId = "prj_web";
+  example.sites.web.projectName = "hello-world";
   writeFileSync(join(root, "arcnet.vercel.json"), JSON.stringify(example));
-  setup(["example-app"], root);
+  setup(["hello-world"], root);
   const config = JSON.parse(readFileSync(join(root, ".arcnet/project.json")));
   const plan = renderPlan(config, root);
   assert.deepEqual(
     plan.sites.map((s) => s.name),
-    ["frontend", "docs"],
+    ["web"],
   );
-  assert.equal(plan.sites[1].output, "apps/docs/build/client");
-  assert.deepEqual(plan.sites[1].outputConfig.routes[0], {
+  assert.equal(plan.sites[0].output, "apps/web/dist");
+  assert.deepEqual(plan.sites[0].outputConfig.routes[0], {
     handle: "filesystem",
   });
   assert.equal(plan.terraform, false);

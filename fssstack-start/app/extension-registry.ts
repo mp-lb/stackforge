@@ -1,5 +1,12 @@
 export const extensionRegistry = [
   {
+    slug: "arcnet",
+    label: "ArcNet",
+    icon: "cloud",
+    accent:
+      "text-sky-300 border-sky-300/60 bg-sky-400/10 shadow-[0_0_10px_rgba(56,189,248,0.18)]",
+  },
+  {
     slug: "clerk",
     label: "Clerk",
     icon: "key",

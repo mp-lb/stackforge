@@ -22,7 +22,8 @@ everything to the shared packages below.
   logging, the event schema, CRUD, env vars, formatting, release process, and
   more.
 - **Extensions** — opt-in setup for MongoDB, Redis, Bull, Clerk + RBAC, S3,
-  Playwright, and custom domains, layered in only when a project needs them.
+  Playwright, custom domains, and [ArcNet deployment](extensions/arcnet.md),
+  layered in only when a project needs them.
 - **React Native setup** — a separate path for mobile.
 - **Project audits** — every shell-based project gets root `audit.md` to guide
   comparison against a fresh project assembled from current Doctrine. Root
@@ -69,8 +70,8 @@ frontends, Next.js where it fits, a tRPC backend, and pnpm workspaces.
 - It is **not a fork-me template**. You don't clone this repo; the agent
   assembles a fresh target repo from the shell plus external scaffolders
   (shadcn CLI for Vite, etc.).
-- It does **not** carry deployment config — deploying the target repo is out
-  of scope for these docs.
+- The base shell carries **no deployment config**. Add the optional
+  [ArcNet extension](extensions/arcnet.md) after the project validates to set up deployment.
 - It assumes **no** authoring tooling is present in your target repo. These docs
   describe how to build the repo, not how this repo is maintained.
 

@@ -21,7 +21,7 @@ const fail = (message) => {
 const read = (p) => readFileSync(p, "utf8");
 const json = (value) => JSON.stringify(value, null, 2) + "\n";
 const usage =
-  "node ~/Work/stackforge/arcnet/setup.mjs <slug> [--dry-run] [--service backend] [--dockerfile Dockerfile] [--repository owner/repo] [--services arcnet.services.json] [--vercel arcnet.vercel.json]";
+  "node <arcnet-source>/setup.mjs <slug> [--dry-run] [--service backend] [--dockerfile .arcnet/Dockerfile] [--repository owner/repo] [--services .arcnet/services.json] [--vercel arcnet.vercel.json]";
 
 export function setup(args, root = process.cwd()) {
   if (args.length === 1 && args[0] === "--help") return usage;
@@ -30,7 +30,7 @@ export function setup(args, root = process.cwd()) {
     fail(
       `Slug must be lowercase, start with a letter and contain at most 23 letters, digits or single hyphens.\n${usage}`,
     );
-  const options = { service: "backend", dockerfile: "Dockerfile" };
+  const options = { service: "backend", dockerfile: ".arcnet/Dockerfile" };
   let dry = false;
   for (let i = 1; i < args.length; i++) {
     if (args[i] === "--dry-run" && !dry) {
@@ -76,8 +76,22 @@ export function setup(args, root = process.cwd()) {
     }
     return target;
   };
-  if (!options.services && existsSync(safe("arcnet.services.json")))
-    options.services = "arcnet.services.json";
+  if (!options.services) {
+    const inputs = [".arcnet/services.json", "arcnet.services.json"].filter(
+      (name) => existsSync(safe(name)),
+    );
+    if (inputs.length > 1)
+      fail(
+        "Both .arcnet/services.json and arcnet.services.json exist. Select one with --services.",
+      );
+    options.services = inputs[0];
+  }
+  if (
+    !options["seen-dockerfile"] &&
+    !existsSync(safe(options.dockerfile)) &&
+    existsSync(safe("Dockerfile"))
+  )
+    options.dockerfile = "Dockerfile";
   const zapPath = safe("zap.yaml");
   if (!existsSync(zapPath))
     fail("Run setup from a target repository containing zap.yaml.");
@@ -98,7 +112,7 @@ export function setup(args, root = process.cwd()) {
       options["seen-repository"]
     )
       fail(
-        "Vercel-only input cannot be combined with Terraform/service flags or arcnet.services.json.",
+        "Vercel-only input cannot be combined with Terraform/service flags or a services.json input.",
       );
     if (
       !existsSync(safe("pnpm-lock.yaml")) ||

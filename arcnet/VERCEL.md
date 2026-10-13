@@ -9,14 +9,15 @@ API or package release is needed. The Terraform-managed profile remains separate
 
 Install StackForge's authoring dependencies once with `zap t arcnet-setup`.
 In the target repo, commit `arcnet.vercel.json`: start from
-[the static-sites example](examples/static-sites.vercel.json), replace account and landing
-project identifiers with actual values, and choose existing/new mode for docs.
+[the static-sites example](examples/static-sites.vercel.json), replace the repository, account and web
+project identifiers with actual values. It selects only the hello-world reference
+project’s Vite web app; choose existing/new mode for your destination.
 The example rejects its `REPLACE` values rather than guessing a live target.
 
 From the target repository root:
 
 ```sh
-node ~/Work/stackforge/arcnet/setup.mjs example-app
+node ~/Work/stackforge/arcnet/setup.mjs hello-world
 ```
 
 The slug must match `zap.yaml`. `--dry-run` writes nothing; `--vercel path.json`
@@ -55,9 +56,8 @@ temporary `.vercel/output/static`; no repository source, `.git`, environment fil
 symlinks or MyShop application directory is uploaded. `outputConfig` is an explicit
 static Build Output API v3 config. Review its routing against the current site:
 it controls the new deployment's routes, while leaving provider project settings
-unchanged. The example translates the landing's SPA fallback/HTML/trailing-slash
-behavior and keeps docs/search/Markdown files separate; live route verification
-is still required. The profile supports static sites, not SSR/functions.
+unchanged. The hello-world example uses a filesystem-first SPA fallback;
+live route verification is still required. The profile supports static sites, not SSR/functions.
 
 After target approval, set `approved: true` locally for the preview; commit that
 flag only after approving the production trigger. `preview` uploads
@@ -80,7 +80,7 @@ Only after specific creation/cost approval, set that site's `creationApproved`
 to true and run locally:
 
 ```sh
-node .arcnet/run.mjs create docs
+node .arcnet/run.mjs create web
 ```
 
 This is a **mutating command**, not part of setup or the offline checks. It first
