@@ -20,13 +20,13 @@ For a project containing only static Vercel sites, the current implementation us
 
 ## Install and validate
 
-The TypeScript package is implemented in tools. Its initial npm publication is currently blocked by registry authentication; the `0.1.0` install commands below become available once that release succeeds.
+The TypeScript package is published from tools.
 
 From the **target repository root**, preview and install the published CLI configuration. No Stackforge checkout is needed:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.1.0 setup <project-slug> --dry-run
-pnpm dlx @mp-lb/arcnet@0.1.0 setup <project-slug>
+pnpm dlx @mp-lb/arcnet@0.2.0 setup <project-slug> --dry-run
+pnpm dlx @mp-lb/arcnet@0.2.0 setup <project-slug>
 pnpm install
 pnpm exec arcnet check
 ```
@@ -94,7 +94,7 @@ Prerequisites for generation: Node 22+, a pinned pnpm version, a GitHub reposito
 From the target repository root:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.1.0 setup my-project
+pnpm dlx @mp-lb/arcnet@0.2.0 setup my-project
 ```
 
 Replace `my-project` with the `project:` slug in `zap.yaml`. GitHub owner/repo is read from `origin`; use `--repository owner/repo` when no GitHub origin exists. Use `--dry-run` for a read-only preview. `--service` and `--dockerfile` override the default backend name/path (`backend` and `.arcnet/Dockerfile`). An existing root `Dockerfile` is accepted as a compatibility fallback. Docker builds use the repository root as their context, so `COPY` paths stay relative to the repo. Slugs are lowercase, start with a letter and have at most 23 characters, fitting the `arcnet-<slug>` GCP project convention.
@@ -148,6 +148,16 @@ The existing `github-ci` module grants project Editor, bucket-scoped Storage Adm
 
 This repository owns sanitized configuration and onboarding. Keep real network identifiers in the appropriate private configuration and operator credentials outside Git.
 
+## Layered secrets
+
+Install `@mp-lb/arcnet` in the project root, then use `arcnet secrets add` for the standard Forum encrypted JSON and `arcnet secrets init` when project-specific values are needed. Setup prompts for your Forum encryption password, creates a file-specific recipient, and sends its key directly to the chosen GitHub repository through `gh`. Reuse an existing GitHub secret with `--existing-key`. Local `fm` and `gh` sessions must already be authenticated.
+
+`.arcnet/secrets.json` records ordered source references, snapshot provenance, key environment names and consumer mappings. Later sources override earlier ones. The `deploy` consumer selects operator credentials; application selection remains in each service's `zap.yaml` env list. Publishing can have its own `publish` consumer. `arcnet deploy` loads the configuration automatically.
+
+Run `arcnet secrets sync` after remote edits and commit the refreshed encrypted snapshots. CI does not need a Forum login: it decrypts these reviewed snapshots using each source's GitHub key. `arcnet env check` verifies decryption and mappings without printing values. For other commands, use `arcnet env run --consumer publish -- <command>`; only selected values reach the child. Setup/sync generate a validation workflow and add source-key references to existing ArcNet workflow steps.
+
+A file's decryption token does not authorize fetching it from Forum. Live loading is available with `arcnet env ... --live` and an authenticated `fm` CLI; snapshots are the default CI approach. See the [package secrets guide and configuration example](https://github.com/mp-lb/tools/tree/main/packages/arcnet#layered-secrets) and [command reference](https://github.com/mp-lb/tools/blob/main/packages/arcnet/docs/public/commands.md).
+
 ## Maintainer validation
 
 Development and release happen in the tools repo under `packages/arcnet`. Run its typecheck, tests and build there. Tests cover dry runs, conflict handling, reruns, package layout, Vercel identity checks and published-engine Terraform rendering without applying infrastructure. The package release follows the tools repo’s Changesets workflow.
@@ -163,7 +173,7 @@ In the target repo, add `.arcnet/vercel.json`: start from [the static-sites exam
 From the target repository root:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.1.0 setup hello-world
+pnpm dlx @mp-lb/arcnet@0.2.0 setup hello-world
 ```
 
 The slug must match `zap.yaml`. `--dry-run` writes nothing; `--vercel path.json` selects another input file. Mixed Terraform/Vercel profiles and existing workflow conflicts fail without overwrites. No backend Dockerfile is needed. Setup leaves `zap.yaml` unchanged and generates `.arcnet/project.json`, an ignore file and `.github/workflows/deploy-arc.yaml`. It pins the CLI in the root manifest; run `pnpm install` and commit the updated lockfile. The legacy root `arcnet.vercel.json` is still accepted, but if both inputs exist you must select one explicitly.
@@ -202,9 +212,9 @@ A successful response records the exact ID locally, changes the site to existing
 
 The generated workflow validates offline on pushes to main. Deployment stays skipped until approved and every site is an existing reference. It then uses the target's own pinned pnpm, builds only selected sites, and uploads with `VERCEL_TOKEN` from the protected `arcnet-production` environment. No OIDC, GCP, Terraform, Cloudflare token or new state bucket is required.
 
-The runner's `VERCEL_TOKEN` is a process interface. Projects with an existing secret loader can export the selected token to the runner through that loader; the generic workflow does not install encrypted-secret integration.
+The runner's `VERCEL_TOKEN` is a process interface. Projects with an existing secret loader can export the selected token to the runner through that loader; use the layered-secrets setup above to wire encrypted sources into that workflow.
 
-Use a dedicated hostname as the docs location convention, initially the verified provider hostname. The docs app must build and deploy without a landing app, and a landing app must build without docs. A cross-app link is optional and should be derived from the verified hostname during onboarding. Custom docs.<project-domain> is optional and requires separately authorized ownership/DNS verification. A single location-to-project orchestration command, standard build/output/routing defaults, and reusable encrypted-source workflow integration remain separately scoped tooling gaps; this CLI does not yet claim to automate those steps from a URL alone.
+Use a dedicated hostname as the docs location convention, initially the verified provider hostname. The docs app must build and deploy without a landing app, and a landing app must build without docs. A cross-app link is optional and should be derived from the verified hostname during onboarding. Custom docs.<project-domain> is optional and requires separately authorized ownership/DNS verification. A single location-to-project orchestration command and standard build/output/routing defaults remain separately scoped tooling gaps; this CLI does not yet claim to automate those steps from a URL alone.
 
 ### Ownership/import is separate
 

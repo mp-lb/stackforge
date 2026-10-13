@@ -8,7 +8,7 @@ Set up an ArcNet environment once, connect each project to it, then push to GitH
 
 ### Environment Setup
 
-Create the provider accounts, choose the environment slug and base domain, collect credentials in a secrets JSON file, and configure GCP and shared-service access. Full environment automation and the secrets-file handoff are still to be implemented. [Full environment setup details](environment/setup.md).
+Create the provider accounts, choose the environment slug and base domain, collect credentials in a secrets JSON file, and configure GCP and shared-service access. Environment bootstrap is still manual; the CLI supports encrypted Forum sources and GitHub key provisioning. [Full environment setup details](environment/setup.md).
 
 ### Project Setup
 
@@ -28,15 +28,19 @@ your existing repo/
 │   ├── project.json                 GENERATED — project identity, approval and CI auth
 │   ├── network.yaml                 GENERATED — environment/network settings to review
 │   ├── .gitignore                   GENERATED — excludes local secrets and Terraform files
-│   └── env.production.json          OPTIONAL — public application environment values
+│   ├── env.production.json          OPTIONAL — public application environment values
+│   ├── secrets.json                 OPTIONAL — ordered Forum sources and consumer mappings
+│   └── secrets/*.json.enc           GENERATED — encrypted snapshots for CI
 ├── zap.yaml                        UPDATED — deployment declaration
 ├── package.json                    UPDATED — pins @mp-lb/arcnet
 └── pnpm-lock.yaml                   UPDATED — run pnpm install after setup
 ```
 
-The package owns the shared TypeScript CLI, runners and Terraform modules. Its first npm release is awaiting a publishing-credential fix. Projects do not copy those files or maintain a second package manifest/lockfile. The workflow calls `pnpm exec arcnet`. [File details](SETUP.md#the-pieces-files-you-add-to-a-project).
+The published package owns the shared TypeScript CLI, runners and Terraform modules. Projects do not copy those files or maintain a second package manifest/lockfile. The workflow calls `pnpm exec arcnet`. [File details](SETUP.md#the-pieces-files-you-add-to-a-project).
 
 Static Vercel references use `.arcnet/vercel.json` as input and only generate `project.json`, `.gitignore` and the workflow; no network file or Dockerfile is needed. Both profiles install the same CLI package.
+
+Secrets setup also adds `.github/workflows/validate-arcnet-secrets.yaml`. Each source has its own GitHub decryption key. Sources merge in order, with project values overriding the standard layer; service whitelists select what reaches each app. [Secrets setup](SETUP.md#layered-secrets).
 
 ## What does ArcNet support?
 

@@ -48,3 +48,7 @@ Do not delete generic secret-loading or release tooling simply because it mentio
 Keep the report in the audit response, or under `.arcnet/audits/` if a saved report is requested. Summarize missing files, configuration drift, forbidden leftovers, justified exceptions and unverified checks. Give each finding its evidence, expected state and smallest proposed fix.
 
 Distinguish repository evidence from live infrastructure verification. Do not claim that DNS, cloud permissions or deployed services are healthy without checking them. Do not deploy, apply Terraform, rotate credentials, delete resources or run manual browser tests as part of this document review. Record any required operational checks separately.
+
+## Secrets
+
+When layered secrets are enabled, verify `.arcnet/secrets.json` source order, individual GitHub key names, encrypted snapshot checksums and consumer mappings. Run `arcnet env check` with authorized keys. Application whitelists stay in `zap.yaml`; operator and publishing keys must only be selected by their own consumers. Refresh snapshots after remote changes. Remove superseded copied secret-loader scripts, duplicate ciphertext/provenance files outside `.arcnet`, and plaintext outputs after verifying the replacement in CI.
