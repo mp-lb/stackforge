@@ -1,0 +1,44 @@
+{
+  "name": "@example/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "main": "dist/main.js",
+  "scripts": {
+    "dev": "pnpm build && electron .",
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "package": "pnpm build && electron-builder --mac --publish never"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "electron": "35.0.0",
+    "electron-builder": "26.8.1",
+    "tsup": "8.5.0",
+    "typescript": "^5.9"
+  },
+  "build": {
+    "appId": "dev.example.desktop",
+    "productName": "Example",
+    "directories": {
+      "output": "out"
+    },
+    "files": [
+      "dist/**/*"
+    ],
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.productivity",
+      "hardenedRuntime": true,
+      "notarize": true
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "owner",
+      "repo": "repository"
+    }
+  }
+}

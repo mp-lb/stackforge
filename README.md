@@ -28,3 +28,5 @@ pnpm -C authoring-tools build:docs
 ```
 
 The repository root is not an npm project.
+
+For a hosted web app that also runs in Electron, see the copyable files and short checklist in [`guides/electron/`](guides/electron/README.md).

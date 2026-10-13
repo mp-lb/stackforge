@@ -7,3 +7,5 @@ Read the extension file for the capability you are adding and apply its local
 project wiring. Extension docs should cover the app-level setup they require:
 packages, code changes, local services, environment variables, and Zapper
 configuration. Cloud deployment is out of scope for these docs.
+
+For a hosted web app in an Electron window, see [Electron](./electron.md).
