@@ -7,7 +7,8 @@
     "typecheck:docs": "tsc --project tsconfig.docs.json --noEmit",
     "lint:docs": "eslint --config eslint.docs.config.mjs scripts-src tests tsup.docs.config.ts vitest.config.ts",
     "test:docs": "vitest run --config vitest.config.ts",
-    "check:docs": "pnpm lint:docs && pnpm typecheck:docs && pnpm test:docs && pnpm build:docs"
+    "check:docs": "pnpm lint:docs && pnpm typecheck:docs && pnpm test:docs && pnpm build:docs",
+    "generate:audit-reference": "tsx scripts-src/generate-audit-reference.ts"
   },
   "devDependencies": {
     "@eslint/js": "9.39.4",
