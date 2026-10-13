@@ -176,3 +176,4 @@ if (process.argv.includes("--scaffold-frameworks")) {
   }
 }
 console.log(destination);
+import { execFileSync } from "node:child_process";
