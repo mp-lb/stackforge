@@ -34,13 +34,22 @@ One workflow deploys the whole project. Most files live in `.arcnet/`; `zap.yaml
 
 ## What does ArcNet support?
 
-| Service | Shared or per project? |
-| --- | --- |
-| Vercel websites | Per project |
-| Cloud Run backends | Per project |
-| MongoDB | Shared |
-| Redis | Per project |
-| Bull workers | Per project |
-| S3 storage | Per project |
+| Service            | Shared or per project? |
+| ------------------ | ---------------------- |
+| Vercel websites    | Per project            |
+| Cloud Run backends | Per project            |
+| MongoDB            | Shared                 |
+| Redis              | Per project            |
+| Bull workers       | Per project            |
+| S3 storage         | Per project            |
 
 Shared services use the project slug as the isolation boundary, with project-scoped namespaces and credentials.
+
+## Layers
+
+1. **Accounts** — company accounts, billing, domain ownership and initial credentials.
+2. **ArcNet environment** — shared infrastructure, Terraform state, DNS and secret distribution.
+3. **Project** — deployment files, service domains and isolated service bindings.
+4. **Delivery** — GitHub Actions builds and deploys on pushes to main.
+
+[Create a new ArcNet environment](ENVIRONMENT.md) · [Add a project](SETUP.md)

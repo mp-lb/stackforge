@@ -1,5 +1,7 @@
 # ArcNet setup guide
 
+This guide onboards a project into an existing environment. Starting a new company/network? Follow [environment setup](ENVIRONMENT.md) first.
+
 Use this guide to add ArcNet deployment to an existing, locally validated project. **FSS Stack is not required.** ArcNet is MAP Lab's deployment conventions and onboarding around Zap Arc, the deployment engine in Zapper; the static Vercel adapter uses Vercel directly.
 
 A `zap.yaml` alone is not sufficient for the current installer. It also requires Node 22+, a pnpm project with an exact `packageManager` and committed lockfile, a GitHub repository, and explicit deployment targets/build instructions. It does not require FSS Stack packages, scaffolding or application architecture. Projects using other package managers need installer/workflow adaptation; they are not supported unchanged merely because they have a Zap file.
