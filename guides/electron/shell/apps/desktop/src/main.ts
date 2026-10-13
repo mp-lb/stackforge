@@ -5,6 +5,8 @@ const appUrl = !app.isPackaged && process.env.DESKTOP_DEV_URL ? process.env.DESK
 const allowedOrigin = new URL(appUrl).origin;
 
 app.whenReady().then(() => {
+  // Keep Electron's development icon; packaged macOS apps use the bundle icon.
+  // Do not override it with app.dock.setIcon().
   const window = new BrowserWindow({ width: 1280, height: 850, webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: true } });
   window.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith('https://')) void shell.openExternal(url);

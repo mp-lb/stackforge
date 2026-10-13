@@ -8,7 +8,8 @@
     "dev": "pnpm build && electron .",
     "build": "tsup",
     "typecheck": "tsc --noEmit",
-    "package": "pnpm build && electron-builder --mac --publish never"
+    "package": "pnpm build && electron-builder --mac --publish never",
+    "package:local": "pnpm build && electron-builder --mac --dir --publish never -c.mac.identity=null -c.mac.notarize=false -c.mac.hardenedRuntime=false"
   },
   "devDependencies": {
     "@types/node": "^22",
@@ -21,7 +22,8 @@
     "appId": "dev.example.desktop",
     "productName": "Example",
     "directories": {
-      "output": "out"
+      "output": "out",
+      "buildResources": "assets"
     },
     "files": [
       "dist/**/*"
