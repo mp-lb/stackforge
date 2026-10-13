@@ -282,6 +282,12 @@ Only run shadcn component installs for frontend apps that actually exist, and us
 
 ## Create context files
 
+Keep the shell's root `audit.md` in every target project. It instructs future
+agents to assemble a fresh reference project from current Doctrine, compare
+root files and folder structure first, and write `tmp/audit-report.md`. Include
+a pointer to `audit.md` in the project's context source blocks so agents can
+find the process. Keep `/tmp/` gitignored for local audit reports.
+
 Create the project's `agents-md/` source blocks and `agents-md/index.md`, then
 build the committed base context:
 
@@ -296,6 +302,10 @@ cloning, a developer who does not need private context can run
 `zap task context-build -- ~/some/global.md`.
 
 ## Validate
+
+Confirm the target has root `audit.md`, a README/context pointer to it, and a
+root `/tmp/` ignore rule. Setup installs the audit process; it does not run an
+audit of the newly created project.
 
 Run validation after all selected apps and packages exist:
 

@@ -24,6 +24,15 @@ everything to the shared packages below.
 - **Extensions** — opt-in setup for MongoDB, Redis, Bull, Clerk + RBAC, S3,
   Playwright, and custom domains, layered in only when a project needs them.
 - **React Native setup** — a separate path for mobile.
+- **Project audits** — every shell-based project gets root `audit.md` to guide
+  comparison against a fresh project assembled from current Doctrine. Root
+  configuration and folder structure come first; findings distinguish justified
+  divergence, missing rationale, and drift in `tmp/audit-report.md`.
+
+Existing projects can adopt the audit process by fetching
+`shell/audit.md` from the `mp-lb/fssstack` store into root `audit.md` (review any
+existing file before replacing it), linking it from their README and agent
+context sources, and adding `/tmp/` to their root `.gitignore`.
 
 ## What it configures
 

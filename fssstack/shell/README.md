@@ -55,6 +55,13 @@ The Zapper task wrapper also runs the standard lint and typecheck flow:
 zap task check
 ```
 
+## Audit
+
+Ask a coding agent to follow [audit.md](audit.md) to compare this project with a
+fresh FSS Stack reference project. The audit prioritizes root configuration and
+folder structure, distinguishes justified differences from drift, and writes
+its findings to `tmp/audit-report.md` without applying fixes.
+
 ## Workspace
 
 - `apps/` contains runnable services and frontend applications.
