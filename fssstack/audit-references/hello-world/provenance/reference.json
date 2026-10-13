@@ -4,7 +4,8 @@
     "path": "fssstack-cli/examples/hello-world.json",
     "sha256": "2b67f0afc174976ffa40101628a1e732926c75c0b026373f5371327ee8c5b802"
   },
-  "stackforgeRevision": "0eeb61642c96365ac011d239dc9eb2deb4d473fb",
+  "sourceRevision": "0eeb61642c96365ac011d239dc9eb2deb4d473fb",
+  "freshnessRule": "Current source files must match stackforge-inputs.json; a reference-only commit does not invalidate this baseline.",
   "generator": {
     "fssstackCli": "0.2.0",
     "shadcn": "4.21.4",
@@ -16,6 +17,11 @@
     "frontendClients": ["web:react-vite", "admin:react-nextjs", "docs:react-fumadocs"],
     "libraryPackages": ["sdk", "shared"],
     "extensions": ["clerk", "mongodb"]
+  },
+  "extensionCoverage": {
+    "clerk": "Web provider wiring is present. API is a node:http example and does not yet apply Clerk request authentication.",
+    "mongodb": "A MongoDB helper and configuration are present; no route persists data in this HelloWorld reference.",
+    "liveChecks": "Not run: this reference contains no credentials and no hosted service is contacted."
   },
   "forumSource": [
     {"path": "SETUP_PROCESS.md", "sha256": "ba1de334435f4ddf964088141ed4060f508e88b2e42d8a05b266500144d6aeb6"},

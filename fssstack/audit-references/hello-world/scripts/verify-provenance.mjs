@@ -1,11 +1,22 @@
 import { createHash } from "node:crypto";
+import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { relative, resolve } from "node:path";
 
 const value = (flag) => process.argv.at(process.argv.indexOf(flag) + 1);
-const root = resolve(value("--stackforge-root") ?? "");
-if (!root || !process.argv.includes("--stackforge-root")) {
+const suppliedRoot = value("--stackforge-root");
+if (!suppliedRoot || !process.argv.includes("--stackforge-root"))
   throw new Error("Pass --stackforge-root <absolute-path>.");
+if (!suppliedRoot.startsWith("/"))
+  throw new Error("--stackforge-root must be an absolute path.");
+const root = resolve(suppliedRoot);
+for (const marker of [
+  ".git",
+  "fssstack",
+  "fssstack-cli/examples/hello-world.json",
+]) {
+  if (!existsSync(resolve(root, marker)))
+    throw new Error(`Not a Stackforge checkout: missing ${marker}.`);
 }
 
 const reference = resolve(root, "fssstack/audit-references/hello-world");
@@ -13,13 +24,35 @@ const provenance = JSON.parse(
   await readFile(resolve(reference, "provenance/reference.json"), "utf8"),
 );
 const sha256 = async (path) =>
-  createHash("sha256").update(await readFile(path)).digest("hex");
+  createHash("sha256")
+    .update(await readFile(path))
+    .digest("hex");
+const verifyManifest = async (manifestPath, base, label) => {
+  const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+  for (const item of manifest.files) {
+    const file = resolve(base, item.path);
+    if (!existsSync(file) || (await sha256(file)) !== item.sha256) {
+      throw new Error(`${label} differs: ${item.path}`);
+    }
+  }
+};
 
 if (
-  (await sha256(resolve(root, provenance.input.path))) !== provenance.input.sha256
+  (await sha256(resolve(root, provenance.input.path))) !==
+  provenance.input.sha256
 ) {
   throw new Error("HelloWorld input differs from this reference.");
 }
+await verifyManifest(
+  resolve(reference, "provenance/stackforge-inputs.json"),
+  root,
+  "Stackforge source",
+);
+await verifyManifest(
+  resolve(reference, "provenance/output-integrity.json"),
+  reference,
+  "Generated reference output",
+);
 
 for (const source of provenance.forumSource) {
   const snapshot = resolve(
@@ -31,5 +64,13 @@ for (const source of provenance.forumSource) {
     throw new Error(`Captured Forum source changed: ${source.path}`);
   }
 }
+const validation = JSON.parse(
+  await readFile(resolve(reference, "provenance/validation.json"), "utf8"),
+);
+if (validation.status !== "passed" || !validation.commands?.length) {
+  throw new Error("Reference has no successful validation record.");
+}
 
-console.log("HelloWorld audit reference provenance is valid.");
+console.log(
+  `HelloWorld audit reference provenance is valid (${relative(root, reference)}).`,
+);
