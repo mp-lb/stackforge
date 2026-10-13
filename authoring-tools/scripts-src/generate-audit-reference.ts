@@ -19,6 +19,10 @@ type Input = {
   slug: string;
   backendServices: string[];
   libraryPackages: string[];
+  frontendClients: Array<{
+    slug: string;
+    type: "react-vite" | "react-nextjs" | "react-fumadocs";
+  }>;
 };
 
 const argument = (flag: string) => {
@@ -114,4 +118,61 @@ rmSync(resolve(destination, "packages/example-cli"), {
   recursive: true,
   force: true,
 });
+if (process.argv.includes("--scaffold-frameworks")) {
+  const run = (args: string[], cwd = destination) =>
+    execFileSync("npx", args, { cwd, stdio: "inherit" });
+  for (const client of input.frontendClients) {
+    if (client.type === "react-vite") {
+      run([
+        "-y",
+        "shadcn@4.21.4",
+        "init",
+        "--preset",
+        "b1a1M7Tvs",
+        "--template",
+        "vite",
+        "--cwd",
+        "apps",
+        "--name",
+        client.slug,
+        "--yes",
+      ]);
+    } else if (client.type === "react-nextjs") {
+      run([
+        "-y",
+        "shadcn@4.21.4",
+        "init",
+        "--preset",
+        "b1a1M7Tvs",
+        "--template",
+        "next",
+        "--cwd",
+        "apps",
+        "--name",
+        client.slug,
+        "--no-monorepo",
+        "--base",
+        "radix",
+        "--yes",
+      ]);
+    } else {
+      run(
+        [
+          "-y",
+          "create-fumadocs-app@16.2.18",
+          client.slug,
+          "--template",
+          "react-router",
+          "--search",
+          "orama",
+          "--pm",
+          "pnpm",
+          "--no-git",
+          "--yes",
+        ],
+        resolve(destination, "apps"),
+      );
+    }
+  }
+}
 console.log(destination);
