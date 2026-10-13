@@ -40,7 +40,7 @@ The published package owns the shared TypeScript CLI, runners and Terraform modu
 
 Static Vercel references use `.arcnet/vercel.json` as input and only generate `project.json`, `.gitignore` and the workflow; no network file or Dockerfile is needed. Both profiles install the same CLI package.
 
-Secrets setup also adds `.github/workflows/validate-arcnet-secrets.yaml`. Each source has its own GitHub decryption key. Sources merge in order, with project values overriding the standard layer; service whitelists select what reaches each app. [Secrets setup](SETUP.md#layered-secrets).
+Secrets setup also adds `.github/workflows/validate-arcnet-secrets.yaml`. Each project gets its own GitHub decryption key for the shared standard file, plus a separate key for its project file. Sources merge in order, with project values overriding the standard layer; service whitelists select what reaches each app. [Secrets setup](SETUP.md#layered-secrets).
 
 ## What does ArcNet support?
 

@@ -25,8 +25,8 @@ The TypeScript package is published from tools.
 From the **target repository root**, preview and install the published CLI configuration. No Stackforge checkout is needed:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.2.0 setup <project-slug> --dry-run
-pnpm dlx @mp-lb/arcnet@0.2.0 setup <project-slug>
+pnpm dlx @mp-lb/arcnet@0.2.1 setup <project-slug> --dry-run
+pnpm dlx @mp-lb/arcnet@0.2.1 setup <project-slug>
 pnpm install
 pnpm exec arcnet check
 ```
@@ -94,7 +94,7 @@ Prerequisites for generation: Node 22+, a pinned pnpm version, a GitHub reposito
 From the target repository root:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.2.0 setup my-project
+pnpm dlx @mp-lb/arcnet@0.2.1 setup my-project
 ```
 
 Replace `my-project` with the `project:` slug in `zap.yaml`. GitHub owner/repo is read from `origin`; use `--repository owner/repo` when no GitHub origin exists. Use `--dry-run` for a read-only preview. `--service` and `--dockerfile` override the default backend name/path (`backend` and `.arcnet/Dockerfile`). An existing root `Dockerfile` is accepted as a compatibility fallback. Docker builds use the repository root as their context, so `COPY` paths stay relative to the repo. Slugs are lowercase, start with a letter and have at most 23 characters, fitting the `arcnet-<slug>` GCP project convention.
@@ -158,6 +158,8 @@ Store project-specific Forum files at `mp-lb/mp-lb:/projects/<project-slug>/secr
 
 Run `arcnet secrets sync` after remote edits and commit the refreshed encrypted snapshots. CI does not need a Forum login: it decrypts these reviewed snapshots using each source's GitHub key. `arcnet env check` verifies decryption and mappings without printing values. For other commands, use `arcnet env run --consumer publish -- <command>`; only selected values reach the child. Setup/sync generate a validation workflow and add source-key references to existing ArcNet workflow steps.
 
+For a first local Terraform deployment, run `arcnet plan --password` and `arcnet deploy --password` in your terminal. GitHub does not reveal its stored file keys; these commands prompt once for the Forum encryption password and decrypt the committed snapshots locally. `arcnet env check --password` checks them without printing values. CI continues to use per-file GitHub keys, not a Forum password.
+
 A file's decryption token does not authorize fetching it from Forum. Live loading is available with `arcnet env ... --live` and an authenticated `fm` CLI; snapshots are the default CI approach. See the [package secrets guide and configuration example](https://github.com/mp-lb/tools/tree/main/packages/arcnet#layered-secrets) and [command reference](https://github.com/mp-lb/tools/blob/main/packages/arcnet/docs/public/commands.md).
 
 ## Maintainer validation
@@ -175,7 +177,7 @@ In the target repo, add `.arcnet/vercel.json`: start from [the static-sites exam
 From the target repository root:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.2.0 setup hello-world
+pnpm dlx @mp-lb/arcnet@0.2.1 setup hello-world
 ```
 
 The slug must match `zap.yaml`. `--dry-run` writes nothing; `--vercel path.json` selects another input file. Mixed Terraform/Vercel profiles and existing workflow conflicts fail without overwrites. No backend Dockerfile is needed. Setup leaves `zap.yaml` unchanged and generates `.arcnet/project.json`, an ignore file and `.github/workflows/deploy-arc.yaml`. It pins the CLI in the root manifest; run `pnpm install` and commit the updated lockfile. The legacy root `arcnet.vercel.json` is still accepted, but if both inputs exist you must select one explicitly.
