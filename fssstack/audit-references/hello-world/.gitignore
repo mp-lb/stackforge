@@ -1,0 +1,9 @@
+node_modules
+dist
+coverage
+/tmp/
+.env
+.zap
+*.tsbuildinfo
+AGENTS.local.md
+AGENTS_WORKTREE.md
