@@ -619,7 +619,7 @@
     },
     {
       "path": "scripts/verify-provenance.mjs",
-      "sha256": "609262ea7e96ad8dc567ce30215779ef039d85b69aa62230699c9d9045b45ffc"
+      "sha256": "eb49d2e1ec0e71d5fb3fd1cfcec676f18ed65d3a56532cdb3099c4a228157d01"
     },
     {
       "path": "zap.yaml",
