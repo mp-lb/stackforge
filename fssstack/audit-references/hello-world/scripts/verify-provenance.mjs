@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { relative, resolve } from "node:path";
@@ -10,13 +11,16 @@ if (!suppliedRoot || !process.argv.includes("--stackforge-root"))
 if (!suppliedRoot.startsWith("/"))
   throw new Error("--stackforge-root must be an absolute path.");
 const root = resolve(suppliedRoot);
-for (const marker of [
-  ".git",
-  "fssstack",
-  "fssstack-cli/examples/hello-world.json",
-]) {
+for (const marker of ["fssstack", "fssstack-cli/examples/hello-world.json"]) {
   if (!existsSync(resolve(root, marker)))
     throw new Error(`Not a Stackforge checkout: missing ${marker}.`);
+}
+try {
+  execFileSync("git", ["-C", root, "rev-parse", "--is-inside-work-tree"], {
+    stdio: "ignore",
+  });
+} catch {
+  throw new Error("--stackforge-root must be a Git Stackforge checkout.");
 }
 
 const reference = resolve(root, "fssstack/audit-references/hello-world");
