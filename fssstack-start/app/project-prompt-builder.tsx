@@ -14,6 +14,7 @@ import {
   Info,
   KeyRound,
   ListChecks,
+  Monitor,
   Palette,
   Plus,
   Trash2,
@@ -59,6 +60,7 @@ import {
   type ProjectPromptConfig,
 } from "./project-schema";
 import { buildPrompt, defaultIncludePrerequisites } from "./project-prompt";
+import { extensionRegistry } from "./extension-registry";
 
 type FrontendType = ProjectPromptConfig["frontendClients"][number]["type"];
 type ExtensionSlug = ProjectPromptConfig["extensions"][number];
@@ -72,49 +74,14 @@ const frontendTypes: { label: string; value: FrontendType }[] = [
 const frontendTypeLabel = (value: FrontendType) =>
   frontendTypes.find((type) => type.value === value)?.label ?? value;
 
-const extensionOptions: Array<{
-  slug: ExtensionSlug;
-  label: string;
-  accent: string;
-  Icon: React.ComponentType<{ className?: string; "aria-hidden"?: true }>;
-}> = [
-  {
-    slug: "clerk",
-    label: "Clerk",
-    accent: "text-violet-300 border-violet-300/60 bg-violet-400/10 shadow-[0_0_10px_rgba(167,139,250,0.18)]",
-    Icon: KeyRound,
-  },
-  {
-    slug: "mongodb",
-    label: "MongoDB",
-    accent: "text-emerald-300 border-emerald-300/60 bg-emerald-400/10 shadow-[0_0_10px_rgba(52,211,153,0.18)]",
-    Icon: Database,
-  },
-  {
-    slug: "s3",
-    label: "S3",
-    accent: "text-sky-300 border-sky-300/60 bg-sky-400/10 shadow-[0_0_10px_rgba(56,189,248,0.18)]",
-    Icon: Cloud,
-  },
-  {
-    slug: "bull",
-    label: "BullMQ",
-    accent: "text-lime-300 border-lime-300/60 bg-lime-400/10 shadow-[0_0_10px_rgba(190,242,100,0.18)]",
-    Icon: Boxes,
-  },
-  {
-    slug: "playwright",
-    label: "Playwright",
-    accent: "text-fuchsia-300 border-fuchsia-300/60 bg-fuchsia-400/10 shadow-[0_0_10px_rgba(240,171,252,0.18)]",
-    Icon: ListChecks,
-  },
-  {
-    slug: "redis",
-    label: "Redis",
-    accent: "text-red-300 border-red-300/60 bg-red-400/10 shadow-[0_0_10px_rgba(248,113,113,0.18)]",
-    Icon: Database,
-  },
-];
+const extensionIcons = {
+  key: KeyRound,
+  database: Database,
+  cloud: Cloud,
+  boxes: Boxes,
+  list: ListChecks,
+  monitor: Monitor,
+};
 
 const includePrerequisitesStorageKey = "fssstack-start.include-prerequisites";
 const servicesHelpOpenStorageKey = "fssstack-start.services-help-open";
@@ -735,8 +702,9 @@ export default function ProjectPromptBuilder() {
           </CardHeader>
           <CardContent className="py-3">
             <div className="flex flex-wrap gap-2">
-              {extensionOptions.map(({ slug, label, accent, Icon }) => {
+              {extensionRegistry.map(({ slug, label, accent, icon }) => {
                 const selected = selectedExtensions.has(slug);
+                const Icon = extensionIcons[icon];
 
                 return (
                   <button

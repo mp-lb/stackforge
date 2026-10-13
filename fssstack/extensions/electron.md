@@ -9,7 +9,18 @@ curl --fail --location --output apps/desktop/src/main.ts https://raw.githubuserc
 
 Copy the remaining [desktop package files](https://github.com/mp-lb/stackforge/tree/main/guides/electron/shell/apps/desktop) to the same relative paths: `package.json`, `tsconfig.json`, `tsup.config.ts`, and `.gitignore`. Whole-file copies are appropriate only when those paths are new. If an app already has an Electron package, read the examples and adapt it instead of overwriting files.
 
-Edit the copied files for the project: set the package name, `build.appId`, `build.productName`, GitHub publish owner/repo, and the hosted HTTPS URL in `src/main.ts`. Add a macOS icon and set `build.mac.icon` before a public release. If pnpm blocks Electron or esbuild install scripts, add their build approvals to `pnpm-workspace.yaml`. Run `pnpm install`, then typecheck and build the desktop package. Set `DESKTOP_DEV_URL` when running against a local frontend; do not assume a port.
+Edit the copied files for the project: set the package name, `build.appId`, `build.productName`, GitHub publish owner/repo, and the hosted HTTPS URL in `src/main.ts`. Add a macOS icon and set `build.mac.icon` before a public release. Before installing, approve the copied package's native install scripts in `pnpm-workspace.yaml`:
+
+```yaml
+allowBuilds:
+  electron: true
+  electron-winstaller: true
+  esbuild: true
+```
+
+Merge these entries with existing `allowBuilds`; do not replace other approvals. Run `pnpm install`, then **verify the Electron binary** with `pnpm --filter <desktop-package> exec electron --version` before enabling the desktop Zap profile. Typecheck and build the desktop package too. A TypeScript build alone does not prove that Electron downloaded its binary. Set `DESKTOP_DEV_URL` when running against a local frontend; do not assume a port.
+
+If the version check reports “Electron failed to install correctly,” inspect the install output and the installed Electron package's `path.txt` and `dist` directory. A previously blocked postinstall can leave a package without a usable binary; changing `allowBuilds` and running an ordinary `pnpm install` or `pnpm rebuild` may leave it that way. Repair or reinstall that dependency, rerun the version check, and only then start Zap. Do not treat an `UP` profile as proof that its desktop service stayed running; check `zap status` and `zap logs desktop --no-follow`.
 
 For Zapper development, keep the browser services in the default profile and add a `desktop` profile with those same services plus a native `desktop` service. Make that service depend on the frontend, run the desktop package's `dev` script, and set `DESKTOP_DEV_URL=http://localhost:${WEB_PORT}` through the project's non-secret environment configuration. Put the project's env files in each profile, as Zap requires. Then `zap profile set desktop` opens the window and `zap profile set default` returns to browser-only development. Adapt the service names and port variable to the project; this is project-specific YAML, not a file to overwrite blindly.
 

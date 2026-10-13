@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { extensionSlugs } from "./extension-registry";
 
 export const defaultTheme = "b1a1M7Tvs";
 
@@ -20,14 +21,6 @@ const namePattern = /^[A-Za-z0-9 .,'&()/_:+#-]+$/;
 const slugPattern = /^[a-z]+(?:-[a-z]+)*$/;
 const npmOrgPattern = /^@[a-z0-9][a-z0-9-]*$/;
 const shadcnPresetPattern = /^[A-Za-z0-9_-]+$/;
-const extensionSlugs = [
-  "bull",
-  "clerk",
-  "mongodb",
-  "playwright",
-  "redis",
-  "s3",
-] as const;
 const emojiPattern =
   /^(?=.*(?:\p{Emoji_Presentation}|\p{Extended_Pictographic}))(?:\p{Emoji_Presentation}|\p{Extended_Pictographic}|\uFE0F|\u200D)+$/u;
 

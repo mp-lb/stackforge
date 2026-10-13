@@ -32,6 +32,10 @@ describe("JSON Schema", () => {
       description: "Example",
     });
   });
+  it("accepts Electron from the shared extension registry", () => {
+    expect(schema.properties.extensions.items.enum).toContain("electron");
+    expect(validate({ description: "Desktop app", extensions: ["electron"] })).toBe(true);
+  });
   it.each([
     {},
     { ...example, packagePrefix: "bad" },
@@ -68,6 +72,7 @@ describe("prompt", () => {
         "bull",
         "redis",
         "playwright",
+        "electron",
       ],
     },
   ])(
