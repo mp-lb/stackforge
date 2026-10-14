@@ -49,8 +49,8 @@ Secrets setup also adds `.github/workflows/validate-arcnet-secrets.yaml`. Each p
 | Vercel websites    | Per project            |
 | Cloud Run backends | Per project            |
 | MongoDB            | Shared                 |
-| Redis              | Per project            |
-| Bull workers       | Per project            |
+| Redis              | Shared                 |
+| Bull workers       | Deferred               |
 | S3 storage         | Per project            |
 
 Shared services use the project slug as the isolation boundary, with project-scoped namespaces and credentials.

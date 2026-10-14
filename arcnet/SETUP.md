@@ -25,8 +25,8 @@ The TypeScript package is published from tools.
 From the **target repository root**, preview and install the published CLI configuration. No Stackforge checkout is needed:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.2.5 setup <project-slug> --dry-run
-pnpm dlx @mp-lb/arcnet@0.2.5 setup <project-slug>
+pnpm dlx @mp-lb/arcnet@0.3.1 setup <project-slug> --dry-run
+pnpm dlx @mp-lb/arcnet@0.3.1 setup <project-slug>
 pnpm install
 pnpm exec arcnet check
 ```
@@ -94,7 +94,7 @@ Prerequisites for generation: Node 22+, a pinned pnpm version, a GitHub reposito
 From the target repository root:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.2.5 setup my-project
+pnpm dlx @mp-lb/arcnet@0.3.1 setup my-project
 ```
 
 Replace `my-project` with the `project:` slug in `zap.yaml`. GitHub owner/repo is read from `origin`; use `--repository owner/repo` when no GitHub origin exists. Use `--dry-run` for a read-only preview. `--service` and `--dockerfile` override the default backend name/path (`backend` and `.arcnet/Dockerfile`). An existing root `Dockerfile` is accepted as a compatibility fallback. Docker builds use the repository root as their context, so `COPY` paths stay relative to the repo. Slugs are lowercase, start with a letter and have at most 23 characters, fitting the `arcnet-<slug>` GCP project convention.
@@ -136,7 +136,7 @@ These are human/operator prerequisites, not actions performed by setup. No provi
 1. Approve the exact services, billing account, domains, spend and permissions. Review `.arcnet/network.yaml`: this network uses `asia-southeast1`, project `arcnet-<slug>`, a shared GCS state bucket with `terraform/state/<slug>`, and `mp-lb.dev` DNS. A new network needs its own bootstrap; do not bootstrap the existing network again. Check GCP project availability/quota and billing permissions. [GCP project prerequisites](https://cloud.google.com/resource-manager/docs/creating-managing-projects).
 2. Install Terraform **1.15.6**, gcloud and (for containers) Docker. Authenticate the approved operator with gcloud and ADC, then configure Docker for the network registry. Confirm access to the state bucket and the permissions for project creation/billing/APIs/IAM. No service-account key file is needed.
 3. Obtain only the provider credentials selected modules require. Cloudflare needs zone-read and DNS-edit permissions on the selected zone; Vercel needs the correct account access; bindings need their respective Atlas/Upstash/AWS credentials. Do not populate CI secrets until specifically approved.
-4. For Cloud Run domains, verify the **base domain** using Search Console. Keep its verification DNS record, and add the deploying service account as a verified owner when created. Verification belongs to an identity, not just a project. [Cloud Run ownership](https://cloud.google.com/run/docs/mapping-custom-domains#add-verified-owners), [Search Console DNS verification](https://support.google.com/webmasters/answer/9008080).
+4. For Cloud Run domains, verify the **base domain** using Search Console and keep its verification DNS record. Then run `arcnet environment domain-owner --domain <base-domain> --email <deploy-service-account> --quota-project <platform-project>` as the verified Google owner. Sign in once with `gcloud auth application-default login --scopes=https://www.googleapis.com/auth/siteverification,https://www.googleapis.com/auth/cloud-platform`, and enable `siteverification.googleapis.com` on the quota project. The command preserves existing owners and is safe to rerun. Verification belongs to an identity, not just a GCP project. [Cloud Run ownership](https://cloud.google.com/run/docs/mapping-custom-domains#add-verified-owners), [Search Console DNS verification](https://support.google.com/webmasters/answer/9008080).
 5. Review DNS ownership/records before applying: current modules can overwrite matching records. Cloud Run's module records only the first returned DNS record, so apex/multiple-record mappings require module review. Use DNS-only records for this existing route. [Cloudflare proxy behavior](https://developers.cloudflare.com/dns/proxy-status/). For Vercel, compare its currently requested records and domain verification with the module's fixed A/CNAME values; do not blindly reuse those values or transfer an existing site's domain. [Vercel domain setup](https://vercel.com/docs/domains/working-with-domains/add-a-domain).
 6. After approval, run `pnpm exec arcnet plan` using the operator credentials and app env pool. This contacts cloud APIs and state; it is not the dry run. A brand-new project's first plan can fail while APIs/resources do not yet exist. Do not turn that failure into permission to apply. Review staged bootstrap with the operator. Arc deploy applies project modules first, then builds/pushes images, then applies services; a later failure can leave partial infrastructure. It is not an atomic transaction.
 7. Only after that approval, set `approved: true` locally and run `pnpm exec arcnet deploy` for the first deployment. This creates project, registry and GitHub WIF trust. Populate `workloadIdentityProvider` using the actual numeric project number and verify `serviceAccount`. Do not commit the approval until CI prerequisites and the live smoke test are complete.
@@ -177,7 +177,7 @@ In the target repo, add `.arcnet/vercel.json`: start from [the static-sites exam
 From the target repository root:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.2.5 setup hello-world
+pnpm dlx @mp-lb/arcnet@0.3.1 setup hello-world
 ```
 
 The slug must match `zap.yaml`. `--dry-run` writes nothing; `--vercel path.json` selects another input file. Mixed Terraform/Vercel profiles and existing workflow conflicts fail without overwrites. No backend Dockerfile is needed. Setup leaves `zap.yaml` unchanged and generates `.arcnet/project.json`, an ignore file and `.github/workflows/deploy-arc.yaml`. It pins the CLI in the root manifest; run `pnpm install` and commit the updated lockfile. The legacy root `arcnet.vercel.json` is still accepted, but if both inputs exist you must select one explicitly.

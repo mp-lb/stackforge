@@ -2,13 +2,13 @@
 
 An ArcNet environment is the company-owned infrastructure and configuration that projects deploy into. Create it once, then onboard projects through the [project setup guide](../SETUP.md). A different company supplies its own accounts, billing, domain, network configuration and credentials; it does not reuse MAP Lab's identifiers or secrets.
 
-**Status:** this is a setup runbook and a specification for the missing automation. `zap arc bootstrap` implements part of the GCP bootstrap today. Full environment infrastructure as code, environment teardown, shared Redis/Bull hosting and a domain-map generator are not implemented. No cloud changes are performed by reading or applying the project extension alone.
+**Status:** this is a setup runbook and a specification for the missing automation. `zap arc bootstrap` implements part of the GCP bootstrap today. `arcnet environment domain-owner` delegates an already verified base domain to a deploy identity. Full environment infrastructure as code, environment teardown, shared Redis/Bull hosting and a domain-map generator are not implemented. No cloud changes are performed by reading or applying the project extension alone.
 
 ## Location and ownership
 
 This folder owns the environment setup guide. Reusable executable tooling belongs in [`@mp-lb/arcnet`](https://github.com/mp-lb/tools/tree/main/packages/arcnet); environment bootstrap, health checks, inventory and teardown remain to be implemented there. These are environment operations, not application Zap tasks. Project installation uses the published CLI described in [project setup](../SETUP.md).
 
-Only this guide exists here today; the environment scripts have not been implemented. Keep actual credentials and private company configuration outside this public source folder and pass their locations explicitly. New tooling must not depend on an implicit `~/.config/zap-arc` pointer. The existing Zap bootstrap is described below as legacy behavior, not the intended entry point.
+Only this guide exists in this folder today; the environment lifecycle scripts have not been implemented. Keep actual credentials and private company configuration outside this public source folder and pass their locations explicitly. New tooling must not depend on an implicit `~/.config/zap-arc` pointer. The existing Zap bootstrap is described below as legacy behavior, not the intended entry point.
 
 ## Environment inputs
 
