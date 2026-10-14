@@ -25,8 +25,8 @@ The TypeScript package is published from tools.
 From the **target repository root**, preview and install the published CLI configuration. No Stackforge checkout is needed:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.2.3 setup <project-slug> --dry-run
-pnpm dlx @mp-lb/arcnet@0.2.3 setup <project-slug>
+pnpm dlx @mp-lb/arcnet@0.2.4 setup <project-slug> --dry-run
+pnpm dlx @mp-lb/arcnet@0.2.4 setup <project-slug>
 pnpm install
 pnpm exec arcnet check
 ```
@@ -94,7 +94,7 @@ Prerequisites for generation: Node 22+, a pinned pnpm version, a GitHub reposito
 From the target repository root:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.2.3 setup my-project
+pnpm dlx @mp-lb/arcnet@0.2.4 setup my-project
 ```
 
 Replace `my-project` with the `project:` slug in `zap.yaml`. GitHub owner/repo is read from `origin`; use `--repository owner/repo` when no GitHub origin exists. Use `--dry-run` for a read-only preview. `--service` and `--dockerfile` override the default backend name/path (`backend` and `.arcnet/Dockerfile`). An existing root `Dockerfile` is accepted as a compatibility fallback. Docker builds use the repository root as their context, so `COPY` paths stay relative to the repo. Slugs are lowercase, start with a letter and have at most 23 characters, fitting the `arcnet-<slug>` GCP project convention.
@@ -127,7 +127,7 @@ pnpm exec arcnet check
 
 The CLI and app share the root package manifest, lockfile and pinned pnpm version. `check` is offline: it validates config, selected services and image paths. It does not build images, authenticate, plan Terraform or prove deployment.
 
-Optionally keep public values in `.arcnet/env.production.json`, secret app values in `ARCNET_ENV_JSON` (a JSON object of strings), and whitelist service keys under `env:` in `zap.yaml`. Operator tokens come from environment variables. No persistent operator pointer file is needed. Do not commit credentials, state, plans, ADC or app secrets.
+Optionally keep public values in `.arcnet/env.production.json`, secret app values in `ARCNET_ENV_JSON` (a JSON object of strings), and whitelist service keys under `env:` in `zap.yaml`. Public values may refer to another pool key with `$NAME` or `${NAME}`; include the base key in the public JSON or secret pool. ArcNet resolves those references before Terraform and rejects missing or cyclic aliases during `check`. Operator tokens come from environment variables. No persistent operator pointer file is needed. Do not commit credentials, state, plans, ADC or app secrets.
 
 ## Before the first live deployment
 
@@ -177,7 +177,7 @@ In the target repo, add `.arcnet/vercel.json`: start from [the static-sites exam
 From the target repository root:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.2.3 setup hello-world
+pnpm dlx @mp-lb/arcnet@0.2.4 setup hello-world
 ```
 
 The slug must match `zap.yaml`. `--dry-run` writes nothing; `--vercel path.json` selects another input file. Mixed Terraform/Vercel profiles and existing workflow conflicts fail without overwrites. No backend Dockerfile is needed. Setup leaves `zap.yaml` unchanged and generates `.arcnet/project.json`, an ignore file and `.github/workflows/deploy-arc.yaml`. It pins the CLI in the root manifest; run `pnpm install` and commit the updated lockfile. The legacy root `arcnet.vercel.json` is still accepted, but if both inputs exist you must select one explicitly.
