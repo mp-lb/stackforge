@@ -268,7 +268,8 @@ Then, in `packages/<library slug>`:
   example is already shaped this way — `tsconfig.json` for typecheck,
   `tsconfig.build.json` for the emitted `dist`);
 - keep public exports small and explicit;
-- update release docs if package names changed.
+- set `private: false` and `publishConfig.access: public` only on packages that should publish to npm;
+- replace `REPLACE_WITH_OWNER/REPOSITORY` in `.github/workflows/release.yaml` with the target GitHub repository and configure `NPM_TOKEN` (or trusted publishing) for that repository. The workflow compares packed files on every push to `main`; no changeset is needed.
 
 A library that ships a command-line tool is still a library: add a package `bin`, a `#!/usr/bin/env node` shebang on the entrypoint, and `chmod +x dist/index.js` in the build (see `packages/example-cli` for the shape). There is no separate CLI package type. See `docs/standards/clis.md` for command-line behaviour on top of the library baseline.
 

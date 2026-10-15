@@ -1,48 +1,9 @@
-# Library Release
+# Library and CLI releases
 
-Use this process for publishable library packages.
+Publishable npm packages release automatically on pushes to `main`. There is no changeset, release note, or manual version bump. The release workflow runs checks, builds each public package, and compares its packed files with the latest version on npm. An unchanged package is skipped. A changed package gets the next patch version and is published. Packages are processed in workspace dependency order, so a dependency update can trigger a dependent package release.
 
-## Process
+The release logic lives in `scripts/auto-publish.mjs` in the target repository. It ignores only the `version` field when comparing package manifests; a changed README, export, type declaration, or other packed file counts as a release. Generated files must be deterministic. If a build embeds timestamps or other changing data, fix that build before enabling automatic publishing.
 
-1. Start from the latest `main`:
+CI uses the npm token or trusted publishing identity configured for that repository. FSS Stack does not require ArcNet for releases. An ArcNet project can supply the npm token through its `publish` secret consumer.
 
-```sh
-git checkout main
-git pull --ff-only origin main
-```
-
-2. Create a changeset:
-
-```sh
-pnpm changeset
-```
-
-3. Commit the code and changeset.
-4. Push to GitHub.
-
-The GitHub release workflow handles versioning, changelog updates, publishing,
-release commits, and tags.
-
-5. Watch the release workflow and verify npm after it completes:
-
-```sh
-gh run list --branch main --limit 5
-npm view <package-name> version dist.tarball --json
-npm pack <package-name>@<version> --dry-run
-```
-
-6. Pull `main` again after the workflow publishes:
-
-```sh
-git pull --ff-only origin main
-```
-
-The post-release pull brings down the release commit that updates package
-versions, changelogs, and removes the consumed changeset.
-
-## Notes
-
-- Choose `patch` for fixes and small compatible changes.
-- Choose `minor` for new compatible APIs.
-- Choose `major` for breaking API, behavior, type, or export changes.
-- The changeset file does not need to be manually edited after it is created.
+To preview the comparison without publishing, run `node scripts/auto-publish.mjs --dry-run`. After CI, inspect the release run and verify changed packages with `npm view <package-name> version dist.tarball --json`. The script chooses patch versions from npm's latest published version; it does not commit version-only changes back to the repository.
