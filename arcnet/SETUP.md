@@ -60,8 +60,8 @@ The example placeholders must be replaced with actual account and project IDs. A
 From the project root, after adding `arcnet.yaml` and any needed Dockerfiles:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.4.0 setup <project-slug> --dry-run
-pnpm dlx @mp-lb/arcnet@0.4.0 setup <project-slug>
+pnpm dlx @mp-lb/arcnet@0.5.0 setup <project-slug> --dry-run
+pnpm dlx @mp-lb/arcnet@0.5.0 setup <project-slug>
 pnpm install
 pnpm exec arcnet check
 ```
@@ -70,7 +70,18 @@ Setup pins the package, adds a deploy workflow only for selected services, and d
 
 ## Secrets and package publishing
 
-For the internal Forum secrets convention, attach the standard encrypted source with `arcnet secrets add` and add a project source only if it has project-specific values. ArcNet stores source references, snapshot provenance, and consumer mappings under `secrets:` in `arcnet.yaml`; snapshots live under `.arcnet/secrets/`. `arcnet secrets sync` refreshes them and generates the validation workflow. CI uses each source's GitHub decryption key and does not need a Forum login. [Legacy guide: source provisioning and local password mode](LEGACY_SETUP.md#layered-secrets).
+For the internal Forum secrets convention, attach the standard encrypted source with `arcnet secrets add --key <GITHUB_SECRET_NAME>` and add a project source only if it has project-specific values. The `secrets:` section needs only each source's `key`, `store`, and `path`, plus consumer mappings. ArcNet stores the ciphertext at `.arcnet/secrets/<KEY>.json.enc`; `arcnet secrets sync` refreshes it and generates the validation workflow. CI uses each source's GitHub decryption key and does not need a Forum login. [Legacy guide: source provisioning and local password mode](LEGACY_SETUP.md#layered-secrets).
+
+```yaml
+secrets:
+  sources:
+    - key: STANDARD_SECRETS_KEY
+      store: mp-lb/mp-lb
+      path: /admin/standard-secrets.json.enc
+  consumers:
+    publish:
+      NODE_AUTH_TOKEN: NPM_TOKEN
+```
 
 A library or CLI release still uses the project's Changesets workflow. To supply npm credentials from ArcNet, configure a `publish` consumer in `arcnet.yaml` and run the publish command through `pnpm exec arcnet env run --consumer publish -- <command>`. The release workflow must call that command; installation does not publish a package or rewrite an unrelated workflow. Public FSS Stack projects may use a GitHub `NPM_TOKEN` secret directly instead of Forum.
 
