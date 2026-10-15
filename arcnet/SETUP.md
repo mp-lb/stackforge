@@ -32,6 +32,8 @@ services:
 
 For an existing static Vercel landing page, use an explicit project reference. This adapter deploys prebuilt static output and does not change Vercel project settings, domains, DNS, or the Git integration. SSR/functions need a different configuration. Existing Vercel references cannot yet be mixed with Terraform services.
 
+Name newly created Vercel projects `arcnet.<project-slug>.<service-slug>` (for example, `arcnet.lexiquest.landing-page`). Keep the verified name of an existing project when referencing it; the ArcNet naming convention applies when creating a replacement.
+
 ```yaml
 version: 1
 project: hello-world
