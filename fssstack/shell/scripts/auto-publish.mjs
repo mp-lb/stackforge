@@ -168,6 +168,16 @@ const originalManifests = new Map(
   packages.map((entry) => [entry.manifest, readFileSync(entry.manifest)]),
 );
 
+const report = [];
+const reportPath = join(root, ".fssstack-release-result.json");
+
+function record(name, version, action) {
+  report.push({ name, version, action });
+  writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
+}
+
+writeFileSync(reportPath, "[]\n");
+
 try {
   const latest = new Map();
 
@@ -223,6 +233,7 @@ try {
 
     if (!changed) {
       console.log(`${pkg.name}: unchanged at ${current}`);
+      record(pkg.name, current, "unchanged");
       continue;
     }
 
@@ -231,7 +242,11 @@ try {
       `${pkg.name}: ${current || "unpublished"} → ${version}${dryRun ? " (dry run)" : ""}`,
     );
 
-    if (dryRun) continue;
+    if (dryRun) {
+      record(pkg.name, version, "would-publish");
+      continue;
+    }
+
     writeVersion(entry, version);
     if (pkg.scripts?.build)
       run("pnpm", ["--filter", `${pkg.name}...`, "build"]);
@@ -240,6 +255,8 @@ try {
       ["publish", "--no-git-checks", "--access", "public"],
       entry.dir,
     );
+
+    record(pkg.name, version, "published");
   }
 } finally {
   for (const [manifest, content] of originalManifests)
