@@ -1,9 +1,7 @@
 # Library and CLI releases
 
-Publishable npm packages release automatically on pushes to `main`. There is no changeset, release note, or manual version bump. The release workflow runs checks, builds each public package, and compares its packed files with the latest version on npm. An unchanged package is skipped. A changed package gets the next patch version and is published. Packages are processed in workspace dependency order, so a dependency update can trigger a dependent package release.
+Push to `main`. CI checks the project, builds public npm packages, and compares their packed files with the latest published versions. If a package changed, CI publishes the next patch version. If it did not, CI skips it. There are no changesets, release notes, or manual version bumps.
 
-The release logic lives in `scripts/auto-publish.mjs` in the target repository. It ignores only the `version` field when comparing package manifests; a changed README, export, type declaration, or other packed file counts as a release. Generated files must be deterministic. If a build embeds timestamps or other changing data, fix that build before enabling automatic publishing.
+The target repository's `scripts/auto-publish.mjs` handles comparison and publishing. It processes workspace dependencies first and ignores only the package manifest's `version` field. Keep generated package files deterministic; a timestamp that changes on every build would cause a release on every push.
 
-CI uses the npm token or trusted publishing identity configured for that repository. FSS Stack does not require ArcNet for releases. An ArcNet project can supply the npm token through its `publish` secret consumer.
-
-To preview the comparison without publishing, run `node scripts/auto-publish.mjs --dry-run`. After CI, inspect the release run and verify changed packages with `npm view <package-name> version dist.tarball --json`. The script chooses patch versions from npm's latest published version; it does not commit version-only changes back to the repository.
+Run `node scripts/auto-publish.mjs --dry-run` to preview. After CI, check the release workflow and `npm view <package-name> version`. The workflow uses the repository's npm credential; ArcNet projects may supply it through the `publish` secret consumer, but FSS Stack does not require ArcNet.
