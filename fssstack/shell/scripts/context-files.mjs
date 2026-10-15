@@ -1,10 +1,10 @@
 #!/usr/bin/env node
+/* global console, process */
 import { execFileSync } from "node:child_process";
 import {
   copyFileSync,
   existsSync,
   mkdtempSync,
-  readFileSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
@@ -17,12 +17,15 @@ const usage = `usage:
 `;
 
 const [command, ...rawArgs] = process.argv.slice(2);
+
 if (command !== "build" && command !== "copy") {
   fail(usage.trim());
 }
 
 const options = parseArgs(rawArgs);
-const outputs = options.outputs.length > 0 ? options.outputs : ["AGENTS.md", "CLAUDE.md"];
+
+const outputs =
+  options.outputs.length > 0 ? options.outputs : ["AGENTS.md", "CLAUDE.md"];
 
 if (command === "build") {
   const entry = findEntry();
@@ -30,9 +33,13 @@ if (command === "build") {
   writeLocalFiles(outputs, options.extraContext);
 } else {
   if (options.extraContext.length > 0) {
-    fail("context-copy does not accept extra context paths; use context-build.");
+    fail(
+      "context-copy does not accept extra context paths; use context-build.",
+    );
   }
+
   ensureFile("AGENTS.base.md");
+
   for (const output of outputs) {
     copyFileSync("AGENTS.base.md", output);
   }
@@ -82,15 +89,18 @@ function writeLocalFiles(outputs, extraContext) {
     for (const output of outputs) {
       copyFileSync("AGENTS.base.md", output);
     }
+
     return;
   }
 
   const dir = mkdtempSync(resolve(tmpdir(), "context-files-"));
   const entry = resolve(dir, "index.md");
+
   const imports = [
     `@${resolve("AGENTS.base.md")}`,
     ...extraContext.map((path) => `@${resolve(expandHome(path))}`),
   ];
+
   writeFileSync(entry, `${imports.join("\n\n")}\n`);
 
   try {
@@ -106,7 +116,10 @@ function findEntry() {
   for (const entry of ["docs/etc/agents-md/index.md", "agents-md/index.md"]) {
     if (existsSync(entry)) return entry;
   }
-  fail("no context source found: expected docs/etc/agents-md/index.md or agents-md/index.md");
+
+  fail(
+    "no context source found: expected docs/etc/agents-md/index.md or agents-md/index.md",
+  );
 }
 
 function ensureFile(path) {
