@@ -58,9 +58,9 @@ zap task check
 ## Audit
 
 Ask a coding agent to follow [audit.md](audit.md) to compare this project with a
-fresh FSS Stack reference project. The audit prioritizes root configuration and
+committed, verified HelloWorld reference in the resolved Stackforge checkout. The audit prioritizes root configuration and
 folder structure, distinguishes justified differences from drift, and writes
-its findings to `tmp/audit-report.md` without applying fixes.
+its findings to `docs/audits/YYYY-MM-DD-fssstack.md` in an isolated worktree for project-owner integration, without applying fixes.
 
 ## Workspace
 

@@ -289,10 +289,11 @@ Only run shadcn component installs for frontend apps that actually exist, and us
 ## Create context files
 
 Keep the shell's root `audit.md` in every target project. It instructs future
-agents to assemble a fresh reference project from current Doctrine, compare
-root files and folder structure first, and write `tmp/audit-report.md`. Include
+agents to resolve and verify the committed HelloWorld reference in Stackforge, compare
+root files and folder structure first, and write `docs/audits/YYYY-MM-DD-fssstack.md`. Include
 a pointer to `audit.md` in the project's context source blocks so agents can
-find the process. Keep `/tmp/` gitignored for local audit reports.
+find the process. Keep `/tmp/` gitignored for scratch files; audit reports are
+tracked and committed from an isolated worktree for project-owner integration.
 
 Create the project's `agents-md/` source blocks and `agents-md/index.md`, then
 build the committed base context:

@@ -3,7 +3,7 @@
 Use this process when asked to audit how this repository aligns with the
 maintained FSS Stack reference project. Compare it with the committed,
 verified HelloWorld reference, then write
-`tmp/audit-report.md` in **this project's root**. Explain which differences serve
+`docs/audits/YYYY-MM-DD-fssstack.md` in **this project's root**. Explain which differences serve
 the project and which are accidental drift. This is an assessment, not a request
 to replace working product code or apply fixes.
 
@@ -175,13 +175,14 @@ unsupported scaffolds, or blocked validation. Do not force these into a verdict.
 Keep impact/severity separate from the category and review priority. Current
 Doctrine is the comparison baseline, not a reason to discard a justified design.
 
-## 5. Write `tmp/audit-report.md` in the real project
+## 5. Write `docs/audits/YYYY-MM-DD-fssstack.md` in the real project
 
-Create the real project's `tmp/` directory if needed. If a prior report exists,
-preserve it with a timestamped name before replacing it. Keep scratch data in
-the temporary workspace; the report is the only new deliverable in the real
-project, apart from preserving an earlier report. Do not commit the report or
-apply remediation unless asked.
+Work in an isolated project worktree and create `docs/audits/` if needed.
+Use the audit date in the report filename; preserve earlier reports and choose
+a distinct suffix for another audit on the same day. Commit the report and
+explicitly authorized audit-process updates for normal project-owner integration.
+Keep generated comparisons and logs outside the repository or in ignored scratch
+paths. Do not commit scratch artifacts or apply remediation unless asked.
 
 Use this report structure:
 

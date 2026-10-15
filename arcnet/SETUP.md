@@ -30,7 +30,7 @@ services:
     env: [MONGODB_URL]
 ```
 
-For an existing static Vercel landing page, use an explicit project reference. This adapter deploys prebuilt static output and does not change Vercel project settings, domains, DNS, or the Git integration. SSR/functions need a different configuration. Existing Vercel references cannot yet be mixed with Terraform services.
+For a Vercel site, set its package root. ArcNet detects Next.js and uses Vercel's framework build; named Vite, VitePress, and prerendered React Router packages use their `build` script and static output. Review the detected strategy in `arcnet plan`. A Vercel site can be selected alongside Terraform services in the same file. For a custom domain, set `vercel.dnsZone` and the site's `domain`; ArcNet attaches the domain to the referenced Vercel project and reconciles its Cloudflare DNS record during deployment. It does not manage Vercel Git integration.
 
 Name newly created Vercel projects `arcnet.<project-slug>.<service-slug>` (for example, `arcnet.lexiquest.landing-page`). Keep the verified name of an existing project when referencing it; the ArcNet naming convention applies when creating a replacement.
 
@@ -49,21 +49,18 @@ vercel:
       mode: existing
       projectId: prj_REPLACE_WITH_REAL_ID
       projectName: hello-world
-      build: [pnpm, --filter, "@mp-lb/hello-world-web", build]
-      output: apps/web/dist
-      outputConfig:
-        version: 3
+      root: apps/web
 ```
 
-The example placeholders must be replaced with actual account and project IDs. A new Vercel project uses `mode: new`, `creationApproved: false`, and an explicit `arcnet create <site>` operator step before deployment. The [legacy guide](LEGACY_SETUP.md#vercel-adapter-details) describes those identity and routing checks in depth.
+The example placeholders must be replaced with actual account and project IDs. A new Vercel project uses `mode: new`, `creationApproved: false`, and an explicit `arcnet create <site>` operator step before deployment. That step records the package root and framework in Vercel. Set `framework: static`, `build`, `output`, or `outputConfig` only to override detection. The [legacy guide](LEGACY_SETUP.md#vercel-adapter-details) describes identity and routing checks in depth.
 
 ## Install and check
 
 From the project root, after adding `arcnet.yaml` and any needed Dockerfiles:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.5.1 setup <project-slug> --dry-run
-pnpm dlx @mp-lb/arcnet@0.5.1 setup <project-slug>
+pnpm dlx @mp-lb/arcnet@0.5.5 setup <project-slug> --dry-run
+pnpm dlx @mp-lb/arcnet@0.5.5 setup <project-slug>
 pnpm install
 pnpm exec arcnet check
 ```
@@ -93,6 +90,6 @@ For Terraform services, `variables:` in `arcnet.yaml` holds committed non-secret
 
 For GCP services, complete the [environment prerequisites](environment/setup.md), including billing, Terraform state, provider credentials, DNS ownership, and initial CI identity. Set `identity.workloadIdentityProvider` and `identity.serviceAccount` in `arcnet.yaml` after the first operator deployment establishes them. Review `arcnet plan` and the expected Terraform changes before enabling `approved: true`. The generated workflow then deploys selected services on pushes to `main`. Verify the actual Actions run, service health, DNS, and TLS.
 
-For static Vercel references, verify the exact account and project with `arcnet inspect`, confirm any existing Git integration will not create unwanted duplicate deployments, then enable `approved: true`. ArcNet does not create or change custom domains in this adapter.
+For static Vercel references, verify the exact account and project with `arcnet inspect`, confirm any existing Git integration will not create unwanted duplicate deployments, then enable `approved: true`. If a site declares a custom domain, the deploy secret mapping must supply `CLOUDFLARE_API_TOKEN` with DNS edit access to `vercel.dnsZone` as well as `VERCEL_TOKEN`.
 
 Older installations continue to work with their committed `project.json`, `services.json`, `network.yaml`, `secrets.json`, and `zap.yaml` deployment block. Migrate them separately after reviewing their current Terraform or Vercel identity; do not run setup over an existing deployment. [Legacy installation and migration details](LEGACY_SETUP.md).

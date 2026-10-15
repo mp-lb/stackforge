@@ -26,14 +26,15 @@ everything to the shared packages below.
   layered in only when a project needs them.
 - **React Native setup** — a separate path for mobile.
 - **Project audits** — every shell-based project gets root `audit.md` to guide
-  comparison against a fresh project assembled from current Doctrine. Root
+  comparison against the committed, verified HelloWorld reference in Stackforge. Root
   configuration and folder structure come first; findings distinguish justified
-  divergence, missing rationale, and drift in `tmp/audit-report.md`.
+  divergence, missing rationale, and drift in `docs/audits/YYYY-MM-DD-fssstack.md`.
 
 Existing projects can adopt the audit process by fetching
 `shell/audit.md` from the `mp-lb/fssstack` store into root `audit.md` (review any
 existing file before replacing it), linking it from their README and agent
-context sources, and adding `/tmp/` to their root `.gitignore`.
+context sources, and keeping audit scratch files ignored. Commit reports from an
+isolated worktree for normal project-owner integration.
 
 ## What it configures
 
