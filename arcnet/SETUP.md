@@ -32,6 +32,8 @@ services:
 
 For a Vercel site, set its package root. ArcNet detects Next.js and uses Vercel's framework build; named Vite, VitePress, and prerendered React Router packages use their `build` script and static output. Review the detected strategy in `arcnet plan`. A Vercel site can be selected alongside Terraform services in the same file. For a custom domain, set `vercel.dnsZone` and the site's `domain`; ArcNet attaches the domain to the referenced Vercel project and reconciles its Cloudflare DNS record during deployment. It does not manage Vercel Git integration.
 
+Put public production build values, including the frontend API URL, in `variables` in `.arcnet/arcnet.yaml`. ArcNet passes these to the site build; it does not import a root `.env.production` file. After deployment, check the public domain and the frontend's actual API target. Keep credentials in encrypted secrets sources.
+
 Name newly created Vercel projects `arcnet.<project-slug>.<service-slug>` (for example, `arcnet.lexiquest.landing-page`). Keep the verified name of an existing project when referencing it; the ArcNet naming convention applies when creating a replacement.
 
 ```yaml
