@@ -95,3 +95,5 @@ For GCP services, complete the [environment prerequisites](environment/setup.md)
 For static Vercel references, verify the exact account and project with `arcnet inspect`, confirm any existing Git integration will not create unwanted duplicate deployments, then enable `approved: true`. If a site declares a custom domain, the deploy secret mapping must supply `CLOUDFLARE_API_TOKEN` with DNS edit access to `vercel.dnsZone` as well as `VERCEL_TOKEN`.
 
 Older installations continue to work with their committed `project.json`, `services.json`, `network.yaml`, `secrets.json`, and `zap.yaml` deployment block. Migrate them separately after reviewing their current Terraform or Vercel identity; do not run setup over an existing deployment. [Legacy installation and migration details](LEGACY_SETUP.md).
+
+For an existing project, use the [ArcNet migration audit](AUDIT.md#moving-a-legacy-project-onto-arcnet) to account for every production variable, release workflow and live endpoint before retiring its old deployment files.
