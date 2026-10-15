@@ -1,12 +1,12 @@
 # ArcNet domain management design
 
-**Status:** project domain commands and a domain map are proposed, not implemented. Today `zap.yaml` service `domain` fields are authoritative; setup may copy initial values from `.arcnet/services.json`. Editing a separate file after setup does not change a deployment.
+**Status:** project domain commands and a dedicated domain map are proposed, not implemented. New projects declare service `domain` fields in `.arcnet/arcnet.yaml`; ArcNet derives conventional domains when omitted. Legacy installations still use `zap.yaml` service domains. Editing an obsolete setup input does not change a deployment.
 
 ## Defaults and explicit routes
 
 For the common web + API shape, a project should start with `<slug>.mp-lb.dev` for the frontend and `api.<slug>.mp-lb.dev` for the API. A dedicated base domain can use the same pattern. These are defaults, not constraints: a project may bind any verified hostname to any supported service.
 
-The eventual source of truth should be one committed `.arcnet/domains.json` map. Each entry identifies the hostname, target service, hosting provider, and whether it is the primary address or an alias. ArcNet should generate provider mappings and owned DNS records from that map, rather than retaining independent copies of the same hostname in the map and `zap.yaml`. Application URLs and external callbacks need explicit references so a domain change can be audited.
+The eventual source of truth should stay in `.arcnet/arcnet.yaml`, rather than adding another project file. Each route identifies the hostname, target service, hosting provider, and whether it is the primary address or an alias. ArcNet should generate provider mappings and owned DNS records from that declaration. Application URLs and external callbacks need explicit references so a domain change can be audited.
 
 A path such as `example.com/api` needs a router that owns `example.com`; a Cloud Run domain mapping alone cannot route one path to a different service. Low-level commands should reject path routes until a supported gateway or project-owned router is declared. High-level presets may generate the common web/API bindings without limiting explicit low-level configuration.
 

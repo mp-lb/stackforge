@@ -4,6 +4,8 @@ An ArcNet environment is the company-owned infrastructure and configuration that
 
 **Status:** this is a setup runbook and a specification for the missing automation. `zap arc bootstrap` implements part of the GCP bootstrap today. `arcnet environment domain-owner` delegates an already verified base domain to a deploy identity. Full environment infrastructure as code, environment teardown, shared Redis/Bull hosting and a domain-map generator are not implemented. No cloud changes are performed by reading or applying the project extension alone.
 
+For the current `mp-lb` environment, new projects select the versioned preset with `environment: mp-lb` in `.arcnet/arcnet.yaml`; they do not copy a network file. The `network.yaml` references below describe legacy bootstrap inputs and existing multi-file projects. Creating a second company's environment preset is not yet automated.
+
 ## Location and ownership
 
 This folder owns the environment setup guide. Reusable executable tooling belongs in [`@mp-lb/arcnet`](https://github.com/mp-lb/tools/tree/main/packages/arcnet); environment bootstrap, health checks, inventory and teardown remain to be implemented there. These are environment operations, not application Zap tasks. Project installation uses the published CLI described in [project setup](../SETUP.md).
@@ -14,18 +16,18 @@ Only this guide exists in this folder today; the environment lifecycle scripts h
 
 Collect these before provisioning. Organization slugs identify provider accounts; the environment slug identifies this ArcNet installation; application project slugs identify apps within it. They are separate values.
 
-| Input | Meaning / required value |
-| --- | --- |
-| Environment slug | `arcnet` for MAP Lab; configurable for another installation |
-| GCP project ID | Exactly `<environment_slug>` — `arcnet` for the requested MAP Lab environment; no company or application prefix |
+| Input                                    | Meaning / required value                                                                                                                                                                  |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Environment slug                         | `arcnet` for MAP Lab; configurable for another installation                                                                                                                               |
+| GCP project ID                           | Exactly `<environment_slug>` — `arcnet` for the requested MAP Lab environment; no company or application prefix                                                                           |
 | Provider accounts and organization slugs | Explicit GitHub organization, Vercel team slug/account ID, Cloudflare account/zone IDs and Atlas organization/project IDs; provider slugs are not interchangeable with numeric/opaque IDs |
-| GCP parent and billing | Organization/folder ID where applicable, billing account ID and authorized bootstrap identity |
-| Location | GCP region and any required worker zone; other provider regions as applicable |
-| DNS | Owned base domain (for example `arc.mp-lb.dev`) and the authoritative Cloudflare zone |
-| External MongoDB and Redis | Manually provisioned cluster/instance identifiers, connection details and scoped access; these remain outside environment creation/destruction |
-| Secrets source | Explicit input/output path for a JSON secrets document populated manually and by setup; encrypted storage and an approved delivery mechanism |
-| State and recovery | Globally unique state-bucket name, state locations and backup/retention choices |
-| Project access | GitHub repositories allowed to deploy, project slugs and required provider scopes |
+| GCP parent and billing                   | Organization/folder ID where applicable, billing account ID and authorized bootstrap identity                                                                                             |
+| Location                                 | GCP region and any required worker zone; other provider regions as applicable                                                                                                             |
+| DNS                                      | Owned base domain (for example `arc.mp-lb.dev`) and the authoritative Cloudflare zone                                                                                                     |
+| External MongoDB and Redis               | Manually provisioned cluster/instance identifiers, connection details and scoped access; these remain outside environment creation/destruction                                            |
+| Secrets source                           | Explicit input/output path for a JSON secrets document populated manually and by setup; encrypted storage and an approved delivery mechanism                                              |
+| State and recovery                       | Globally unique state-bucket name, state locations and backup/retention choices                                                                                                           |
+| Project access                           | GitHub repositories allowed to deploy, project slugs and required provider scopes                                                                                                         |
 
 **Naming rule:** `gcp_project_id = environment_slug`. GCP project IDs must satisfy Google's naming rules, be globally unused, and cannot be reused after permanent deletion. `arcnet` is the requested value, not a verified available ID. If unavailable, fail with a clear explanation and require an explicitly chosen different environment slug; do not silently append a suffix. Rebuilding after project deletion requires a new slug/ID. See [project ID constraints](https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects) and [deletion/reuse rules](https://docs.cloud.google.com/resource-manager/docs/delete-restore-projects).
 
@@ -33,27 +35,27 @@ Collect these before provisioning. Organization slugs identify provider accounts
 
 ## The layers
 
-| Layer | Owns | Created when |
-| --- | --- | --- |
-| Provider accounts | Company identity, billing, domain ownership and initial administrative access | Before bootstrap |
-| ArcNet environment | Network GCP project, Terraform state storage, shared MongoDB, DNS conventions and credential distribution | Once per company/environment |
-| Project infrastructure | Cloud Run/Vercel services, current per-project Redis/workers/S3, database bindings and CI identity | On project onboarding and updates |
-| Application runtime | App configuration, database/queue namespaces and scoped connection credentials | Injected into each selected app |
-| Delivery | GitHub workflow that builds and deploys committed project configuration | Every push to main after onboarding |
+| Layer                  | Owns                                                                                                      | Created when                        |
+| ---------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| Provider accounts      | Company identity, billing, domain ownership and initial administrative access                             | Before bootstrap                    |
+| ArcNet environment     | Network GCP project, Terraform state storage, shared MongoDB, DNS conventions and credential distribution | Once per company/environment        |
+| Project infrastructure | Cloud Run/Vercel services, S3 where selected, database bindings and CI identity                           | On project onboarding and updates   |
+| Application runtime    | App configuration, database/queue namespaces and scoped connection credentials                            | Injected into each selected app     |
+| Delivery               | GitHub workflow that builds and deploys committed project configuration                                   | Every push to main after onboarding |
 
 ## 1. Accounts and inputs
 
 Create the accounts and choose billing/owners before running provisioning tools. These are external prerequisites, not resources a bootstrap script can assume it may create with no credentials.
 
-| Provider | Prepare | Used for |
-| --- | --- | --- |
-| GitHub | Company organization, repositories, Actions access and protected deployment environments | Source, CI and OIDC identity |
-| Google Cloud | Organization/folder where applicable, billing account, project quota and bootstrap operator | Terraform state, Cloud Run, image registry, current worker VMs and CI federation |
-| Cloudflare + domain registrar | Owned domain, active authoritative DNS zone, zone/account IDs and scoped API token | DNS for project hostnames |
-| MongoDB Atlas | Organization/project, shared cluster, cluster host and management API access | Shared MongoDB with project database users |
-| Vercel | Explicit team/personal account, billing and token | Websites and frontends |
-| Upstash | Account email and Developer API key, if Redis is selected | Current per-project Redis provisioning |
-| AWS | Account and scoped provisioning access, only if S3 is selected | Object storage |
+| Provider                      | Prepare                                                                                     | Used for                                                                         |
+| ----------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| GitHub                        | Company organization, repositories, Actions access and protected deployment environments    | Source, CI and OIDC identity                                                     |
+| Google Cloud                  | Organization/folder where applicable, billing account, project quota and bootstrap operator | Terraform state, Cloud Run, image registry, current worker VMs and CI federation |
+| Cloudflare + domain registrar | Owned domain, active authoritative DNS zone, zone/account IDs and scoped API token          | DNS for project hostnames                                                        |
+| MongoDB Atlas                 | Organization/project, shared cluster, cluster host and management API access                | Shared MongoDB with project database users                                       |
+| Vercel                        | Explicit team/personal account, billing and token                                           | Websites and frontends                                                           |
+| Upstash                       | Shared Redis instance and scoped runtime connection details                                 | Redis for projects that need it                                                  |
+| AWS                           | Account and scoped provisioning access, only if S3 is selected                              | Object storage                                                                   |
 
 Copy [network.yaml](https://github.com/mp-lb/tools/blob/main/packages/arcnet/templates/network.yaml) into an environment-owned configuration location. Replace all company-specific values, not just `REPLACE_` entries: name, GCP project prefix, network project, billing account, regions, DNS zone, state bucket, registry pattern and Atlas facts. Decide backup/retention policy and who owns the environment. The template's `mp-lb` names are not defaults for another company.
 
@@ -69,14 +71,14 @@ Keep three identities distinct:
 
 The bootstrap identity needs permissions at the resources it manages. Typical role families are below; organization policies and selected modules determine the complete grant set.
 
-| Operation | Scope / permission family |
-| --- | --- |
-| Create GCP projects | Project Creator on the intended organization/folder |
-| Link billing | Billing Account User on the billing account plus project billing-assignment permission |
-| Enable APIs | Service Usage Admin on the relevant project |
-| Create/configure the state bucket | Storage administration on the network project, then appropriate bucket access |
-| Create service accounts, WIF and IAM grants | Service-account administration, Workload Identity Pool administration and project IAM administration as needed |
-| Provision workloads | Permissions for Cloud Run, Artifact Registry, Compute and the selected modules, including use of their runtime service accounts |
+| Operation                                   | Scope / permission family                                                                                                       |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Create GCP projects                         | Project Creator on the intended organization/folder                                                                             |
+| Link billing                                | Billing Account User on the billing account plus project billing-assignment permission                                          |
+| Enable APIs                                 | Service Usage Admin on the relevant project                                                                                     |
+| Create/configure the state bucket           | Storage administration on the network project, then appropriate bucket access                                                   |
+| Create service accounts, WIF and IAM grants | Service-account administration, Workload Identity Pool administration and project IAM administration as needed                  |
+| Provision workloads                         | Permissions for Cloud Run, Artifact Registry, Compute and the selected modules, including use of their runtime service accounts |
 
 See Google's [project creation permissions](https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects) and [deployment-pipeline federation guide](https://docs.cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines). Prefer short-lived credentials and GitHub OIDC over committing a GCP service-account key.
 
@@ -86,14 +88,14 @@ See Google's [project creation permissions](https://docs.cloud.google.com/resour
 
 Enable APIs in the **network/quota project before bootstrap uses them**, and in workload projects before creating their resources. Do not assume API enablement in one project enables it everywhere.
 
-| Purpose | APIs |
-| --- | --- |
+| Purpose                                      | APIs                                                                                                |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | Project creation, billing and API enablement | `cloudresourcemanager.googleapis.com`, `cloudbilling.googleapis.com`, `serviceusage.googleapis.com` |
-| Terraform state bucket | `storage.googleapis.com` |
-| Cloud Run and container images | `run.googleapis.com`, `artifactregistry.googleapis.com` |
-| Current worker VMs / networking | `compute.googleapis.com` |
-| Service accounts and CI federation | `iam.googleapis.com`, `iamcredentials.googleapis.com`, `sts.googleapis.com` |
-| Billing budgets | `billingbudgets.googleapis.com` when used |
+| Terraform state bucket                       | `storage.googleapis.com`                                                                            |
+| Cloud Run and container images               | `run.googleapis.com`, `artifactregistry.googleapis.com`                                             |
+| Current worker VMs / networking              | `compute.googleapis.com`                                                                            |
+| Service accounts and CI federation           | `iam.googleapis.com`, `iamcredentials.googleapis.com`, `sts.googleapis.com`                         |
+| Billing budgets                              | `billingbudgets.googleapis.com` when used                                                           |
 
 The current bootstrap enables the listed management/workload/IAM APIs except it does not explicitly enable `storage.googleapis.com`; verify Cloud Storage availability before bucket creation. The project factory separately enables Run, Artifact Registry, Compute, Resource Manager, Billing Budgets and the three IAM/federation APIs. Neither list is a promise that organization policies or billing prerequisites have been satisfied.
 
@@ -117,24 +119,13 @@ The current module uses `MONGODB_ATLAS_PUBLIC_KEY` and `MONGODB_ATLAS_PRIVATE_KE
 
 Shared services use the project slug as their namespace and access boundary. MongoDB currently uses a database named for the slug and a user scoped to it. Shared Redis and Bull hosting remain planned; their binding must supply a namespace and scoped access in addition to a URL. Separate credentials/access controls enforce the boundary; a key prefix alone does not.
 
-Today Upstash creates a Redis database per project, using `UPSTASH_EMAIL` and `UPSTASH_API_KEY`. These are management credentials, distinct from the runtime `REDIS_URL`; see [Upstash API authentication](https://upstash.com/docs/devops/developer-api/authentication). Current workers receive separate GCE VMs. A future shared Bull pool also needs a way to register and deploy each project's worker image/code, not just a Redis connection string.
+New installations take the shared Redis URL from encrypted secrets; the current CLI does not provision Redis or enforce project-scoped Redis access. Older installations may still manage a per-project Upstash database with `UPSTASH_EMAIL` and `UPSTASH_API_KEY`. Current workers receive separate GCE VMs; new worker installations are deferred. A future shared Bull pool also needs a way to register and deploy each project's worker image/code, not just a Redis connection string.
 
 ## 4. DNS and service domains
 
 Choose the environment's base domain up front, for example **`arc.mp-lb.dev`**. The authoritative Cloudflare zone might still be **`mp-lb.dev`**; a base hostname and a DNS zone are different things. Configure delegation only if using a separately hosted child zone. Create a Cloudflare token with Zone Read and DNS Edit for the intended zone, using the provider's [token permissions](https://developers.cloudflare.com/fundamentals/api/reference/permissions/).
 
-**Proposed hostname convention:** `<service>.<project-slug>.<environment-base-domain>`, for example `api.hello-world.arc.mp-lb.dev` and `web.hello-world.arc.mp-lb.dev`. Only publicly addressable services get public domains; databases and Bull workers do not need one by default.
-
-**Proposed project source of truth:** `.arcnet/domains.json`, mapping public service names to hostnames. Omitted overrides would use the environment convention. A generator would resolve this map into deployment configuration and app URLs, with explicit hostnames taking precedence. For example:
-
-```json
-{
-  "api": "api.hello-world.arc.mp-lb.dev",
-  "web": "www.example.com"
-}
-```
-
-This file and the convention are **not implemented**. Currently the hostname is the service's `domain` in `.arcnet/services.json`, copied into `zap.yaml` at setup. The runner subsequently reads `zap.yaml`; changing the input JSON alone does not update a deployed domain. The default single-backend installer currently uses `<slug>-api.<dns.zone>`. Keep those existing fields authoritative until a domain-map generator is implemented; do not add an ignored JSON file and assume it changes DNS.
+For the `mp-lb` preset, a web service defaults to `<project-slug>.mp-lb.dev` and a backend named `backend` defaults to `api.<project-slug>.mp-lb.dev`. Set `domain` on a service in `.arcnet/arcnet.yaml` to override it. Only publicly addressable services need domains; databases and workers do not. The generic convention for other environment presets has not yet been defined.
 
 DNS records alone are not sufficient: attach each hostname to its hosting provider and complete ownership/TLS verification. Cloud Run's current module uses domain mappings and Cloudflare; follow the [first-deployment requirements](../SETUP.md#before-the-first-live-deployment). Vercel requires the domain to be assigned to the correct project and its requested DNS/verification records, as described in [Vercel domain setup](https://vercel.com/docs/domains/working-with-domains/add-a-domain). Vercel-only ArcNet deployment currently does not manage domains. Do not assume a wildcard record or certificate for the environment covers every nested project/service name.
 
@@ -178,23 +169,23 @@ This environment credential file is an operator/deployment artifact, not app run
 
 ### Storage and delivery boundaries
 
-Use an encrypted JSON document as the environment's secret source if that is the company's secret-management convention. Decrypt outside Git into the deployment process. Do not put plaintext provider keys in `network.yaml`, `.arcnet/services.json` or the repository. Encryption and delivery are supplied by the company's secret loader; the generic ArcNet workflow does not install such a loader.
+Use an encrypted JSON document as the environment's secret source if that is the company's secret-management convention. Decrypt outside Git into the deployment process. Do not put plaintext provider keys in `.arcnet/arcnet.yaml` or the repository. ArcNet's secrets commands can sync encrypted Forum snapshots and deliver selected values to CI consumers.
 
-| Secret class | Consumer | Examples |
-| --- | --- | --- |
-| Environment administration | Bootstrap / environment maintenance only | Account-level provisioning credentials |
-| Project deployment | That project's protected CI job | Required Cloudflare, Atlas, Vercel, Upstash or AWS management credentials, scoped where possible |
-| Application runtime | Only the app needing them | MongoDB/Redis URLs, app secrets and project namespace |
+| Secret class               | Consumer                                 | Examples                                                                                         |
+| -------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Environment administration | Bootstrap / environment maintenance only | Account-level provisioning credentials                                                           |
+| Project deployment         | That project's protected CI job          | Required Cloudflare, Atlas, Vercel, Upstash or AWS management credentials, scoped where possible |
+| Application runtime        | Only the app needing them                | MongoDB/Redis URLs, app secrets and project namespace                                            |
 
 A single centrally maintained JSON source is compatible with this model; giving every project its decrypted contents is not the isolation model. Deliver project-specific subsets/credentials. If every repo holds the same encrypted file and a key that decrypts all of it, filtering variables afterward does not prevent that repo from reading the other secrets.
 
-Current interfaces: Terraform Vercel uses `VERCEL_API_TOKEN`; the static Vercel adapter uses `VERCEL_TOKEN`. Other provider names are in [network.yaml](https://github.com/mp-lb/tools/blob/main/packages/arcnet/templates/network.yaml) and the [workflow](https://github.com/mp-lb/tools/blob/main/packages/arcnet/templates/deploy-arc.yaml). `ARCNET_ENV_JSON` is a JSON object of **application** secret values, not a universal provider-credentials loader. `.arcnet/env.production.json` contains public app values. The ArcNet CLI now loads ordered encrypted Forum JSON sources, provisions per-file GitHub decryption keys, and selects operator credentials through a `deploy` consumer. See [layered secrets](../SETUP.md#layered-secrets). The current GCP CI workflow uses OIDC/WIF; the planned service-account-key JSON handoff above is not wired into it yet.
+Current interfaces: Terraform Vercel uses `VERCEL_API_TOKEN`; the static Vercel adapter uses `VERCEL_TOKEN`. The standard provider configuration comes from the pinned ArcNet package. `ARCNET_ENV_JSON` is a JSON object of **application** secret values, not a universal provider-credentials loader. New projects keep non-secret app values under `variables:` in `.arcnet/arcnet.yaml`; legacy projects may still have `.arcnet/env.production.json`. The ArcNet CLI loads ordered encrypted Forum JSON sources, provisions per-file GitHub decryption keys, and selects operator credentials through a `deploy` consumer. See [project secrets and publishing](../SETUP.md#secrets-and-package-publishing). The current GCP CI workflow uses OIDC/WIF; the planned service-account-key JSON handoff above is not wired into it yet.
 
 ## 6. Onboard a project and enable push-to-deploy
 
 1. Reserve the project slug, provider destinations, public domains and shared-service namespaces.
-2. Install the [project files](../README.md#what-gets-added) using [SETUP.md](../SETUP.md), including application-specific build/Docker settings. Choose existing provider projects explicitly; current mixed Terraform/Vercel-reference limitations still apply.
-3. Bind the project to the environment: non-secret network snapshot, project-scoped data access and deployment credentials.
+2. Install the [project files](../README.md#files-in-a-project) using [SETUP.md](../SETUP.md), including application-specific build/Docker settings. Choose existing provider projects explicitly; current mixed Terraform/Vercel-reference limitations still apply.
+3. Bind the project to the versioned environment preset, project-scoped data access and deployment credentials.
 4. Complete initial provisioning with the bootstrap/operator identity. The current Terraform first deployment creates the workload GCP project, image registry and GitHub OIDC trust; CI cannot use that trust before it exists.
 5. Configure the GitHub environment, actual WIF provider/service-account values, secret delivery and production approval. Verify a deployment and health/DNS/TLS before treating onboarding as complete.
 6. Commit the ready configuration. From then on, pushes to main build and deploy through GitHub Actions.

@@ -1,54 +1,24 @@
 # Audit an ArcNet project
 
-Check whether an existing installation matches what [project setup](SETUP.md) would produce today. ArcNet should be self-contained, with a small, explicit set of files outside `.arcnet/`. Audit first; report proposed fixes before changing the project or its infrastructure.
+Compare the project to the current [setup guide](SETUP.md) without changing infrastructure. Record the repository commit, installed ArcNet package version, selected capabilities, actual CI triggers, and live verification separately from repository checks.
 
-## Establish the baseline
+## New installation baseline
 
-1. Record the target repository commit and any uncommitted changes. Record the Stackforge guide commit and both the installed and current supported `@mp-lb/arcnet` versions; use the current supported package’s installer and templates as the baseline.
-2. Identify the actual deployable services from the app packages, build scripts, Dockerfiles, Zap configuration and workflows. Confirm intended destinations and existing provider identities. Local services and package publishing do not automatically need ArcNet.
-3. Follow the current setup guide as a comparison checklist. Compare the installed files with the installer and templates for the same selected services. If generating reference output helps, use a disposable copy with placeholder credentials; never rerun setup over the real installation just to inspect differences.
-4. Check every setup requirement: service selection, build commands and outputs, container context and entry points, ports and health endpoints, domain mappings, environment bindings, dependency versions, CI authentication, approval state and workflow triggers.
-5. Check project and environment identities consistently across configuration. Shared services use the project slug as the isolation boundary, with project-scoped namespaces and credentials. Confirm bindings agree with those identities; do not infer credential permissions from a namespace alone.
+- `.arcnet/arcnet.yaml` is the single project-owned ArcNet declaration. It contains only selected services, optional non-secret variables, CI identity, and encrypted-source/consumer references. The standard environment is supplied by the pinned package.
+- Container services have `.arcnet/<service>.Dockerfile`. Package-only projects have no Dockerfile or deploy workflow. Terraform and static Vercel projects have one `.github/workflows/deploy-arc.yaml` generated from the selected mode.
+- Encrypted Forum sources, if used, have reviewed snapshots under `.arcnet/secrets/` and one generated `.github/workflows/validate-arcnet-secrets.yaml`. Check source order, snapshot checksums, GitHub key names and consumer mappings. Application keys are whitelisted in the selected service's `env` list.
+- `zap.yaml` remains the local-development declaration and has no duplicate `deploy:` block. The root package manifest pins `@mp-lb/arcnet` and its lockfile agrees.
+- Check service build/output paths, image entrypoints, health ports, public domains, provider identities, workflow permissions, approval state, and actual deployment results. A passing offline `arcnet check` does not prove cloud health.
 
-Use the current supported deployment profile as the baseline. Planned shared Redis/Bull infrastructure and environment automation are not requirements until implemented. A repo with no deployment installation should be reported as **not installed**, not treated as a broken installation.
+## Negative checks
 
-## Allowed locations
+Report each as pass, fail, not applicable or unverified, with file evidence:
 
-| Location | Allowed contents |
-| --- | --- |
-| `.arcnet/` | Deployment configuration, Dockerfiles, project-specific deployment notes and audit reports. |
-| `.github/workflows/deploy-arc.yaml` | The project's ArcNet workflow. |
-| `zap.yaml` | The deployment declaration alongside existing local configuration. |
-| Existing root manifests and lockfiles | Application dependencies and package-manager settings required by setup. |
-| Existing README or agent instructions | A short pointer to ArcNet's central guides or project-specific notes under `.arcnet/`. |
+- Copied network/provider templates, duplicate service lists, old `project.json`, `services.json`, `network.yaml`, `env.production.json`, `secrets.json`, or deployment blocks alongside `arcnet.yaml`.
+- ArcNet-only scripts or runbooks scattered outside `.arcnet/`, and copied runners or Terraform modules that should come from the pinned package.
+- Duplicate deployment workflows or provider Git integrations that cause unintended second deployments.
+- Tracked plaintext secrets, unscoped secret consumers, stale encrypted snapshots or obsolete credentials.
+- Worker deployments through the deprecated GCE container startup mechanism, or claims that shared Redis/Bull access controls are implemented when they are not.
+- Domains, DNS records, callbacks or redirects that no longer match the selected services.
 
-The current Vercel adapter prefers `.arcnet/vercel.json`; report root `arcnet.vercel.json` as a compatibility input to migrate. Root `arcnet.services.json`, `arcnet.network.yaml` and Dockerfiles are supported compatibility inputs, but report migration to the documented `.arcnet/` layout where applicable. Provider-required application files and tooling also used for local development or releases need individual review; they are not automatically ArcNet clutter.
-
-New installations use the root `@mp-lb/arcnet` dependency and lockfile. Copied runners, separate deployment manifests/lockfiles, `.npmrc`, `operator.json` and bundled module copies are legacy files. For an older installation, compare modifications and migrate every consumer before removing them; follow [the migration steps](SETUP.md#upgrade-an-existing-copied-installation).
-
-## Things that should not be there
-
-Grow this list from concrete findings. For each item, record **pass**, **fail**, **not applicable**, or **unverified**, with file/line evidence and a proposed replacement. An exception needs an explicit reason; it is not a silent pass.
-
-| Check | Expected replacement or action |
-| --- | --- |
-| ArcNet-only scripts, runbooks or network files scattered through root, `scripts/`, `docs/` or `.github/` | Keep project-specific material under `.arcnet/`; link to central setup instructions instead of copying them. Keep the workflow in GitHub's required location. |
-| Duplicate or abandoned deployment workflows and provider auto-deploy triggers | One intentional delivery process, with each active trigger accounted for. Confirm provider settings before claiming duplication. |
-| Unpinned deployment tools, cloning the engine's default branch in CI, or editing downloaded provider modules during deployment | Use the current pinned tooling and supported configuration. Fix reusable behavior in its owning source. |
-| Obsolete migration overrides, expired workaround comments, or unused credentials and service bindings | Verify whether each still has a consumer; remove only confirmed obsolete items during a separately authorized fix. |
-| Environment bootstrap or shared-infrastructure administration copied into an application repo | Follow the central [environment setup](environment/setup.md); keep application deployment scoped to the project. |
-| Hard-coded operator home directories or implicit machine-global configuration | Explicit project/environment configuration using the current setup contract. |
-| Tracked credentials, plaintext secret dumps without cleanup, or provider credentials exported more broadly than needed | Ignored or temporary secret files with cleanup and appropriately scoped CI credentials. Never include values in the report. |
-| Documentation that disagrees with the installed services, current file layout or supported capabilities | Concise project-specific notes and links to the current guides. |
-
-Do not delete generic secret-loading or release tooling simply because it mentions a deployment provider. Check its actual consumers first.
-
-## Report
-
-Keep the report in the audit response, or under `.arcnet/audits/` if a saved report is requested. Summarize missing files, configuration drift, forbidden leftovers, justified exceptions and unverified checks. Give each finding its evidence, expected state and smallest proposed fix.
-
-Distinguish repository evidence from live infrastructure verification. Do not claim that DNS, cloud permissions or deployed services are healthy without checking them. Do not deploy, apply Terraform, rotate credentials, delete resources or run manual browser tests as part of this document review. Record any required operational checks separately.
-
-## Secrets
-
-When layered secrets are enabled, verify `.arcnet/secrets.json` source order, individual GitHub key names, encrypted snapshot checksums and consumer mappings. Run `arcnet env check` with authorized keys. Application whitelists stay in `zap.yaml`; operator and publishing keys must only be selected by their own consumers. Refresh snapshots after remote changes. Remove superseded copied secret-loader scripts, duplicate ciphertext/provenance files outside `.arcnet`, and plaintext outputs after verifying the replacement in CI.
+Older multi-file projects are **legacy installations**, not automatically broken. Compare them against [the legacy guide](LEGACY_SETUP.md), then plan a reviewed migration before deleting files or changing Terraform state. Do not run new setup over them. Report the smallest fix for each finding and distinguish code/config evidence from live provider verification.
