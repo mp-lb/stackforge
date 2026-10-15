@@ -180,7 +180,8 @@ try {
   for (const [index, entry] of packages.entries()) {
     const pkg = readPackage(entry.manifest);
     const current = latest.get(pkg.name);
-    if (pkg.scripts?.build) run("pnpm", ["--filter", pkg.name, "build"]);
+    if (pkg.scripts?.build)
+      run("pnpm", ["--filter", `${pkg.name}...`, "build"]);
 
     const localDir = join(scratch, `local-${index}`);
     mkdirSync(localDir);
@@ -232,7 +233,8 @@ try {
 
     if (dryRun) continue;
     writeVersion(entry, version);
-    if (pkg.scripts?.build) run("pnpm", ["--filter", pkg.name, "build"]);
+    if (pkg.scripts?.build)
+      run("pnpm", ["--filter", `${pkg.name}...`, "build"]);
     run(
       "pnpm",
       ["publish", "--no-git-checks", "--access", "public"],

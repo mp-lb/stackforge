@@ -26,6 +26,7 @@ jobs:
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint && pnpm typecheck && pnpm test
+      - run: pnpm build
       - name: Publish changed package builds
         run: node scripts/auto-publish.mjs
         env:
