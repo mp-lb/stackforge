@@ -61,8 +61,8 @@ Replace the account ID placeholder, review the site name, then set `approved: tr
 From the project root, after adding `arcnet.yaml` and any needed Dockerfiles:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.5.8 setup <project-slug> --dry-run
-pnpm dlx @mp-lb/arcnet@0.5.8 setup <project-slug>
+pnpm dlx @mp-lb/arcnet@0.5.9 setup <project-slug> --dry-run
+pnpm dlx @mp-lb/arcnet@0.5.9 setup <project-slug>
 pnpm install
 pnpm exec arcnet check
 ```
