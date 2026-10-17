@@ -61,8 +61,8 @@ The example placeholders must be replaced with actual account and project IDs. A
 From the project root, after adding `arcnet.yaml` and any needed Dockerfiles:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.5.5 setup <project-slug> --dry-run
-pnpm dlx @mp-lb/arcnet@0.5.5 setup <project-slug>
+pnpm dlx @mp-lb/arcnet@0.5.7 setup <project-slug> --dry-run
+pnpm dlx @mp-lb/arcnet@0.5.7 setup <project-slug>
 pnpm install
 pnpm exec arcnet check
 ```
