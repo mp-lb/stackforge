@@ -48,21 +48,21 @@ vercel:
     id: team_REPLACE_WITH_REAL_ID
   sites:
     web:
-      mode: existing
-      projectId: prj_REPLACE_WITH_REAL_ID
-      projectName: hello-world
+      mode: new
+      creationApproved: true
+      projectName: arcnet.hello-world.web
       root: apps/web
 ```
 
-The example placeholders must be replaced with actual account and project IDs. A new Vercel project uses `mode: new`, `creationApproved: false`, and an explicit `arcnet create <site>` operator step before deployment. That step records the package root and framework in Vercel. Set `framework: static`, `build`, `output`, or `outputConfig` only to override detection. The [legacy guide](LEGACY_SETUP.md#vercel-adapter-details) describes identity and routing checks in depth.
+Replace the account ID placeholder, review the site name, then set `approved: true` when ready to deploy. The first push to `main` creates a missing Vercel project in that exact account; later pushes verify and reuse it. Keep `creationApproved: false` to prevent creation. To reference a project that ArcNet must never create, use `mode: existing` with its verified `projectId` and `projectName`. Set `framework: static`, `build`, `output`, or `outputConfig` only to override detection. The [legacy guide](LEGACY_SETUP.md#vercel-adapter-details) describes identity and routing checks in depth.
 
 ## Install and check
 
 From the project root, after adding `arcnet.yaml` and any needed Dockerfiles:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.5.7 setup <project-slug> --dry-run
-pnpm dlx @mp-lb/arcnet@0.5.7 setup <project-slug>
+pnpm dlx @mp-lb/arcnet@0.5.8 setup <project-slug> --dry-run
+pnpm dlx @mp-lb/arcnet@0.5.8 setup <project-slug>
 pnpm install
 pnpm exec arcnet check
 ```
@@ -92,6 +92,6 @@ For Terraform services, `variables:` in `arcnet.yaml` holds committed non-secret
 
 For GCP services, complete the [environment prerequisites](environment/setup.md), including billing, Terraform state, provider credentials, DNS ownership, and initial CI identity. Set `identity.workloadIdentityProvider` and `identity.serviceAccount` in `arcnet.yaml` after the first operator deployment establishes them. Review `arcnet plan` and the expected Terraform changes before enabling `approved: true`. The generated workflow then deploys selected services on pushes to `main`. Verify the actual Actions run, service health, DNS, and TLS.
 
-For static Vercel references, verify the exact account and project with `arcnet inspect`, confirm any existing Git integration will not create unwanted duplicate deployments, then enable `approved: true`. If a site declares a custom domain, the deploy secret mapping must supply `CLOUDFLARE_API_TOKEN` with DNS edit access to `vercel.dnsZone` as well as `VERCEL_TOKEN`.
+For Vercel sites, run `arcnet inspect` to verify existing identities and see which new projects are pending. Confirm any existing Git integration will not create unwanted duplicate deployments, then enable `approved: true`. A new project is created during the first approved deployment and then found by its configured name; the repository does not need to commit a generated project ID. If a site declares a custom domain, the deploy secret mapping must supply `CLOUDFLARE_API_TOKEN` with DNS edit access to `vercel.dnsZone` as well as `VERCEL_TOKEN`.
 
 Older installations continue to work with their committed `project.json`, `services.json`, `network.yaml`, `secrets.json`, and `zap.yaml` deployment block. Migrate them separately after reviewing their current Terraform or Vercel identity; do not run setup over an existing deployment. [Legacy installation and migration details](LEGACY_SETUP.md).
