@@ -140,7 +140,7 @@ The intended setup script first prints the required JSON shape, where to obtain 
 The outputs are:
 
 - **Non-secret environment configuration:** environment slug/GCP project ID, organization and account IDs, region, base domain, state bucket and resource references.
-- **Completed secrets JSON:** the manually supplied provider keys plus the generated GCP service-account key JSON. Store it privately and encrypt it for persistence/distribution.
+- **Completed secrets JSON:** the manually supplied provider keys and shared-service connections. Store it privately and encrypt it for persistence/distribution. GCP deploy identity is configured through Workload Identity Federation, not a JSON key.
 - **Setup/check report:** what exists, which checks passed, and any manual steps still required.
 
 Illustrative secrets shape for the planned tool (not a schema supported by today's runner):
@@ -151,8 +151,7 @@ Illustrative secrets shape for the planned tool (not a schema supported by today
     "cloudflare": { "apiToken": "REPLACE" },
     "vercel": { "apiToken": "REPLACE" },
     "mongodb": { "publicKey": "REPLACE", "privateKey": "REPLACE" },
-    "upstash": { "email": "REPLACE", "apiKey": "REPLACE" },
-    "gcp": { "serviceAccountKey": null }
+    "upstash": { "email": "REPLACE", "apiKey": "REPLACE" }
   },
   "connections": {
     "mongodb": "REPLACE",
@@ -161,11 +160,11 @@ Illustrative secrets shape for the planned tool (not a schema supported by today
 }
 ```
 
-For the requested key-based flow, setup creates a dedicated infrastructure service account, assigns its deployment permissions, creates a JSON key, and stores the complete parsed key object under `providers.gcp.serviceAccountKey`. `null` means pending setup, not an empty usable credential. Reruns reuse the recorded key; they must not create another key on every invocation. Rotation/revocation is explicit. If organization policy prohibits key creation, setup reports that constraint and requires the supported federation path rather than changing policy automatically.
+For each project, setup creates or binds a dedicated deploy service account, grants the permissions needed for that project's resources and configures GitHub OIDC/Google Workload Identity Federation. The project records the provider and service-account identifiers in `.arcnet/arcnet.yaml`. No service-account JSON key is generated. An operator can use gcloud/ADC for the initial bootstrap before CI federation exists.
 
-This environment credential file is an operator/deployment artifact, not app runtime configuration. Project onboarding must deliver the required deployment values through protected GitHub secrets or the company's encrypted-secret loader, and inject only app connection credentials into application services. The adapter maps JSON fields to provider environment variables and configures GCP authentication; simply assigning a JSON file to an arbitrary environment variable does not do this. Connection URLs handed to apps must use the project's namespace and scoped credentials, not a cluster administrator login.
+This environment credential file is an operator/deployment artifact, not app runtime configuration. Project onboarding must deliver non-GCP deployment values through protected GitHub secrets or the company's encrypted-secret loader, and inject only app connection credentials into application services. GCP CI authentication uses the configured federation identity. Connection URLs handed to apps must use the project's namespace and scoped credentials, not a cluster administrator login.
 
-**Not implemented yet:** the interactive/manual input instructions, key generation/merge, JSON adapter and GitHub handoff above. Today's generated Terraform workflow uses WIF and does not consume this GCP key field. Supporting the key-based flow requires an explicit workflow/authentication change as part of the environment tooling, not just generating a key file.
+**Not implemented yet:** the interactive/manual input instructions and full environment bootstrap/teardown tooling. Today's generated Terraform workflow already uses WIF; a shared GCP key field is neither required nor consumed.
 
 ### Storage and delivery boundaries
 
@@ -179,7 +178,7 @@ Use an encrypted JSON document as the environment's secret source if that is the
 
 A single centrally maintained JSON source is compatible with this model; giving every project its decrypted contents is not the isolation model. Deliver project-specific subsets/credentials. If every repo holds the same encrypted file and a key that decrypts all of it, filtering variables afterward does not prevent that repo from reading the other secrets.
 
-Current interfaces: Terraform Vercel uses `VERCEL_API_TOKEN`; the static Vercel adapter uses `VERCEL_TOKEN`. The standard provider configuration comes from the pinned ArcNet package. `ARCNET_ENV_JSON` is a JSON object of **application** secret values, not a universal provider-credentials loader. New projects keep non-secret app values under `variables:` in `.arcnet/arcnet.yaml`; legacy projects may still have `.arcnet/env.production.json`. The ArcNet CLI loads ordered encrypted Forum JSON sources, provisions per-file GitHub decryption keys, and selects operator credentials through a `deploy` consumer. See [project secrets and publishing](../SETUP.md#secrets-and-package-publishing). The current GCP CI workflow uses OIDC/WIF; the planned service-account-key JSON handoff above is not wired into it yet.
+Current interfaces: Terraform Vercel uses `VERCEL_API_TOKEN`; the static Vercel adapter uses `VERCEL_TOKEN`. The standard provider configuration comes from the pinned ArcNet package. `ARCNET_ENV_JSON` is a JSON object of **application** secret values, not a universal provider-credentials loader. New projects keep non-secret app values under `variables:` in `.arcnet/arcnet.yaml`; legacy projects may still have `.arcnet/env.production.json`. The ArcNet CLI loads ordered encrypted Forum JSON sources, provisions per-file GitHub decryption keys, and selects operator credentials through a `deploy` consumer. See [project secrets and publishing](../SETUP.md#secrets-and-package-publishing). GCP CI uses OIDC/WIF.
 
 ## 6. Onboard a project and enable push-to-deploy
 

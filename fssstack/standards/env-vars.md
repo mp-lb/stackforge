@@ -86,11 +86,9 @@ TODO: Add `zap env export` command to eliminate duplication.
 
 File Committed Purpose `.env.local` Yes Local non-secret values `.env` No Local secret values `.env.production` Yes Prod non-secret values `zap.yaml` Yes Local whitelists `env-map.yaml` Yes Prod whitelists (temporary) GitHub Secrets N/A Prod secret values
 
-## GitHub Secrets Baseline
+## Deployment credentials
 
-**Org-level secrets (inherited by all private repos):** `GCP_PROJECT_ID`, `GCP_SA_KEY`, `GCP_REGION`, `VERCEL_API_TOKEN`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ZONE_ID`
-
-Note: We use **Secrets**, not Actions variables, for these org-level values.
+FSS Stack does not require a deployment provider or an organization-wide GitHub secrets baseline. Deployment extensions define their own production configuration. For ArcNet, use project-specific GitHub OIDC/Google Workload Identity Federation for GCP deployments; do not create or distribute a `GCP_SA_KEY` JSON key. Put the target GCP project ID in the deployment configuration, not in a shared secret that every project inherits.
 
 **Repo-level secrets (add per-project):**
 
