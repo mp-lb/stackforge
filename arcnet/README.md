@@ -32,7 +32,7 @@ A package-only project selects no services: it needs no domain, Dockerfile, clou
 | Cloud Run APIs             | Per-project GCP service and container registry                                                  |
 | MongoDB Atlas              | Project-scoped database user on a shared cluster                                                |
 | Redis                      | Shared URL can be supplied through secrets; ArcNet does not provision project-scoped access yet |
-| S3                         | Per-project bucket                                                                              |
+| S3                         | Private per-project bucket; browser CORS follows configured app domains                         |
 | Bull workers               | Deferred; no qualified shared worker deployment                                                 |
 | npm publishing credentials | `publish` consumer supplies selected secrets to an existing release workflow                    |
 
