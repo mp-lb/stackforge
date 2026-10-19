@@ -34,7 +34,17 @@ For a Vercel site, set its package root. ArcNet detects Next.js and uses Vercel'
 
 When `aws-s3` is selected as the `s3` service, ArcNet defaults to the private bucket `arcnet.<project>.backend`; set `params.bucket` to choose another name. The default IAM user can list the bucket and get, put, and delete its objects, scoped to that bucket. Browser CORS follows HTTPS origins derived from declared service and Vercel site domains. The backend authorizes access and issues presigned URLs, so normal app domains need no separate CORS origin list.
 
-Put public production build values, including the frontend API URL, in `variables` in `.arcnet/arcnet.yaml`. ArcNet passes these to the site build; it does not import a root `.env.production` file. After deployment, check the public domain and the frontend's actual API target. Keep credentials in encrypted secrets sources.
+Store non-secret production values, including frontend API URLs, in Forum. List the standard file first and the project file second so project values override shared defaults:
+
+```yaml
+variables:
+  store: mp-lb/mp-lb
+  paths:
+    - /admin/standard-variables.json
+    - /projects/hello-world/variables.json
+```
+
+Run `arcnet variables sync` and commit the generated `.arcnet/variables/*.json` snapshots with `arcnet.yaml`. CI reads the snapshots and needs no Forum token. ArcNet passes the resolved values to builds and selected services; it does not import a root `.env.production` file. Keep credentials in encrypted secrets sources. Existing inline `variables:` maps remain supported during migration.
 
 Name newly created Vercel projects `arcnet.<project-slug>.<service-slug>` (for example, `arcnet.lexiquest.landing-page`). Keep the verified name of an existing project when referencing it; the ArcNet naming convention applies when creating a replacement.
 
@@ -63,8 +73,8 @@ Replace the account ID placeholder, review the site name, then set `approved: tr
 From the project root, after adding `arcnet.yaml` and any needed Dockerfiles:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.6.0 setup <project-slug> --dry-run
-pnpm dlx @mp-lb/arcnet@0.6.0 setup <project-slug>
+pnpm dlx @mp-lb/arcnet@0.7.0 setup <project-slug> --dry-run
+pnpm dlx @mp-lb/arcnet@0.7.0 setup <project-slug>
 pnpm install
 pnpm exec arcnet check
 ```
@@ -88,7 +98,7 @@ secrets:
 
 A library or CLI release still uses the project's Changesets workflow. To supply npm credentials from ArcNet, configure a `publish` consumer in `arcnet.yaml` and run the publish command through `pnpm exec arcnet env run --consumer publish -- <command>`. The release workflow must call that command; installation does not publish a package or rewrite an unrelated workflow. Public FSS Stack projects may use a GitHub `NPM_TOKEN` secret directly instead of Forum.
 
-For Terraform services, `variables:` in `arcnet.yaml` holds committed non-secret application values. Encrypted sources supply secret values; each service's `env` list selects which values it receives. The `deploy` consumer selects operator credentials. Do not put plaintext keys or connection URLs in the YAML.
+For Terraform services, `variables:` in `arcnet.yaml` selects ordered Forum non-secret files; their committed snapshots provide application values. Encrypted sources supply secret values; each service's `env` list selects which values it receives. The `deploy` consumer selects operator credentials. Do not put plaintext keys or connection URLs in the YAML.
 
 ## First deployment
 

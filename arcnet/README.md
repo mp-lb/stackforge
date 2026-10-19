@@ -9,8 +9,9 @@ A new installation has one project-owned configuration file. Add only the other 
 ```text
 project/
 ├── .arcnet/
-│   ├── arcnet.yaml                 project-specific services, public variables, identities, and secret-source map
+│   ├── arcnet.yaml                 project-specific services, Forum variable paths, identities, and secret-source map
 │   ├── <service>.Dockerfile        only for a container service
+│   ├── variables/*.json            synced non-secret Forum values, when configured
 │   └── secrets/*.json.enc          only when using encrypted Forum sources
 ├── .github/workflows/
 │   ├── deploy-arc.yaml             generated only when there is a deployable service
