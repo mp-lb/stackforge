@@ -88,7 +88,7 @@ For the internal Forum secrets convention, attach the standard encrypted source 
 ```yaml
 secrets:
   sources:
-    - key: STANDARD_SECRETS_KEY
+    - key: ARCNET_STANDARD_SECRETS_KEY
       store: mp-lb/mp-lb
       path: /admin/standard-secrets.json.enc
   consumers:
