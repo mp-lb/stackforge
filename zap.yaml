@@ -10,7 +10,7 @@ native:
     cmd: pnpm -C fssstack/shell --filter @example/fss-shell-example-backend dev
     env: "*"
 tasks:
-  compile-agents:
+  context-build:
     cmds:
       - npx -y @mp-lb/mdcompile context/index.md --optional --silent | fm compile --stdin -o AGENTS.md
       - npx -y @mp-lb/mdcompile context/index.md --optional --silent | fm compile --stdin -o CLAUDE.md
