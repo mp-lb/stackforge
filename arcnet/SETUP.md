@@ -30,7 +30,7 @@ services:
     env: [MONGODB_URL]
 ```
 
-For a Vercel site, set its package root. ArcNet detects Next.js and uses Vercel's framework build; named Vite, VitePress, and prerendered React Router packages use their `build` script and static output. Review the detected strategy in `arcnet plan`. A Vercel site can be selected alongside Terraform services in the same file. For a custom domain, set `vercel.dnsZone` and the site's `domain`; ArcNet attaches the domain to the referenced Vercel project and reconciles its Cloudflare DNS record during deployment. It does not manage Vercel Git integration.
+For a Vercel site, set its package root (`root: .` when the app is at the repository root). ArcNet detects Next.js and uses Vercel's framework build; named Vite, VitePress, and prerendered React Router packages use their `build` script and static output. Review the detected strategy in `arcnet plan`. A Vercel site can be selected alongside Terraform services in the same file. For a custom domain, set `vercel.dnsZone` and the site's `domain`; ArcNet attaches the domain to the referenced Vercel project and reconciles its Cloudflare DNS record during deployment. It does not manage Vercel Git integration.
 
 When `aws-s3` is selected as the `s3` service, ArcNet defaults to the private bucket `arcnet.<project>.backend`; set `params.bucket` to choose another name. The default IAM user can list the bucket and get, put, and delete its objects, scoped to that bucket. Browser CORS follows HTTPS origins derived from declared service and Vercel site domains. The backend authorizes access and issues presigned URLs, so normal app domains need no separate CORS origin list.
 
@@ -73,8 +73,8 @@ Replace the account ID placeholder, review the site name, then set `approved: tr
 From the project root, after adding `arcnet.yaml` and any needed Dockerfiles:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.7.2 setup <project-slug> --dry-run
-pnpm dlx @mp-lb/arcnet@0.7.2 setup <project-slug>
+pnpm dlx @mp-lb/arcnet@0.7.3 setup <project-slug> --dry-run
+pnpm dlx @mp-lb/arcnet@0.7.3 setup <project-slug>
 pnpm install
 pnpm exec arcnet check
 ```
