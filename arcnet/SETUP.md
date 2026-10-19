@@ -73,8 +73,8 @@ Replace the account ID placeholder, review the site name, then set `approved: tr
 From the project root, after adding `arcnet.yaml` and any needed Dockerfiles:
 
 ```sh
-pnpm dlx @mp-lb/arcnet@0.7.0 setup <project-slug> --dry-run
-pnpm dlx @mp-lb/arcnet@0.7.0 setup <project-slug>
+pnpm dlx @mp-lb/arcnet@0.7.1 setup <project-slug> --dry-run
+pnpm dlx @mp-lb/arcnet@0.7.1 setup <project-slug>
 pnpm install
 pnpm exec arcnet check
 ```
@@ -98,7 +98,7 @@ secrets:
 
 A library or CLI release still uses the project's Changesets workflow. To supply npm credentials from ArcNet, configure a `publish` consumer in `arcnet.yaml` and run the publish command through `pnpm exec arcnet env run --consumer publish -- <command>`. The release workflow must call that command; installation does not publish a package or rewrite an unrelated workflow. Public FSS Stack projects may use a GitHub `NPM_TOKEN` secret directly instead of Forum.
 
-For Terraform services, `variables:` in `arcnet.yaml` selects ordered Forum non-secret files; their committed snapshots provide application values. Encrypted sources supply secret values; each service's `env` list selects which values it receives. The `deploy` consumer selects operator credentials. Do not put plaintext keys or connection URLs in the YAML.
+For Terraform services, `variables:` in `arcnet.yaml` selects ordered Forum non-secret files; their committed snapshots provide application values. Encrypted sources supply secret values. `arcnet env` merges both pools before applying consumer mappings, with secrets taking precedence. Each service's `env` list selects which values it receives. The `deploy` consumer selects operator credentials. Do not put plaintext keys or connection URLs in the YAML.
 
 ## First deployment
 
