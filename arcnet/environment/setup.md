@@ -82,7 +82,17 @@ The bootstrap identity needs permissions at the resources it manages. Typical ro
 
 See Google's [project creation permissions](https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects) and [deployment-pipeline federation guide](https://docs.cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines). Prefer short-lived credentials and GitHub OIDC over committing a GCP service-account key.
 
-**Current grants are broader than that design:** the bundled `github-ci` module gives the project deployer Project Editor, Storage Admin on the shared state bucket, Service Usage Consumer on the network quota project and, when configured, Billing Costs Manager on the billing account. It grants GitHub Workload Identity User access based on repository name. A state key prefix is not an IAM boundary; the bucket-wide grant does not isolate projects' Terraform state. Review these grants before adopting the existing modules for another company. Numeric repository/owner identity conditions and narrower state access are improvements still to implement.
+**Current grants are broader than that design:** the bundled `github-ci` module gives the project deployer Project Editor, Storage Admin on the shared state bucket and, when configured, Billing Costs Manager on the billing account. It grants GitHub Workload Identity User access based on repository name. The environment bootstrap operator must separately grant that deployer `roles/serviceusage.serviceUsageConsumer` on the platform quota project before the first CI deployment; a project CI identity cannot administer platform IAM. A state key prefix is not an IAM boundary; the bucket-wide grant does not isolate projects' Terraform state. Review these grants before adopting the existing modules for another company. Numeric repository/owner identity conditions and narrower state access are improvements still to implement.
+
+For the current MapLab environment, after the first operator deployment creates `arc-deploy@arcnet-<slug>.iam.gserviceaccount.com`, grant quota-project access from an operator account:
+
+```sh
+gcloud projects add-iam-policy-binding arcnet-platform \
+  --member="serviceAccount:arc-deploy@arcnet-<slug>.iam.gserviceaccount.com" \
+  --role=roles/serviceusage.serviceUsageConsumer
+```
+
+This is an environment-level bootstrap grant. Remove it when retiring the project; project Terraform does not own it.
 
 ### API enablement
 
