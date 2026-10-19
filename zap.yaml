@@ -12,8 +12,8 @@ native:
 tasks:
   compile-agents:
     cmds:
-      - npx -y @mp-lb/mdcompile agents-md/index.md -o AGENTS.md --optional --silent
-      - npx -y @mp-lb/mdcompile agents-md/index.md -o CLAUDE.md --optional --silent
+      - npx -y @mp-lb/mdcompile context/index.md --optional --silent | fm compile --stdin -o AGENTS.md
+      - npx -y @mp-lb/mdcompile context/index.md --optional --silent | fm compile --stdin -o CLAUDE.md
   setup:
     cmds:
       - pnpm -C fssstack/shell install --frozen-lockfile
