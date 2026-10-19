@@ -43,6 +43,7 @@ yarn-error.log*
 next-env.d.ts
 
 .zap
+.forum/
 
 # Agent files are compiled from agents-md/index.md via `zap t compile-agents`; not committed.
 /CLAUDE.md

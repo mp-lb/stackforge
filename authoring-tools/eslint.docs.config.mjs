@@ -6,7 +6,7 @@ import tseslint from "typescript-eslint";
 const eslintDocsConfig = [
   {
     ignores: [
-      ".doctrine/**",
+      ".forum/**",
       ".next/**",
       "node_modules/**",
       "flatpack-docs/scripts/**",
