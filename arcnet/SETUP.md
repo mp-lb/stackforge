@@ -32,7 +32,7 @@ services:
 
 For a Vercel site, set its package root. ArcNet detects Next.js and uses Vercel's framework build; named Vite, VitePress, and prerendered React Router packages use their `build` script and static output. Review the detected strategy in `arcnet plan`. A Vercel site can be selected alongside Terraform services in the same file. For a custom domain, set `vercel.dnsZone` and the site's `domain`; ArcNet attaches the domain to the referenced Vercel project and reconciles its Cloudflare DNS record during deployment. It does not manage Vercel Git integration.
 
-When `aws-s3` is selected, ArcNet configures browser CORS for HTTPS origins derived from the declared service and Vercel site domains. The bucket stays private; the backend authorizes access and issues presigned URLs. No separate CORS origin list is needed for normal app domains.
+When `aws-s3` is selected as the `s3` service, ArcNet defaults to the private bucket `arcnet.<project>.backend`; set `params.bucket` to choose another name. Browser CORS follows HTTPS origins derived from declared service and Vercel site domains. The backend authorizes access and issues presigned URLs, so normal app domains need no separate CORS origin list.
 
 Put public production build values, including the frontend API URL, in `variables` in `.arcnet/arcnet.yaml`. ArcNet passes these to the site build; it does not import a root `.env.production` file. After deployment, check the public domain and the frontend's actual API target. Keep credentials in encrypted secrets sources.
 
