@@ -1,6 +1,6 @@
 # ArcNet
 
-ArcNet adds publishing credentials and selected deployments to an existing project. It does not require FSS Stack; the current installer expects Zap, pnpm, and GitHub. [Project setup](SETUP.md) · [Environment setup](environment/setup.md) · [FSS Stack extension](../fssstack/extensions/arcnet.md)
+ArcNet adds publishing credentials and selected deployments to an existing project. It does not require FSS Stack; the current installer expects Zap, pnpm, and GitHub. [Project setup](SETUP.md) · [Initial environment setup](initial-setup.md) · [FSS Stack extension](../fssstack/extensions/arcnet.md)
 
 The examples below use the current `mp-lb` environment preset. ArcNet still needs a configurable environment preset before another organization can install it without MapLab-specific defaults.
 
@@ -39,4 +39,4 @@ A package-only project selects no services: it needs no domain, Dockerfile, clou
 | Bull workers               | Deferred; no qualified shared worker deployment                                                 |
 | npm publishing credentials | `publish` consumer supplies selected secrets to an existing release workflow                    |
 
-Shared services use the project slug as the naming boundary; credentials must also enforce access isolation. [Domain lifecycle design](DOMAINS.md) · [Audit](AUDIT.md).
+Shared services use the project slug as the naming boundary; credentials must also enforce access isolation. [Domain lifecycle design](domains.md) · [Audit](audit.md).

@@ -1,6 +1,6 @@
 # Set up a new ArcNet environment
 
-An ArcNet environment is the company-owned infrastructure and configuration that projects deploy into. Create it once, then onboard projects through the [project setup guide](../SETUP.md). A different company supplies its own accounts, billing, domain, network configuration and credentials; it does not reuse MAP Lab's identifiers or secrets.
+An ArcNet environment is the company-owned infrastructure and configuration that projects deploy into. Create it once, then onboard projects through the [project setup guide](SETUP.md). A different company supplies its own accounts, billing, domain, network configuration and credentials; it does not reuse MAP Lab's identifiers or secrets.
 
 **Status:** this is a setup runbook and a specification for the missing automation. `zap arc bootstrap` implements part of the GCP bootstrap today. `arcnet environment domain-owner` delegates an already verified base domain to a deploy identity. Full environment infrastructure as code, environment teardown, shared Redis/Bull hosting and a domain-map generator are not implemented. No cloud changes are performed by reading or applying the project extension alone.
 
@@ -8,9 +8,9 @@ For the current `mp-lb` environment, new projects select the versioned preset wi
 
 ## Location and ownership
 
-This folder owns the environment setup guide. Reusable executable tooling belongs in [`@mp-lb/arcnet`](https://github.com/mp-lb/tools/tree/main/packages/arcnet); environment bootstrap, health checks, inventory and teardown remain to be implemented there. These are environment operations, not application Zap tasks. Project installation uses the published CLI described in [project setup](../SETUP.md).
+This guide owns environment setup. Reusable executable tooling belongs in [`@mp-lb/arcnet`](https://github.com/mp-lb/tools/tree/main/packages/arcnet); environment bootstrap, health checks, inventory and teardown remain to be implemented there. These are environment operations, not application Zap tasks. Project installation uses the published CLI described in [project setup](SETUP.md).
 
-Only this guide exists in this folder today; the environment lifecycle scripts have not been implemented. Keep actual credentials and private company configuration outside this public source folder and pass their locations explicitly. New tooling must not depend on an implicit `~/.config/zap-arc` pointer. The existing Zap bootstrap is described below as legacy behavior, not the intended entry point.
+The environment lifecycle scripts have not been implemented. Keep actual credentials and private company configuration outside this public source folder and pass their locations explicitly. New tooling must not depend on an implicit `~/.config/zap-arc` pointer. The existing Zap bootstrap is described below as legacy behavior, not the intended entry point.
 
 ## Environment inputs
 
@@ -139,7 +139,7 @@ For the `mp-lb` preset, a web service defaults to `<project-slug>.mp-lb.dev` and
 
 For a dedicated project domain, first confirm that the registration is active and its nameservers delegate to the intended Cloudflare zone. An existing Cloudflare zone is not enough if the domain has expired or its registry delegation is missing. Set each Terraform web service's `domain` and top-level `dns-zone` to that zone; set `vercel.dnsZone` and each Vercel site's `domain` separately. For example, `api.example.app` may use `dns-zone: example.app`, while the Vercel site uses `dnsZone: example.app` and `domain: example.app`. The standing CI token should have Zone Read and DNS Write for all zones in the environment's Cloudflare account, including future zones. With that one-time token scope in place, the project change is its YAML plus a push. Verify the base domain in Google Search Console and delegate ownership to the project deploy identity before applying a Cloud Run domain mapping.
 
-DNS records alone are not sufficient: attach each hostname to its hosting provider and complete ownership/TLS verification. Cloud Run's current module uses domain mappings and Cloudflare; follow the [first-deployment requirements](../SETUP.md#before-the-first-live-deployment). For configured Vercel sites, ArcNet attaches the domain to the referenced project and reconciles the Cloudflare DNS record during deployment; provider-requested verification records may still require attention. See [Vercel domain setup](https://vercel.com/docs/domains/working-with-domains/add-a-domain). Do not assume a wildcard record or certificate for the environment covers every nested project/service name.
+DNS records alone are not sufficient: attach each hostname to its hosting provider and complete ownership/TLS verification. Cloud Run's current module uses domain mappings and Cloudflare; follow the [first-deployment requirements](SETUP.md#add-arcnet-to-a-project). For configured Vercel sites, ArcNet attaches the domain to the referenced project and reconciles the Cloudflare DNS record during deployment; provider-requested verification records may still require attention. See [Vercel domain setup](https://vercel.com/docs/domains/working-with-domains/add-a-domain). Do not assume a wildcard record or certificate for the environment covers every nested project/service name.
 
 Google currently classifies [Cloud Run domain mappings](https://docs.cloud.google.com/run/docs/mapping-custom-domains) as Preview and recommends a global external Application Load Balancer for production. ArcNet's current module uses the mapping, so an applied Terraform plan or a `CertificateProvisioned` condition does not replace an actual HTTPS request check. Certificate issuance can take up to 24 hours. Keep the old working host until the new host serves requests successfully.
 
@@ -192,12 +192,12 @@ Use an encrypted JSON document as the environment's secret source if that is the
 
 A single centrally maintained JSON source is compatible with this model; giving every project its decrypted contents is not the isolation model. Deliver project-specific subsets/credentials. If every repo holds the same encrypted file and a key that decrypts all of it, filtering variables afterward does not prevent that repo from reading the other secrets.
 
-Current interfaces: Terraform Vercel uses `VERCEL_API_TOKEN`; the static Vercel adapter uses `VERCEL_TOKEN`. The standard provider configuration comes from the pinned ArcNet package. `ARCNET_ENV_JSON` is a JSON object of **application** secret values, not a universal provider-credentials loader. New projects list non-secret Forum JSON paths under `variables:` in `.arcnet/arcnet.yaml` and commit snapshots from `arcnet variables sync`; legacy projects may still have inline variables or `.arcnet/env.production.json`. The ArcNet CLI loads ordered encrypted Forum JSON sources, provisions per-file GitHub decryption keys, and selects operator credentials through a `deploy` consumer. See [project secrets and publishing](../SETUP.md#secrets-and-package-publishing). GCP CI uses OIDC/WIF.
+Current interfaces: Terraform Vercel uses `VERCEL_API_TOKEN`; the static Vercel adapter uses `VERCEL_TOKEN`. The standard provider configuration comes from the pinned ArcNet package. `ARCNET_ENV_JSON` is a JSON object of **application** secret values, not a universal provider-credentials loader. New projects list non-secret Forum JSON paths under `variables:` in `.arcnet/arcnet.yaml` and commit snapshots from `arcnet variables sync`; legacy projects may still have inline variables or `.arcnet/env.production.json`. The ArcNet CLI loads ordered encrypted Forum JSON sources, provisions per-file GitHub decryption keys, and selects operator credentials through a `deploy` consumer. See [project setup](SETUP.md). GCP CI uses OIDC/WIF.
 
 ## 6. Onboard a project and enable push-to-deploy
 
 1. Reserve the project slug, provider destinations, public domains and shared-service namespaces.
-2. Install the [project files](../README.md#files-in-a-project) using [SETUP.md](../SETUP.md), including application-specific build/Docker settings. Choose existing provider projects explicitly; current mixed Terraform/Vercel-reference limitations still apply.
+2. Install the [project files](README.md#files-in-a-project) using [SETUP.md](SETUP.md), including application-specific build/Docker settings. Choose existing provider projects explicitly; current mixed Terraform/Vercel-reference limitations still apply.
 3. Bind the project to the versioned environment preset, project-scoped data access and deployment credentials.
 4. Complete initial provisioning with the bootstrap/operator identity. The current Terraform first deployment creates the workload GCP project, image registry and GitHub OIDC trust; CI cannot use that trust before it exists.
 5. Configure the GitHub environment, actual WIF provider/service-account values, secret delivery and production approval. Verify a deployment and health/DNS/TLS before treating onboarding as complete.
@@ -210,11 +210,12 @@ Account creation, domain ownership, shared infrastructure and the first identity
 The environment tooling belongs here in Stackforge, with declarative Terraform resources and CLI/API calls for bootstrap prerequisites. It uses environment state separate from application state. The planned source layout is:
 
 ```text
-stackforge/arcnet/environment/
-├── setup.md                     This guide and input contract
-├── infrastructure/              Environment Terraform definitions (planned)
-├── scripts/                     Setup, checks, analysis and teardown (planned)
-└── tests/                       Environment lifecycle tests (planned)
+stackforge/arcnet/
+├── initial-setup.md             This guide and input contract
+└── environment/                 Planned environment tooling
+    ├── infrastructure/          Environment Terraform definitions
+    ├── scripts/                 Setup, checks, analysis and teardown
+    └── tests/                   Environment lifecycle tests
 ```
 
 Supply the company-specific configuration and encrypted secrets from an explicit external location. They are inputs to this tooling, not files to commit under Stackforge. MongoDB and Upstash are provisioned manually and treated as referenced resources; environment teardown must preserve them.
