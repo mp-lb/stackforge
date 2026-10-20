@@ -9,7 +9,6 @@ Start with a working Zap/pnpm/GitHub project and an [ArcNet environment](initial
    project: hello-world
    repository: mp-lb/hello-world
    environment: mp-lb
-   approved: false
    variables:
      store: mp-lb/mp-lb
      paths: [/admin/standard-variables.json]
@@ -20,7 +19,6 @@ Start with a working Zap/pnpm/GitHub project and an [ArcNet environment](initial
      sites:
        web:
          mode: new
-         creationApproved: true
          projectName: arcnet.hello-world.web
          root: apps/web
    ```
@@ -36,10 +34,10 @@ Start with a working Zap/pnpm/GitHub project and an [ArcNet environment](initial
    pnpm exec arcnet check
    ```
 
-3. Set `approved: true`, commit the generated files, and push to `main`. For Cloud Run, complete the first-deployment step below **before** pushing.
+3. Commit the generated files and push to `main`. For Cloud Run, complete the first-deployment step below **before** pushing.
 
 Omit `variables` and its sync command if no Forum values are needed. If YAML lists encrypted `secrets` sources, run `pnpm exec arcnet secrets add --key KEY --store STORE --path PATH --repository OWNER/REPO` for each source before `arcnet check`.
 
-**First Cloud Run deployment:** An authorized operator must run `arcnet plan` and `arcnet deploy` locally before pushing the approved configuration. This creates GitHub's GCP trust relationship. Then add the resulting `identity` values to `arcnet.yaml` and push. [Environment prerequisites](initial-setup.md).
+**First Cloud Run deployment:** An authorized operator must run `arcnet plan` and `arcnet deploy` locally before pushing. This creates GitHub's GCP trust relationship. Then add the resulting `identity` values to `arcnet.yaml` and push. [Environment prerequisites](initial-setup.md).
 
 [Project files and supported capabilities](README.md) · [Command reference](https://github.com/mp-lb/tools/tree/main/packages/arcnet/docs/public)

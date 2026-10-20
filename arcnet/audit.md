@@ -8,7 +8,7 @@ Compare the project to the current [setup guide](SETUP.md) without changing infr
 - Container services have `.arcnet/<service>.Dockerfile`. Package-only projects have no Dockerfile or deploy workflow. Terraform and static Vercel projects have one `.github/workflows/deploy-arc.yaml` generated from the selected mode.
 - Encrypted Forum sources, if used, have reviewed ciphertext files under `.arcnet/secrets/` and one generated `.github/workflows/validate-arcnet-secrets.yaml`. Check source order, GitHub key names and consumer mappings. Application keys are whitelisted in the selected service's `env` list.
 - `zap.yaml` remains the local-development declaration and has no duplicate `deploy:` block. The root package manifest pins `@mp-lb/arcnet` and its lockfile agrees.
-- Check service build/output paths, image entrypoints, health ports, public domains, provider identities, workflow permissions, approval state, and actual deployment results. A passing offline `arcnet check` does not prove cloud health.
+- Check service build/output paths, image entrypoints, health ports, public domains, provider identities, workflow permissions, and actual deployment results. A passing offline `arcnet check` does not prove cloud health.
 
 ## Negative checks
 

@@ -31,7 +31,7 @@ A package-only project selects no services: it needs no domain, Dockerfile, clou
 
 | Capability                 | Current behavior                                                                                |
 | -------------------------- | ----------------------------------------------------------------------------------------------- |
-| Vercel sites               | Creates missing approved projects on first deploy; static or Next.js builds and optional domains |
+| Vercel sites               | Creates missing named projects on first deploy; static or Next.js builds and optional domains |
 | Cloud Run APIs             | Per-project GCP service and container registry                                                  |
 | MongoDB Atlas              | Project-scoped database user on a shared cluster                                                |
 | Redis                      | Shared URL can be supplied through secrets; ArcNet does not provision project-scoped access yet |

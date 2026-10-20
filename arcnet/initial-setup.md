@@ -200,7 +200,7 @@ Current interfaces: Terraform Vercel uses `VERCEL_API_TOKEN`; the static Vercel 
 2. Install the [project files](README.md#files-in-a-project) using [SETUP.md](SETUP.md), including application-specific build/Docker settings. Choose existing provider projects explicitly; current mixed Terraform/Vercel-reference limitations still apply.
 3. Bind the project to the versioned environment preset, project-scoped data access and deployment credentials.
 4. Complete initial provisioning with the bootstrap/operator identity. The current Terraform first deployment creates the workload GCP project, image registry and GitHub OIDC trust; CI cannot use that trust before it exists.
-5. Configure the GitHub environment, actual WIF provider/service-account values, secret delivery and production approval. Verify a deployment and health/DNS/TLS before treating onboarding as complete.
+5. Configure the GitHub environment, actual WIF provider/service-account values and secret delivery. Verify a deployment and health/DNS/TLS before treating onboarding as complete.
 6. Commit the ready configuration. From then on, pushes to main build and deploy through GitHub Actions.
 
 Account creation, domain ownership, shared infrastructure and the first identity bootstrap are the prerequisites that make step 6 simple. Merely copying project files and supplying arbitrary API keys is not sufficient today.
