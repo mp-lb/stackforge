@@ -28,8 +28,8 @@ Start with a working Zap/pnpm/GitHub project and an [ArcNet environment](initial
 2. Install and check:
 
    ```sh
-   pnpm dlx @mp-lb/arcnet@latest variables sync
-   pnpm dlx @mp-lb/arcnet@latest setup hello-world
+   npx -y @mp-lb/arcnet@latest variables sync
+   npx -y @mp-lb/arcnet@latest setup hello-world
    pnpm install
    pnpm exec arcnet check
    ```
