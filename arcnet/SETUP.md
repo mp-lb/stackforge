@@ -42,4 +42,4 @@ Omit `variables` and its sync command if no Forum values are needed. If YAML lis
 
 **First Cloud Run deployment:** An authorized operator must run `arcnet plan` and `arcnet deploy` locally before pushing the approved configuration. This creates GitHub's GCP trust relationship. Then add the resulting `identity` values to `arcnet.yaml` and push. [Environment prerequisites](environment/setup.md).
 
-[Project files and supported capabilities](README.md) · [Command reference](https://github.com/mp-lb/tools/tree/main/packages/arcnet/docs/public) · [Existing installations and unusual setups](LEGACY_SETUP.md)
+[Project files and supported capabilities](README.md) · [Command reference](https://github.com/mp-lb/tools/tree/main/packages/arcnet/docs/public)

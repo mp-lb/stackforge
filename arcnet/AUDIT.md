@@ -21,4 +21,4 @@ Report each as pass, fail, not applicable or unverified, with file evidence:
 - Worker deployments through the deprecated GCE container startup mechanism, or claims that shared Redis/Bull access controls are implemented when they are not.
 - Domains, DNS records, callbacks or redirects that no longer match the selected services.
 
-Older multi-file projects are **legacy installations**, not automatically broken. Compare them against [the legacy guide](LEGACY_SETUP.md), then plan a reviewed migration before deleting files or changing Terraform state. Do not run new setup over them. Report the smallest fix for each finding and distinguish code/config evidence from live provider verification.
+Older multi-file projects are **legacy installations**, not automatically broken. Compare them against the [current setup](SETUP.md), then plan a reviewed migration before deleting files or changing Terraform state. Do not run new setup over them. Report the smallest fix for each finding and distinguish code/config evidence from live provider verification.
