@@ -3,3 +3,5 @@ git:
 sync:
   - target: fssstack
     store: mp-lb/fssstack
+  - target: arcnet
+    store: mp-lb/arcnet
