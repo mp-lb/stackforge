@@ -79,14 +79,13 @@ pnpm dlx @mp-lb/arcnet@latest variables sync # when variables: uses Forum paths
 pnpm dlx @mp-lb/arcnet@latest setup <project-slug> --dry-run
 pnpm dlx @mp-lb/arcnet@latest setup <project-slug>
 pnpm install
-pnpm exec arcnet check
 ```
 
-Setup pins the package, adds a deploy workflow only for selected services, and does not alter `zap.yaml`. A package-only project gets no deployment workflow. `check` and static Vercel `plan` are offline; Terraform `plan` contacts providers. Setup does not create cloud resources or approve deployment.
+Provision any declared secrets in the next step, then run `pnpm exec arcnet check`. A project without encrypted secrets can run it immediately. Setup pins the package, adds a deploy workflow only for selected services, and does not alter `zap.yaml`. A package-only project gets no deployment workflow. `check` and static Vercel `plan` are offline; Terraform `plan` contacts providers. Setup does not create cloud resources or approve deployment.
 
 ## Secrets and package publishing
 
-For the internal Forum secrets convention, attach the standard encrypted source with `arcnet secrets add --key <GITHUB_SECRET_NAME>` and add a project source only if it has project-specific values. The `secrets:` section needs only each source's `key`, `store`, and `path`, plus consumer mappings. ArcNet stores the ciphertext at `.arcnet/secrets/<KEY>.json.enc`; `arcnet secrets sync` refreshes it and generates the validation workflow. CI uses each source's GitHub decryption key and does not need a Forum login. [Legacy guide: source provisioning and local password mode](LEGACY_SETUP.md#layered-secrets).
+For the internal Forum secrets convention, you may declare sources and consumer mappings in `arcnet.yaml` before provisioning. Declaring a source does not create its GitHub key. After setup, run `arcnet secrets add` for each existing Forum file; it creates the missing recipient and GitHub key even when the source is already listed in YAML. Add a project source only if it has project-specific values. ArcNet stores the ciphertext at `.arcnet/secrets/<KEY>.json.enc`; `arcnet secrets sync` refreshes it and generates the validation workflow. CI uses each source's GitHub decryption key and does not need a Forum login. [Legacy guide: source provisioning and local password mode](LEGACY_SETUP.md#layered-secrets).
 
 ```yaml
 secrets:
@@ -98,6 +97,14 @@ secrets:
     publish:
       NODE_AUTH_TOKEN: NPM_TOKEN
 ```
+
+For the example above, run this from the project root and enter the Forum password locally:
+
+```sh
+arcnet secrets add --key ARCNET_STANDARD_SECRETS_KEY --store mp-lb/mp-lb --path /admin/standard-secrets.json.enc --repository mp-lb/<project-slug>
+```
+
+Run `pnpm exec arcnet check`, then commit `arcnet.yaml` and the generated encrypted snapshot. On subsequent runs, a source with its GitHub key already present is left unchanged; use `arcnet secrets sync` when the Forum file changes.
 
 A library or CLI release still uses the project's Changesets workflow. To supply npm credentials from ArcNet, configure a `publish` consumer in `arcnet.yaml` and run the publish command through `pnpm exec arcnet env run --consumer publish -- <command>`. The release workflow must call that command; installation does not publish a package or rewrite an unrelated workflow. Public FSS Stack projects may use a GitHub `NPM_TOKEN` secret directly instead of Forum.
 
