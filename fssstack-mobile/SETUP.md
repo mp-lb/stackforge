@@ -30,7 +30,7 @@ Copy everything in `snippets/` over the new repo (workflows go to
 interpolate:
 
 ```bash
-node <stackforge>/guides/react-native/scripts/apply-inputs.mjs inputs.env .
+node <stackforge>/fssstack-mobile/scripts/apply-inputs.mjs inputs.env .
 ```
 
 Link EAS and re-run interpolation for the project ID:
@@ -39,7 +39,7 @@ Link EAS and re-run interpolation for the project ID:
 npm install -g eas-cli && eas login
 eas init --force    # creates/links under EXPO_OWNER; default MAP Lab owner is mp-lb
 eas update:configure
-node <stackforge>/guides/react-native/scripts/apply-inputs.mjs inputs.env .
+node <stackforge>/fssstack-mobile/scripts/apply-inputs.mjs inputs.env .
 ```
 
 Add `.env.production` (committed; no secrets):

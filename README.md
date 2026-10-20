@@ -9,7 +9,8 @@ Stackforge is the workbench for FSS Stack: a thin wrapper around separate workin
 - `flatpack-shell/`: Minimal working target-repo shell monorepo.
 - `fssstack/`: Forum content (store `mp-lb/fssstack`) for creating FSS Stack target projects.
 - `arcnet/`: opt-in deployment onboarding and non-secret network configuration; see [setup and migration prerequisites](arcnet/README.md). The engine stays in Zapper.
-- `guides/`: the **advisory** tier — strong-default playbooks where deviation is expected (macos, security, and publishing as single files; `react-native/` as a subfolder because it carries snippets and rollout state). Contrast with the **canon** tier above (`fssstack/`), which is followed to a tee. Plain git for now.
+- `fssstack-mobile/`: mobile setup and release guidance, templates, and snippets for FSS Stack projects.
+- `guides/`: the **advisory** tier — strong-default playbooks where deviation is expected. Contrast with the **canon** tier above (`fssstack/`), which is followed to a tee. Plain git for now.
 - `examples/`: local generated repos and experiments.
 
 ## Commands
