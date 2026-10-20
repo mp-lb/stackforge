@@ -59,7 +59,7 @@ variables:
   paths:
     - /admin/standard-variables.json
 vercel:
-  # Account comes from ARCNET_VERCEL_ACCOUNT_ID in standard variables.
+  # Team comes from VERCEL_TEAM_ID in standard variables.
   sites:
     web:
       mode: new
@@ -68,7 +68,7 @@ vercel:
       root: apps/web
 ```
 
-Put `ARCNET_VERCEL_ACCOUNT_ID` in the environment's standard non-secret variables file once, then run `arcnet variables sync` before setup. ArcNet infers a team or personal account from the ID and uses the committed standard variables snapshot; an explicit `vercel.account` in YAML still overrides it. This keeps the shared account ID out of each project file. Review the site name, then set `approved: true` when ready to deploy. The first push to `main` creates a missing Vercel project in that exact account; later pushes verify and reuse it. Keep `creationApproved: false` to prevent creation. To reference a project that ArcNet must never create, use `mode: existing` with its verified `projectId` and `projectName`. Set `framework: static`, `build`, `output`, or `outputConfig` only to override detection. The [legacy guide](LEGACY_SETUP.md#vercel-adapter-details) describes identity and routing checks in depth.
+Put `VERCEL_TEAM_ID` in the environment's standard non-secret variables file once, then run `arcnet variables sync` before setup. ArcNet uses the committed standard variables snapshot; an explicit `vercel.account` in YAML still overrides it, including for personal accounts. This keeps the shared account ID out of each project file. Review the site name, then set `approved: true` when ready to deploy. The first push to `main` creates a missing Vercel project in that exact account; later pushes verify and reuse it. Keep `creationApproved: false` to prevent creation. To reference a project that ArcNet must never create, use `mode: existing` with its verified `projectId` and `projectName`. Set `framework: static`, `build`, `output`, or `outputConfig` only to override detection. The [legacy guide](LEGACY_SETUP.md#vercel-adapter-details) describes identity and routing checks in depth.
 
 ## Install and check
 
