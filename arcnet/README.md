@@ -2,6 +2,8 @@
 
 ArcNet adds publishing credentials and selected deployments to an existing project. It does not require FSS Stack; the current installer expects Zap, pnpm, and GitHub. [Project setup](SETUP.md) · [Environment setup](environment/setup.md) · [FSS Stack extension](../fssstack/extensions/arcnet.md)
 
+The examples below use the current `mp-lb` environment preset. ArcNet still needs a configurable environment preset before another organization can install it without MapLab-specific defaults.
+
 ## Files in a project
 
 A new installation has one project-owned configuration file. Add only the other files that the selected capabilities need:
