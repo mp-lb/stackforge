@@ -95,6 +95,7 @@ secrets:
       path: /admin/standard-secrets.json.enc
   consumers:
     publish:
+      NPM_TOKEN: NPM_TOKEN
       NODE_AUTH_TOKEN: NPM_TOKEN
 ```
 
@@ -106,7 +107,7 @@ arcnet secrets add --key ARCNET_STANDARD_SECRETS_KEY --store mp-lb/mp-lb --path 
 
 Run `pnpm exec arcnet check`, then commit `arcnet.yaml` and the generated encrypted snapshot. On subsequent runs, a source with its GitHub key already present is left unchanged; use `arcnet secrets sync` when the Forum file changes.
 
-A library or CLI release still uses the project's Changesets workflow. To supply npm credentials from ArcNet, configure a `publish` consumer in `arcnet.yaml` and run the publish command through `pnpm exec arcnet env run --consumer publish -- <command>`. The release workflow must call that command; installation does not publish a package or rewrite an unrelated workflow. Public FSS Stack projects may use a GitHub `NPM_TOKEN` secret directly instead of Forum.
+FSS Stack's release workflow already runs its auto-publish script on `main`. When `arcnet setup` finds its marked publish step and an ArcNet secrets source, it adds the `publish` consumer above and changes that step to run through `pnpm exec arcnet env run --consumer publish -- node scripts/auto-publish.mjs`. ArcNet does not create the npm token; the configured encrypted source must contain `NPM_TOKEN`. Other projects keep ownership of their release workflow and can opt into the same handoff explicitly. FSS Stack projects without ArcNet continue to use a GitHub `NPM_TOKEN` secret directly.
 
 For Terraform services, `variables:` in `arcnet.yaml` selects ordered Forum non-secret files; their committed snapshots provide application values. Encrypted sources supply secret values. `arcnet env` merges both pools before applying consumer mappings, with secrets taking precedence. Each service's `env` list selects which values it receives. The `deploy` consumer selects operator credentials. Do not put plaintext keys or connection URLs in the YAML.
 

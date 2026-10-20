@@ -4,19 +4,23 @@ Run this from a folder containing only the setup inputs (`fssstack.yaml` and `fo
 
 ## Project configuration
 
-Read project values, apps, packages, and extensions from `fssstack.yaml`. Use `name`, `emoji`, and `description` for project metadata; `projectSlug` and `packagePrefix` for package naming; and `shadcnPreset` for frontend scaffolding. Each `frontends` entry provides the frontend slug in `name` and its framework in `type`. `backends` and `libs` contain backend and library slugs. Apply the selected `extensions` after the base project validates.
+Read project values, apps, packages, and extensions from `fssstack.yaml`. Use `name`, `emoji`, and `description` for project metadata; `projectSlug` and `packagePrefix` for package naming; `githubRepository` for GitHub workflow templating; and `shadcnPreset` for frontend scaffolding. Each `frontends` entry provides the frontend slug in `name` and its framework in `type`. `backends` and `libs` contain backend and library slugs. Apply the selected `extensions` after the base project validates.
 
 ## Shell
 
-Fetch the shell project files with the one-off CLI, install Forum CLI as a local workspace dev dependency, then fetch the helper scripts with the local CLI:
+Fetch the shell project files with the one-off CLI, then install Forum CLI as a local workspace dev dependency:
 
 ```bash
 npx -y @mp-lb/forum-cli pull --direct --store mp-lb/fssstack --path shell --target .
 pnpm add -Dw --save-exact @mp-lb/forum-cli
-pnpm exec fm pull --direct --store mp-lb/fssstack --path scripts --target scripts
 ```
 
 Use `pnpm exec fm` for subsequent Forum CLI commands from the project root.
+
+Template the shell before creating project packages: replace
+`REPLACE_WITH_OWNER/REPOSITORY` in `.github/workflows/release.yaml` with the
+`githubRepository` value from `fssstack.yaml`. This keeps the publish workflow
+scoped to the target repository from the initial setup.
 
 The shell is a working monorepo: the root workspace config, the shared
 `etc/` config that re-exports our published presets, the internal `core` /
@@ -278,7 +282,7 @@ Then, in `packages/<library slug>`:
   `tsconfig.build.json` for the emitted `dist`);
 - keep public exports small and explicit;
 - set `private: false` and `publishConfig.access: public` only on packages that should publish to npm;
-- replace `REPLACE_WITH_OWNER/REPOSITORY` in `.github/workflows/release.yaml` with the target GitHub repository and configure `NPM_TOKEN` (or trusted publishing) for that repository. The workflow compares packed files on every push to `main`; no changeset is needed.
+- configure `NPM_TOKEN` (or trusted publishing) for the target repository. The release workflow was templated from `githubRepository` during shell setup and compares packed files on every push to `main`; no changeset is needed.
 
 A library that ships a command-line tool is still a library: add a package `bin`, a `#!/usr/bin/env node` shebang on the entrypoint, and `chmod +x dist/index.js` in the build (see `packages/example-cli` for the shape). There is no separate CLI package type. See `docs/standards/clis.md` for command-line behaviour on top of the library baseline.
 

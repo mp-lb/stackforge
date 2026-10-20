@@ -25,7 +25,7 @@ project/
 
 The [ArcNet package](https://github.com/mp-lb/tools/tree/main/packages/arcnet) supplies the standard `mp-lb` environment, provider and Terraform defaults, deployment runners, and workflow templates. ArcNet renders Zap Arc's deployment input temporarily; a project does not commit a network snapshot or a second service list. Existing installations using `project.json`, `services.json`, `network.yaml`, or `secrets.json` remain supported until explicitly migrated.
 
-A package-only project selects no services: it needs no domain, Dockerfile, cloud project, or deploy workflow. It can use the `publish` secret consumer to supply npm credentials to its existing release workflow. [Publishing setup](SETUP.md#package-only-projects).
+A package-only project selects no services: it needs no domain, Dockerfile, cloud project, or deploy workflow. For an FSS Stack project, setup automatically wires the `publish` secret consumer into the marked auto-publish workflow. Other projects can use the same consumer with an explicit release-workflow handoff. [Publishing setup](SETUP.md#secrets-and-package-publishing).
 
 ## What ArcNet currently supports
 

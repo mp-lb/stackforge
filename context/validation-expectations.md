@@ -1,12 +1,12 @@
 ## Validation Expectations
 
-For `flatpack-shell/` changes, prefer:
+For `fssstack/shell/` changes, prefer:
 
 ```bash
-pnpm -C flatpack-shell install
-pnpm -C flatpack-shell typecheck
-pnpm -C flatpack-shell test
-pnpm -C flatpack-shell build
+pnpm -C fssstack/shell install
+pnpm -C fssstack/shell typecheck
+pnpm -C fssstack/shell test
+pnpm -C fssstack/shell build
 ```
 
 When validating local run behavior, use Zapper:
@@ -17,6 +17,10 @@ zap up
 zap o
 ```
 
-For `fssstack-start/` changes, use the fssstack-start commands. Before changing framework-sensitive Next.js behavior, check the relevant guide in `fssstack-start/node_modules/next/dist/docs/`.
+For `fssstack/` changes, compare the setup instructions against the actual
+`fssstack/shell/` shape. The docs must not assume this authoring checkout exists
+inside the generated target repo.
 
-For `fssstack/` changes, read `TARGET_PROJECT_SHAPE.md` if present and compare the instructions against the actual `flatpack-shell/` shape. The docs must not assume this authoring checkout exists inside the generated target repo.
+When a change alters the basic `fssstack.yaml` input contract, update the
+separate [FSS Stack Start repository](https://github.com/mp-lb/fssstack-start)
+as part of that work.

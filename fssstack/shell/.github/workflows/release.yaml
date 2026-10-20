@@ -28,6 +28,7 @@ jobs:
       - run: pnpm lint && pnpm typecheck && pnpm test
       - run: pnpm build
       - name: Publish changed package builds
+        # fssstack-publish-command
         run: node scripts/auto-publish.mjs
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
