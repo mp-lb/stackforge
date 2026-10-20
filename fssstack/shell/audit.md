@@ -94,7 +94,7 @@ Fetch and read the current setup instructions and input configuration template:
 
 ```bash
 npx -y @mp-lb/forum-cli read --store mp-lb/fssstack SETUP_PROCESS.md > "$audit_workspace/evidence/SETUP_PROCESS.md"
-npx -y @mp-lb/forum-cli read --store mp-lb/fssstack forum.example.yaml > "$audit_workspace/reference/forum.yaml"
+npx -y @mp-lb/forum-cli read --store mp-lb/fssstack sync.example.yaml > "$audit_workspace/reference/sync.yaml"
 ```
 
 Check that each fetch succeeded before using its output. Write the reconciled

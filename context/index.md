@@ -12,6 +12,8 @@ Stackforge is the authoring workbench for the FSS Stack setup system. It is not 
 
 @root-commands.md
 
+@forum-sync.md
+
 @forum-content-rules.md
 
 @validation-expectations.md
