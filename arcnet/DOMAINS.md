@@ -1,6 +1,6 @@
 # ArcNet domain management design
 
-**Status:** project domain commands and a dedicated domain map are proposed, not implemented. New projects declare service `domain` fields in `.arcnet/arcnet.yaml`; ArcNet derives conventional domains when omitted. Legacy installations still use `zap.yaml` service domains. Editing an obsolete setup input does not change a deployment.
+**Status:** project route add/remove commands and a dedicated domain map are proposed, not implemented. New projects declare service `domain` fields in `.arcnet/arcnet.yaml`, and ArcNet derives conventional domains when omitted. The standing CI token covers all Cloudflare zones in the environment account, so no per-domain token update command is needed. Legacy installations still use `zap.yaml` service domains. Editing an obsolete setup input does not change a deployment.
 
 ## Defaults and explicit routes
 
