@@ -16,11 +16,11 @@ A handful of CLI tools are installed and already authenticated on this machine �
 - **Google Cloud CLI (`gcloud`)**
 - **AWS CLI (`aws`)**
 - **Zapper** — our process manager and task runner.
-- **Doctrine** — our document sync system.
+- **Forum** — our document sync system.
 
 ## Git
 
-Some projects use git and some use Doctrine, so be aware of which kind you're in.
+Some projects use git and some use Forum, so be aware of which kind you're in.
 
 **Local-first.** Work happens locally. Branches isolate a piece of work before it merges to `main`. We **rarely push to GitHub — only to deploy**, from `main`, as a separate step. We never use PRs.
 
@@ -32,7 +32,7 @@ Some projects use git and some use Doctrine, so be aware of which kind you're in
 
 Many projects deploy via CI when you push `main`. To confirm a deploy landed, lean on `gh`: glance at how long recent runs took, then schedule a recheck on a fitting cadence rather than polling tightly. Specifics vary by project.
 
-## Doctrine
+## Forum
 
 Unlike GitHub there are no branches — there's always a single source of truth. **Sync before you edit:** the source lives in the cloud, so the local copy can be stale, and editing stale is how you get conflicts. Pull latest first. After syncing, we commit the synced files to git too, so they always live in the repo.
 

@@ -10,7 +10,7 @@ Read this file before making changes in this repository.
 - Do not add loose files at the repository root unless a tool requires the file at root.
 - Keep `forum.yaml` at the repository root so `npx -y @mp-lb/forum-cli` can discover checkout sync config.
 - Keep `README.md` at the repository root for install and publishing instructions.
-- Treat the public Doctrine store `mp-lb/skills` as the website for this repository.
+- Treat the public Forum store `mp-lb/skills` as the website for this repository.
 - After making changes, always run `npx -y @mp-lb/forum-cli sync`.
 
 ## Skill Folders

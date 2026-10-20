@@ -33,7 +33,6 @@
   "exclude": [
     "node_modules",
     "flatpack-docs",
-    "mp-lb-run",
     "scripts-src",
     "tests",
     "tsup.docs.config.ts",

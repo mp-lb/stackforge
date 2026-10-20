@@ -1,7 +1,7 @@
 defaults:
   store: mp-lb/fssstack
 git:
-  commit_message: Update doctrine docs
+  commit_message: Update Forum content
 sync:
   - target: docs/standards
     store: mp-lb/fssstack

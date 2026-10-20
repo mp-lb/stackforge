@@ -1,6 +1,6 @@
 # Skills
 
-Install skills from this public Doctrine store.
+Install skills from this public Forum store.
 
 ## Install
 

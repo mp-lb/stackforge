@@ -13,7 +13,6 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "flatpack-docs/**",
-    "mp-lb-run/**",
   ]),
 ]);
 

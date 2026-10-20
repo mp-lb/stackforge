@@ -317,12 +317,12 @@ secrets:
 - `.env.production` (committed): non-secret production config, e.g.
   `EXPO_PUBLIC_API_BASE_URL` and the Clerk *publishable* key.
 - `docs/secrets.json.enc`: one big encrypted JSON object of secrets, shared
-  with the main repo by mounting the same Doctrine store. Add a
+  with the main repo by mounting the same Forum store. Add a
   `forum.yaml` and sync:
 
   ```yaml
   git:
-    commit-message: Update doctrine docs
+    commit-message: Update Forum content
   sync:
     - target: docs
       store: <workspace>/<docs-store>

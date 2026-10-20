@@ -1,5 +1,5 @@
 git:
-  commit-message: "Update doctrine docs"
+  commit-message: "Update Forum content"
 sync:
   - target: fssstack
     store: mp-lb/fssstack

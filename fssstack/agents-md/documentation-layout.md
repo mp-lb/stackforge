@@ -11,7 +11,7 @@ This project's docs live under `docs/` with a fixed layout — keep to it:
   `docs/internals/`, never loose at the root.
 - **`docs/standards/`, `docs/extensions/`, `docs/examples/`, `docs/skills/` =
   Fssstack store references.** Shared content composed in via the project's
-  Doctrine store. Read-through; don't fork or edit casually.
+  Forum store. Read-through; don't fork or edit casually.
 - **`docs/public/`** *(libraries only)* — the opt-in published surface the docs
   site renders (see `standards/libs.md`). Everything else in `docs/` is
   unpublished by default.

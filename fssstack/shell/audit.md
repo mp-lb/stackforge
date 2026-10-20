@@ -63,7 +63,7 @@ ask the user to choose one of these paths:
    report its limitation, and do not treat it as the shared baseline.
 2. **Shared refresh:** delegate a separate worker a complete request containing
    the verified Stackforge path, target branch, exact HelloWorld input, required
-   Forum-source materialization and review, generator/tool versions, validation
+   Forum-source materialization and review, setup-tool versions, validation
    commands, commit instructions, and the requirement to preserve unrelated
    changes. The worker must generate outside the existing reference first,
    validate it, review the resulting diff, then replace the shared reference in
@@ -173,7 +173,7 @@ checks not run and why.
 Track **Unverified** separately for incomplete comparisons, inaccessible docs,
 unsupported scaffolds, or blocked validation. Do not force these into a verdict.
 Keep impact/severity separate from the category and review priority. Current
-Doctrine is the comparison baseline, not a reason to discard a justified design.
+Forum content is the comparison baseline, not a reason to discard a justified design.
 
 ## 5. Write `docs/audits/YYYY-MM-DD-fssstack.md` in the real project
 
@@ -210,7 +210,7 @@ Use this report structure:
 - Impact: High / Medium / Low, with a concrete explanation
 - Real project: path and relevant lines/behavior
 - Fresh reference: counterpart path and relevant lines/behavior
-- Doctrine: source document and section
+- Forum: source document and section
 - Difference and evidence:
 - Project-specific rationale (or missing evidence):
 - Recommendation: keep / document / investigate / align

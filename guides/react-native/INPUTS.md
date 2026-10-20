@@ -76,7 +76,7 @@ domain; hyphens allowed), `ANDROID_PACKAGE` (no hyphens allowed — drop them).
 ## 5. Tokens into the shared secrets file (5 minutes)
 
 Add to the shared encrypted secrets file (`docs/secrets.json.enc` via the
-Doctrine store — see SETUP_REACT_NATIVE.md §9 for the mechanics):
+Forum store — see SETUP_REACT_NATIVE.md §9 for the mechanics):
 
 - `EXPO_TOKEN` — Expo dashboard → account settings → access tokens.
 - `NODE_AUTH_TOKEN` — read-only token for the private tRPC package.

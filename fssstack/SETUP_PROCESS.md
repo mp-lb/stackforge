@@ -34,11 +34,9 @@ level:
 - **`@mp-lb/fssstack-platform`** (dep of `server` / `trpc`) — the server uses
   `createTrpc`, the structured logger, `AppError`, and the event schema.
 
-The **`scripts/` directory** holds the one remaining helper, `augment-docs-site.mjs`
-(used only when a library ships a docs site). It lives at the store's **top
-level, not inside `shell/`**, so the `shell` pull does not bring it — it needs
-its own pull (above). Everything else below is done by copying a shell example
-and editing it by hand.
+Everything below is done by copying a shell example, running the selected
+scaffolder, and applying the documented wiring by hand. There are no
+Stackforge-only setup scripts to fetch or run.
 
 ## Package naming
 
@@ -186,13 +184,11 @@ docs/examples/frontend/logging.md
 ## Docs Sites
 
 For a library that publishes a documentation site, scaffold a **Fumadocs** app on
-**React Router**, run the augment script, then finish the small bit of wiring it
-deliberately leaves to you:
+**React Router**, then apply the standard wiring directly:
 
 ```bash
 mkdir -p apps
 (cd apps && CI=1 npm create fumadocs-app@16.2.18 <docs slug> --template react-router --search orama --pm pnpm --no-git)
-node scripts/augment-docs-site.mjs . "<docs slug>"
 ```
 
 Fumadocs owns the generic React Router + MDX + search scaffold (the
@@ -204,17 +200,30 @@ prompts interactively (a linter `select`) even with flags passed, so `CI=1` make
 it take defaults and run unattended; it also ignores `--cwd` (it scaffolds into
 `./<docs slug>` in the current directory), so run it from `apps/`.
 
-`augment-docs-site.mjs <target> [docs slug]` does **only** this:
+Apply this wiring directly; it is intentionally ordinary setup work, not a
+separate generator:
 
-- rewrites `package.json` scripts so `dev` / `start` read the Zapper-injected
-  `${<DOCS_SLUG>_PORT}` (with a `4315` fallback), and adds `typecheck`;
-- adds the `serve` devDependency and writes `serve.json`, so `start` (static
-  serve of `build/client`) works out of the box;
-- writes `tsconfig.json` extending the shared `etc/tsconfig.frontend.json`
-  (creating that base if missing);
-- pins dependency ranges.
+- **Scripts and static server** — in `apps/<docs slug>/package.json`, set
+  `dev` to `react-router dev --host 0.0.0.0 --port ${<DOCS_SLUG>_PORT:-4315}`;
+  `build` to `react-router build`; `start` to
+  `serve ./build/client --config serve.json -l ${<DOCS_SLUG>_PORT:-4315}`;
+  `typecheck` to `react-router typegen && fumadocs-mdx && tsc --noEmit`; and
+  `postinstall` to `fumadocs-mdx`. Add `serve@14.2.6` as a dev dependency and
+  pin the scaffolded dependency ranges.
+- **Shared tsconfig** — create `etc/tsconfig.frontend.json` if it is absent:
+  ```json
+  { "extends": "@mp-lb/fssstack-config/tsconfig/frontend.json" }
+  ```
+  Then set `apps/<docs slug>/tsconfig.json` to extend
+  `../../etc/tsconfig.frontend.json`, retain the scaffold's framework-specific
+  compiler options, and include `**/*`, `**/.server/**/*`,
+  `**/.client/**/*`, and `.react-router/types/**/*`.
+- **Static-host config** — add `apps/<docs slug>/serve.json`:
+  ```json
+  { "rewrites": [{ "source": "/**", "destination": "/__spa-fallback.html" }] }
+  ```
 
-It does **not** rename the package or touch `zap.yaml` — finish those by hand:
+Finish the remaining project-specific wiring by hand:
 
 - **Package name** — set `apps/<docs slug>/package.json` `name` to
   `<package-scope>/<project-slug>-<docs slug>`, collapsing to
