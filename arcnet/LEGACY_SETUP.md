@@ -168,7 +168,7 @@ A file's decryption token does not authorize fetching it from Forum. Live loadin
 
 ## Maintainer validation
 
-Development and release happen in the tools repo under `packages/arcnet`. Run its typecheck, tests and build there. Tests cover dry runs, conflict handling, reruns, package layout, Vercel identity checks and published-engine Terraform rendering without applying infrastructure. The package release follows the tools repo’s Changesets workflow.
+Development and release happen in the tools repo under `packages/arcnet`. Run its typecheck, tests and build there. Tests cover dry runs, conflict handling, reruns, package layout, Vercel identity checks and published-engine Terraform rendering without applying infrastructure. The tools repo publishes changed package builds automatically on pushes to `main`.
 
 ## Vercel adapter details
 

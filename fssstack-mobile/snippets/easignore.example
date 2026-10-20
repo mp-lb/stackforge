@@ -49,6 +49,5 @@ secrets.json
 # Not needed for builds: shared docs store (large media), CI, docs
 docs/
 .github/
-.changeset/
 mvp.md
 README.md

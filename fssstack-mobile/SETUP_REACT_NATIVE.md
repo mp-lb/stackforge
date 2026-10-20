@@ -15,9 +15,7 @@ Use this when the web/backend app already exists and the mobile app should live 
 
 ```bash
 pnpm -C <main-repo> --filter <trpc-package> build
-pnpm -C <main-repo> changeset
-pnpm -C <main-repo> version-packages
-pnpm -C <main-repo> release
+git push origin main  # the main repo publishes changed package builds
 ```
 
 4. Create a read-only package token for the mobile repo. Store it as `NODE_AUTH_TOKEN` locally (`.env`) and add it to the shared encrypted secrets file (section 9); CI and EAS get it from there.
@@ -58,7 +56,7 @@ shows how to sketch the first working app with `@mp-lb/mobile-kit` and
 push-token registration. Use it when those defaults help; skip it when the app
 needs a different auth/navigation shape.
 
-Keep this repo out of pnpm workspaces unless there is a specific React Native expert owning the dependency/debugging cost. Changesets (used for releases in section 9) works fine with npm, so a pnpm switch is never required for the release flow. If pnpm is used anyway, set `node-linker=hoisted` in `.npmrc`; Metro and native builds do not cope well with pnpm's symlinked layout.
+Keep this repo out of pnpm workspaces unless there is a specific React Native expert owning the dependency/debugging cost. The mobile release workflow uses npm, so a pnpm switch is not required. If pnpm is used anyway, set `node-linker=hoisted` in `.npmrc`; Metro and native builds do not cope well with pnpm's symlinked layout.
 
 Make sure exactly one lockfile exists. A stray `pnpm-lock.yaml` or `yarn.lock` next to `package-lock.json` (common when files are copied from the main monorepo) can make EAS detect the wrong package manager.
 
@@ -97,7 +95,7 @@ npm ci
 
 ## 4. Configure Expo
 
-Start from `snippets/eas.json` and `snippets/app.json`. Add `snippets/app.config.ts` next to `app.json`: it mirrors `package.json`'s version (owned by changesets, section 9) into the Expo config, so the marketing version is bumped by merging the release PR. Build numbers stay remote (`appVersionSource: "remote"` + `autoIncrement`).
+Start from `snippets/eas.json` and `snippets/app.json`. Add `snippets/app.config.ts` next to `app.json`: it mirrors `package.json`'s version (maintained in this repo) into the Expo config, so the marketing version is bumped by merging the release PR. Build numbers stay remote (`appVersionSource: "remote"` + `autoIncrement`).
 
 - `expo.name`, `slug`, `scheme`
 - `expo.owner` (`mp-lb` for normal MAP Lab apps; override for client-owned
@@ -279,35 +277,9 @@ Policy boundary:
 
 ## 9. CI/CD
 
-Releases are gated by changesets and deployed by a fingerprint-aware workflow:
+Every push to `main` syncs the production environment and runs the fingerprint-aware deploy workflow. The deploy action (`expo/expo-github-action/continuous-deploy-fingerprint`) compares each platform's native fingerprint against existing EAS production builds. An existing compatible build receives an OTA update; a changed native runtime starts store builds with auto-submit. Update `package.json`'s marketing version when the app needs a new version; `app.config.ts` mirrors it. The policy boundary in section 8 still applies to content.
 
-- Feature PRs that should ship include a changeset (`npx changeset`).
-- When changesets land on `main`, the changesets action opens/updates a
-  "Version Packages" PR.
-- Merging that PR bumps `package.json` (mirrored into the Expo config by
-  `app.config.ts`), tags the commit, and triggers the deploy job.
-- The deploy job (`expo/expo-github-action/continuous-deploy-fingerprint`)
-  computes the native fingerprint per platform and checks EAS for an existing
-  production build with that fingerprint. If one exists, the change is JS-only
-  for that runtime and ships as an EAS Update (OTA). If not, it starts store
-  builds and auto-submits them. No manual "is this OTA-safe?" judgement call
-  is needed for the mechanics; the policy boundary in section 8 still applies
-  to content.
-
-Do not gate binary-vs-OTA on whether `eas update` fails: it does not fail when
-the runtime changed, it just publishes an update no installed build can
-receive. Fingerprint comparison is the reliable signal.
-
-Set up changesets:
-
-```bash
-npm install --save-dev @changesets/cli
-npx changeset init
-```
-
-Then copy `snippets/changeset-config.json` over `.changeset/config.json`. The
-`privatePackages: { version: true, tag: true }` setting makes changesets
-version and git-tag an app repo that never publishes to a registry.
+Do not gate binary-vs-OTA on whether `eas update` fails: it does not fail when the runtime changed; it publishes an update that no installed build can receive. Fingerprint comparison is the reliable signal.
 
 ### Env and secrets (shared encrypted secrets file)
 
@@ -381,12 +353,7 @@ Two more first-run gotchas:
   `fm sync` and commits. CI decrypts the committed copy, not the store.
   Consider a scheduled job that runs `fm sync --dry-run` and opens a re-sync
   PR when the store has moved.
-- The first push to main tags the current version (`changeset tag` with no
-  pending changesets) and reports `published=true`, so the deploy job fires
-  once at bootstrap. Harmless — but expect it, and make sure EAS is linked
-  before that push or kick the first deploy deliberately via
-  `workflow_dispatch`.
-
+- The first push to `main` starts the deploy job. Link EAS and populate its credentials before that push, or use `workflow_dispatch` after bootstrap to retry.
 Copy:
 
 - `snippets/.github/workflows/ci.yml`
@@ -428,7 +395,7 @@ base64 -i AuthKey_XXXXXXXXXX.p8 | tr -d '\n'
 base64 -i google-service-account.json | tr -d '\n'
 ```
 
-The release workflow only deploys after a changesets release (or a manual `workflow_dispatch` for the first deploy). The fingerprint action then publishes an OTA update when a compatible production build exists, and otherwise creates store builds and auto-submits them.
+The release workflow deploys on every push to `main` (or a manual `workflow_dispatch`). The fingerprint action then publishes an OTA update when a compatible production build exists, and otherwise creates store builds and auto-submits them.
 
 ## 10. Release workflow
 
@@ -465,12 +432,11 @@ populated by the `sync-eas-env` job on the first push to main — so push main
 at least once before running the bootstrap build, or the build fails
 installing the private package.
 
-Release (normal path — changesets decides *when*, fingerprint decides *how*):
+Release (normal path — push to `main`; fingerprint decides how):
 
 ```bash
-npx changeset            # describe the change, pick patch/minor/major
-git push                 # changeset lands on main via PR
-# merge the "Release" PR that the bot opens -> deploy runs automatically
+# bump package.json version when the marketing version should change
+git push origin main
 ```
 
 Manual escape hatches (first deploy, emergencies):
@@ -498,7 +464,7 @@ zap task check
 - Push tokens register on the backend from real devices.
 - Store records exist before feature work is complete.
 - CI runs lint and typecheck on PRs.
-- Changesets gate releases: a merged "Release" PR triggers the deploy job.
+- Every push to `main` triggers the fingerprint-aware deploy job.
 - The deploy job picks OTA vs store build from the native fingerprint.
 - Secrets come from the shared `docs/secrets.json.enc`; the only GitHub
   secret is `SECRETS_KEY`.

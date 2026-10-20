@@ -34,7 +34,7 @@ matters because each step feeds the next.
    minutes after upload.
 
 6. **Dispatch the pipeline end-to-end**: `gh workflow run release.yml` and
-   confirm it goes green. From here, releases are changeset-driven.
+   confirm it goes green. From here, pushes to `main` trigger fingerprint-aware releases.
 
 ## When the first release misbehaves
 

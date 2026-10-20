@@ -69,7 +69,7 @@ updates later (`SETUP_REACT_NATIVE.md` §8 has the policy boundary).
 
 Wire-up that's already decided by the snippets:
 
-- `app.config.ts` mirrors `package.json`'s version (changesets owns it);
+- `app.config.ts` mirrors `package.json`'s version (maintained in the mobile repo);
   build numbers are remote and auto-increment.
 - Validate with `zap task check` locally; CI runs the same lint/typecheck/doctor
   checks directly through npm/npx.
@@ -88,11 +88,9 @@ apps that should prove a different navigation/auth shape first.
 One manual sitting — follow `BOOTSTRAP.md`. After it, the steady state is:
 
 ```bash
-npx changeset        # on feature PRs that should ship
-# merge the bot's "Release" PR → deploy job runs:
-#   fingerprint unchanged → OTA update
-#   fingerprint changed   → store builds + auto-submit
+# merge a change to main; CI deploys it
+# fingerprint unchanged → OTA update
+# fingerprint changed   → store builds + auto-submit
 ```
 
-`gh workflow run release.yml` is the escape hatch to force a deploy without
-a changeset.
+`gh workflow run release.yml` reruns deployment of the current main commit.

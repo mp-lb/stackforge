@@ -12,7 +12,7 @@ function hasResolvedProjectId(projectId: unknown): projectId is string {
 }
 
 // Static config lives in app.json. This wrapper keeps the app's marketing
-// version in lockstep with package.json, which changesets owns; build numbers
+// version in lockstep with package.json, which the mobile repo maintains; build numbers
 // are managed remotely by EAS (appVersionSource: remote + autoIncrement).
 export default ({ config }: ConfigContext): ExpoConfig => {
   const resolvedConfig: ExpoConfig = {
