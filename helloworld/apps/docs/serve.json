@@ -1,8 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/**",
-      "destination": "/__spa-fallback.html"
-    }
-  ]
-}
