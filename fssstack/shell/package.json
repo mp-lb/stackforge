@@ -6,7 +6,8 @@
   "scripts": {
     "build": "pnpm -r --if-present build",
     "dev": "pnpm --filter @example/fss-shell-example-backend dev",
-    "lint": "eslint .",
+    "lint": "eslint . && node scripts/check-module-dependencies.mjs",
+    "modules:map": "node scripts/check-module-dependencies.mjs --map",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test"
   },

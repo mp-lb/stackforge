@@ -1,5 +1,19 @@
 # Modular Monolith Architecture
 
+## Dependency boundaries
+
+Workspace apps and packages import each other through package names. List every
+workspace package used by production source in the importing package's
+`dependencies`. Do not use relative paths into another app or package. These
+rules make `package.json` a readable record of module dependencies and keep
+cross-package imports on the exported API.
+
+The shell's `pnpm lint` runs `scripts/check-module-dependencies.mjs` after
+ESLint. It checks production files under each package's `src/`, including
+imports, re-exports, and static `import()` or `require()` calls. Test files and
+test directories are excluded. Run `pnpm modules:map` to list the declared
+workspace dependencies for each package. Both commands use `dependencies` only.
+
 ## Philosophy
 
 This codebase follows a **modular monolith** pattern. Each domain (customers, orders, messaging, etc.) lives in its own package as an independent, self-contained module. All modules currently run together in a single backend process, but they're designed so that any module could be extracted to run as a separate microservice with minimal changes.
