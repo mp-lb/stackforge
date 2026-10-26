@@ -1,0 +1,7 @@
+fssstack/shell/node_modules
+fssstack/shell/**/node_modules
+fssstack/shell/**/dist
+fssstack/shell/.codex
+fssstack/shell/.zap
+fssstack/shell/.env.local
+fssstack/shell/.fssstack-release-result.json

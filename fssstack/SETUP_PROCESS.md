@@ -22,7 +22,8 @@ Template the shell before creating project packages: replace
 `githubRepository` value from `fssstack.yaml`. This keeps the publish workflow
 scoped to the target repository from the initial setup.
 
-The shell is a working monorepo: the root workspace config, the shared
+The shell is a working monorepo: the root workspace config, the `docs/`
+baseline, the shared
 `etc/` config that re-exports our published presets, the internal `core` /
 `server` / `trpc` packages, an `apps/example-backend`, and a publishable
 `packages/example-lib` + `packages/example-cli`. It already depends on and uses
@@ -181,8 +182,8 @@ The shadcn CLI owns the generic Next.js, React, Tailwind, and shadcn/ui scaffold
 Frontend implementation and test examples live in:
 
 ```text
-docs/examples/frontend/web-request.md
-docs/examples/frontend/logging.md
+docs/internals/examples/frontend/web-request.md
+docs/internals/examples/frontend/logging.md
 ```
 
 ## Docs Sites
@@ -236,11 +237,36 @@ Finish the remaining project-specific wiring by hand:
 - **Zap service** — add `<DOCS_SLUG>_PORT` to `ports:` and a native service
   (`cmd: pnpm --filter <package-name> dev`, `env: "*"`); a `homepage:` pointing at
   `http://localhost:${<DOCS_SLUG>_PORT}/docs` is handy.
-- **Cleanup** — the scaffolded sample pages under `content/docs/` are disposable.
+- **Content boundary** — create `docs/public/index.mdx` and
+  `docs/public/meta.json` in the project root. Replace the scaffold's sample
+  pages under `apps/<docs slug>/content/docs/`; do not leave the site reading
+  those sample pages. Point the Fumadocs source in the docs app at
+  `../../docs/public` (relative to the app) and configure prerendering to
+  enumerate the MDX pages there. Confirm the built site renders the root
+  `docs/public/index.mdx` at `/docs` and that an internal file under
+  `docs/internals/` is not rendered. The initial files can be minimal:
 
-A docs site renders the library's published `docs/public/` — the generated API
-reference plus hand-written guides. Bringing a docs site up to internal house
-style (shared theme, generated-reference wiring) is a separate augmented flow,
+  ```mdx
+  ---
+  title: Project documentation
+  ---
+
+  # Project documentation
+
+  Add the first public guide here.
+  ```
+
+  ```json
+  { "pages": ["index"] }
+  ```
+
+A docs site renders the library's published `docs/public/` — hand-written guides
+and any generated API reference. `docs/public/` is created only when a docs
+site is selected; it is not the shell's default internal-docs folder. Generate
+API pages with `docs:gen` into that folder and commit them; `docs:check` should
+verify freshness in CI. The site build reads those committed pages rather than
+creating them implicitly. Bringing a docs site up to internal house style
+(shared theme and generated-reference wiring) is a separate augmented flow,
 not part of this template.
 
 ### AGENTS.md docs layer
@@ -310,23 +336,27 @@ find the process. Keep `/tmp/` gitignored for scratch files; audit reports are
 tracked and committed from an isolated worktree for project-owner integration.
 
 Create the project's `agents-md/` source blocks and `agents-md/index.md`, then
-build the committed base context:
+build and commit the project context:
 
 ```bash
 zap task context-build
-git add agents-md AGENTS.base.md
+git add agents-md AGENTS.base.md AGENTS.md CLAUDE.md
 ```
 
-`AGENTS.md` and `CLAUDE.md` are local generated files and stay gitignored. After
-cloning, a developer who does not need private context can run
-`zap task context-copy`; a developer who wants extra context can run
-`zap task context-build -- ~/some/global.md`.
+Root `AGENTS.md` and `CLAUDE.md` are committed generated outputs and must not be
+gitignored. Keep them in sync with `AGENTS.base.md` when project instructions
+change. `AGENTS.local.md` and `AGENTS_WORKTREE.md` remain ignored for local
+instructions. A developer can run `zap task context-copy` to restore the
+committed base context. If they run `zap task context-build -- ~/some/global.md`
+to append private context, the resulting changes to the tracked agent files
+are local only and must not be committed.
 
 ## Validate
 
-Confirm the target has root `audit.md`, a README/context pointer to it, and a
-root `/tmp/` ignore rule. Setup installs the audit process; it does not run an
-audit of the newly created project.
+Confirm the target has root `audit.md`, a README/context pointer to it, a
+tracked `docs/README.md` and `AGENTS.md`/`CLAUDE.md`, and a root `/tmp/` ignore
+rule. Setup installs the audit process; it does not run an audit of the newly
+created project.
 
 Run validation after all selected apps and packages exist:
 

@@ -67,7 +67,9 @@ its findings to `docs/audits/YYYY-MM-DD-fssstack.md` in an isolated worktree for
 - `apps/` contains runnable services and frontend applications.
 - `packages/` contains shared libraries, server helpers, API contracts, and publishable packages.
 - `etc/` contains shared TypeScript, Vitest, and tooling configuration.
-- `docs/` contains project standards and implementation guidance.
+- `docs/` contains a project documentation index and internal implementation
+  examples. Published library docs belong under `docs/public/` only when a docs
+  site is added.
 - `zap.yaml` defines local services, ports, and common development tasks.
 
 ## Development Notes

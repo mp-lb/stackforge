@@ -45,5 +45,6 @@ next-env.d.ts
 .zap
 /.forum/*
 !/.forum/sync.yaml
+!/.forum/ignore
 tmp/
 **/.pnpm-store/
