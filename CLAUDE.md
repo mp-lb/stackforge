@@ -89,24 +89,13 @@ The root has no `package.json`. Use the owning folder:
 The root `zap.yaml` is only a convenience wrapper for the shell example. The
 target repo shell has its own `fssstack/shell/zap.yaml`.
 
-## Forum Sync
+## Documentation
 
-Always run `fm sync` from the Stackforge repository root before making changes and again after finishing them.
+Stackforge authors shared Forum content. Its two sync targets publish `fssstack/` to `mp-lb/fssstack` and `arcnet/` to `mp-lb/arcnet`; these are source trees, rather than a project-specific `docs/` folder. Run `fm sync` from the repository root before changing mapped content and again after committing it. Resolve conflicts before continuing.
 
-## Forum Content Rules
+Do not add `AGENTS.md` inside `fssstack/` or generate setup scripts. Edit the relevant source documents or templates, run focused validation, commit the change, and publish the mapped files. The setup process must remain followable from the published instructions.
 
-Do not add `AGENTS.md` files inside `fssstack/`. That folder is published Forum
-content, not a standalone working repo in this checkout.
-
-For Forum content changes:
-
-1. Edit the relevant docs, templates, or shell files in this repository.
-2. Run focused validation for the changed surface.
-3. Commit changes in this repository.
-4. Run `fm sync` from the repository root again to publish mapped content. Resolve any conflicts before finishing.
-
-Do not add generated setup scripts. The setup process must remain directly
-followable from the published instructions.
+Read shared standards with `fm read <file>.md --store mp-lb/dev` and shared extensions with `fm read extensions/<file>.md --store mp-lb/fssstack`.
 
 ## Validation Expectations
 
