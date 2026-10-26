@@ -6,7 +6,7 @@ A few conventions about these instruction files themselves:
 
 - **The source is `context/` building blocks; the agent files are compiled from them.** `context/index.md` composes project-specific `@<block>.md` imports and standalone Forum links for shared blocks. Edit the project blocks and index, not the generated files.
 - **`CLAUDE.md` and `AGENTS.md` are generated and committed outputs.** The context task first resolves local imports with [`@mp-lb/mdcompile`](https://www.npmjs.com/package/@mp-lb/mdcompile), then pipes that Markdown through `fm compile --stdin` to expand Forum links. Regenerate both files with the project’s context task and commit them with their source changes.
-- **The compiled agent file is small on purpose.** It carries the always-true essentials and *points* at the detailed `docs/standards/*` for the rest — read those on demand rather than expecting everything to be in context.
+- **The compiled agent file is small on purpose.** It carries the always-true essentials. Read relevant shared standards directly from `mp-lb/dev` on demand with `fm read <file>.md --store mp-lb/dev`.
 
 ## Tools you can expect to be authenticated
 
@@ -16,11 +16,11 @@ A handful of CLI tools are installed and already authenticated on this machine �
 - **Google Cloud CLI (`gcloud`)**
 - **AWS CLI (`aws`)**
 - **Zapper** — our process manager and task runner.
-- **Forum** — our document sync system.
+- **Forum** — our document system.
 
 ## Git
 
-Some projects use git and some use Forum, so be aware of which kind you're in.
+Some projects also sync project documentation with Forum; check the project's documentation instructions before editing docs.
 
 **Local-first.** Work happens locally. Branches isolate a piece of work before it merges to `main`. We **rarely push to GitHub — only to deploy**, from `main`, as a separate step. We never use PRs.
 
@@ -34,7 +34,7 @@ Many projects deploy via CI when you push `main`. To confirm a deploy landed, le
 
 ## Forum
 
-Unlike GitHub there are no branches — there's always a single source of truth. **Sync before you edit:** the source lives in the cloud, so the local copy can be stale, and editing stale is how you get conflicts. Pull latest first. After syncing, we commit the synced files to git too, so they always live in the repo.
+Projects with a dedicated Forum store run `fm sync` before and after editing their mapped docs. Projects without one read shared material directly from Forum and do not need a sync configuration. Follow the project's documentation block for its actual store and layout.
 
 ## Task running
 

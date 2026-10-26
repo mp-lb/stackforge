@@ -7,4 +7,4 @@ This project publishes docs, so they're **generated from the source of truth**, 
 - **`docs:check` runs in CI and fails if the committed docs are stale** — regenerating is not optional.
 - Hand-written narrative (README, guides) lives beside the generated reference: update it when behaviour changes, but never restate signatures or flags — link to the reference instead.
 
-Read `docs/standards/libs.md` for the full model (and `docs/standards/clis.md` if the package ships a `bin`).
+Read `libs.md` from `mp-lb/dev` for the full model (`fm read libs.md --store mp-lb/dev`). If the package ships a CLI, read `clis.md` from the same store.
