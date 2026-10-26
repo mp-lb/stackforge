@@ -1,7 +1,7 @@
 git:
   commit-message: "Update Forum content"
 sync:
-  - target: fssstack
-    store: mp-lb/fssstack
   - target: arcnet
     store: mp-lb/arcnet
+  - target: fssstack
+    store: mp-lb/fssstack

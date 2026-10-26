@@ -1,22 +1,6 @@
 project: stackforge
-env-files:
-  - fssstack/shell/.env.local
-  - fssstack/shell/.env
-homepage: http://localhost:${EXAMPLE_BACKEND_PORT}/health
-ports:
-  - EXAMPLE_BACKEND_PORT
-native:
-  example-backend:
-    cmd: pnpm -C fssstack/shell --filter @example/fss-shell-example-backend dev
-    env: "*"
 tasks:
   context-build:
     cmds:
       - npx -y @mp-lb/mdcompile context/index.md --optional --silent | fm compile --stdin -o AGENTS.md
       - npx -y @mp-lb/mdcompile context/index.md --optional --silent | fm compile --stdin -o CLAUDE.md
-  setup:
-    cmds:
-      - pnpm -C fssstack/shell install --frozen-lockfile
-  worktree-setup:
-    cmds:
-      - pnpm -C fssstack/shell install --frozen-lockfile
