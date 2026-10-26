@@ -110,13 +110,20 @@ function ownsPath(directory, filename) {
   return filename.startsWith(`${directory}${path.sep}`);
 }
 
+function declaredWorkspaceDependencies(manifest) {
+  return new Set([
+    ...Object.keys(manifest.dependencies ?? {}),
+    ...Object.keys(manifest.devDependencies ?? {}),
+  ]);
+}
+
 const packages = await readPackages();
 
 if (mapOnly) {
   for (const owner of packages.sort((left, right) =>
     left.manifest.name.localeCompare(right.manifest.name),
   )) {
-    const dependencies = Object.keys(owner.manifest.dependencies ?? {})
+    const dependencies = [...declaredWorkspaceDependencies(owner.manifest)]
       .filter((name) =>
         packages.some((candidate) => candidate.manifest.name === name),
       )
@@ -167,11 +174,10 @@ for (const owner of packages) {
 
       const message = specifier.startsWith(".")
         ? `crosses into ${target.manifest.name}; import through its package name`
-        : !Object.hasOwn(
-              owner.manifest.dependencies ?? {},
+        : !declaredWorkspaceDependencies(owner.manifest).has(
               target.manifest.name,
             )
-          ? `uses ${target.manifest.name} without listing it in dependencies`
+          ? `uses ${target.manifest.name} without listing it in dependencies or devDependencies`
           : null;
 
       if (message) {
