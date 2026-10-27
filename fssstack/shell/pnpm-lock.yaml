@@ -15,8 +15,8 @@ importers:
         specifier: 0.1.0
         version: 0.1.0(vitest@4.0.16(@types/node@20.19.39)(tsx@4.20.6)(yaml@2.9.1))
       '@mp-lb/monolith-mapper':
-        specifier: 0.1.0
-        version: 0.1.0
+        specifier: 0.1.1
+        version: 0.1.1
       '@types/node':
         specifier: 20.19.39
         version: 20.19.39
@@ -582,8 +582,8 @@ packages:
       vitest:
         optional: true
 
-  '@mp-lb/monolith-mapper@0.1.0':
-    resolution: {integrity: sha512-Shpvv2iSsb5g3WFLGfTdIdahroHgJfkqJWl9l+BIxk0U+9RUGZdcFc+827GKsi61HSItbmjzJMMxXqiqrKSQaA==}
+  '@mp-lb/monolith-mapper@0.1.1':
+    resolution: {integrity: sha512-j2+pQODM30HMSNuC0Fp3iO9J77mLZLIGgmZyghqgOak1lB2xOH4BAiWTzTg10GJH9pw9IYDINlx5h5IWwk0NdA==}
     hasBin: true
 
   '@nodelib/fs.scandir@2.1.5':
@@ -2498,7 +2498,7 @@ snapshots:
     optionalDependencies:
       vitest: 4.0.16(@types/node@20.19.39)(tsx@4.20.6)(yaml@2.9.1)
 
-  '@mp-lb/monolith-mapper@0.1.0':
+  '@mp-lb/monolith-mapper@0.1.1':
     dependencies:
       commander: 14.0.3
       fast-glob: 3.3.3

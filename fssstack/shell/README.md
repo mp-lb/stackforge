@@ -44,6 +44,7 @@ Use the same checks before handing off work:
 
 ```bash
 pnpm lint
+pnpm modules:map
 pnpm typecheck
 pnpm test
 pnpm build

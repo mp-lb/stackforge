@@ -365,7 +365,10 @@ zap task setup
 zap up
 ```
 
-Then run the standard checks — `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm build` — and confirm the dev server serves. See the AGENTS.md for project-specific validation.
+Then run `pnpm modules:map` to refresh the root `map.json` for the assembled
+workspace. Run the standard checks — `pnpm typecheck`, `pnpm lint`, `pnpm test`,
+`pnpm build` — and confirm the dev server serves. See the AGENTS.md for
+project-specific validation.
 
 ## Extensions
 

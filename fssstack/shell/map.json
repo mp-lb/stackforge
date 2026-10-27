@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "nodes": [
+    {
+      "name": "@example/fss-shell-core",
+      "dependencies": []
+    },
+    {
+      "name": "@example/fss-shell-example-backend",
+      "dependencies": [
+        "@example/fss-shell-server",
+        "@example/fss-shell-trpc"
+      ]
+    },
+    {
+      "name": "@example/fss-shell-example-cli",
+      "dependencies": []
+    },
+    {
+      "name": "@example/fss-shell-example-lib",
+      "dependencies": []
+    },
+    {
+      "name": "@example/fss-shell-server",
+      "dependencies": [
+        "@example/fss-shell-core"
+      ]
+    },
+    {
+      "name": "@example/fss-shell-trpc",
+      "dependencies": [
+        "@example/fss-shell-core",
+        "@example/fss-shell-server"
+      ]
+    }
+  ],
+  "cycles": []
+}
