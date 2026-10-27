@@ -7,14 +7,14 @@
     "build": "pnpm -r --if-present build",
     "dev": "pnpm --filter @example/fss-shell-example-backend dev",
     "lint": "eslint . && monolith-mapper check",
-    "modules:map": "monolith-mapper map",
+    "modules:map": "monolith-mapper map --output module-map.json",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test"
   },
   "devDependencies": {
     "@mp-lb/fssstack-config": "0.3.1",
     "@mp-lb/fssstack-testing": "0.1.0",
-    "@mp-lb/monolith-mapper": "0.1.1",
+    "@mp-lb/monolith-mapper": "0.1.2",
     "@types/node": "20.19.39",
     "eslint": "9.39.4",
     "prettier": "3.8.3",

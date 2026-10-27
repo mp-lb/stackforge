@@ -14,7 +14,7 @@ The shell's `pnpm lint` runs `monolith-mapper check` after ESLint. It checks
 production files under each package's `src/`, including
 imports, re-exports, and static `import()` or `require()` calls. Test files and
 test directories are excluded. Run `pnpm modules:map` (or `monolith-mapper map`)
-to write `map.json` at the workspace root. Its nodes list declared workspace
+to write `module-map.json` at the workspace root. Its nodes list declared workspace
 dependencies and its `cycles` array names any cyclic groups. Cycles are reported
 without preventing map generation. The map validates that every dependency names
 a node. Both commands count `dependencies` and `devDependencies` as ordinary
