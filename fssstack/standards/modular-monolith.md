@@ -6,16 +6,16 @@ Workspace apps and packages import each other through package names. List every
 workspace package used by production source in the importing package's
 `dependencies` or `devDependencies`. Use `devDependencies` when the package is
 bundled into a published artifact rather than needed by its consumers at runtime.
-Do not use relative paths into another app or package. These
-rules make `package.json` a readable record of module dependencies and keep
+Do not use relative paths into another app or package. These rules make
+`package.json` a readable record of module dependencies and keep
 cross-package imports on the exported API.
 
-The shell's `pnpm lint` runs `scripts/check-module-dependencies.mjs` after
-ESLint. It checks production files under each package's `src/`, including
+The shell's `pnpm lint` runs `monorepo-mapper check` after ESLint. It checks
+production files under each package's `src/`, including
 imports, re-exports, and static `import()` or `require()` calls. Test files and
-test directories are excluded. Run `pnpm modules:map` to list the declared
-workspace dependencies for each package. Both commands count `dependencies` and
-`devDependencies` as ordinary module relationships.
+test directories are excluded. Run `pnpm modules:map` (or `monorepo-mapper map`)
+to list the declared workspace dependencies for each package. Both commands
+count `dependencies` and `devDependencies` as ordinary module relationships.
 
 ## Philosophy
 
