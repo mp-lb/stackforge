@@ -14,7 +14,7 @@ importers:
       '@mp-lb/fssstack-testing':
         specifier: 0.1.0
         version: 0.1.0(vitest@4.0.16(@types/node@20.19.39)(tsx@4.20.6)(yaml@2.9.1))
-      '@mp-lb/monorepo-mapper':
+      '@mp-lb/monolith-mapper':
         specifier: 0.1.0
         version: 0.1.0
       '@types/node':
@@ -582,8 +582,8 @@ packages:
       vitest:
         optional: true
 
-  '@mp-lb/monorepo-mapper@0.1.0':
-    resolution: {integrity: sha512-Q787jmuKuEGmdYICXduGoOlRodkZF+KLKPgcfJ/mV8/oS6U/aS8wmn2oCE/3CR/po5iNiJaxVY5Fy032WQ8UDg==}
+  '@mp-lb/monolith-mapper@0.1.0':
+    resolution: {integrity: sha512-Shpvv2iSsb5g3WFLGfTdIdahroHgJfkqJWl9l+BIxk0U+9RUGZdcFc+827GKsi61HSItbmjzJMMxXqiqrKSQaA==}
     hasBin: true
 
   '@nodelib/fs.scandir@2.1.5':
@@ -2498,7 +2498,7 @@ snapshots:
     optionalDependencies:
       vitest: 4.0.16(@types/node@20.19.39)(tsx@4.20.6)(yaml@2.9.1)
 
-  '@mp-lb/monorepo-mapper@0.1.0':
+  '@mp-lb/monolith-mapper@0.1.0':
     dependencies:
       commander: 14.0.3
       fast-glob: 3.3.3

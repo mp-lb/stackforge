@@ -10,10 +10,10 @@ Do not use relative paths into another app or package. These rules make
 `package.json` a readable record of module dependencies and keep
 cross-package imports on the exported API.
 
-The shell's `pnpm lint` runs `monorepo-mapper check` after ESLint. It checks
+The shell's `pnpm lint` runs `monolith-mapper check` after ESLint. It checks
 production files under each package's `src/`, including
 imports, re-exports, and static `import()` or `require()` calls. Test files and
-test directories are excluded. Run `pnpm modules:map` (or `monorepo-mapper map`)
+test directories are excluded. Run `pnpm modules:map` (or `monolith-mapper map`)
 to list the declared workspace dependencies for each package. Both commands
 count `dependencies` and `devDependencies` as ordinary module relationships.
 
