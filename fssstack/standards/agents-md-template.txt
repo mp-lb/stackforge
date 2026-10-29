@@ -46,10 +46,9 @@ Read these before making changes:
 - docs/standards/logging.md - For logging on backend (via tRPC context) and frontend
 - docs/standards/event-schema.md - For sending/storing any kind of events: errors, logs, analytics, real time events follow this
 
-## Releases
+## Delivery
 
-For package releases, read the release standard:
-- docs/standards/lib-release.md - For publishable library packages (including those that ship a `bin`)
+Use the project's delivery context block for deployment and package publishing.
 
 ## Tech stack
 

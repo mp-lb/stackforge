@@ -335,8 +335,11 @@ a pointer to `audit.md` in the project's context source blocks so agents can
 find the process. Keep `/tmp/` gitignored for scratch files; audit reports are
 tracked and committed from an isolated worktree for project-owner integration.
 
-Create the project's `agents-md/` source blocks and `agents-md/index.md`, then
-build and commit the project context:
+Create the project's `agents-md/` source blocks and `agents-md/index.md`.
+Include a project-specific `agents-md/delivery.md` based on
+[`agents-md/delivery.md`](./agents-md/delivery.md), and import it from the index.
+Adapt it to the project's actual packages and configured workflows; retain the
+block even when no packages are publishable. Build and commit the project context:
 
 ```bash
 zap task context-build

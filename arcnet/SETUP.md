@@ -36,6 +36,8 @@ Start with a working Zap/pnpm/GitHub project and an [ArcNet environment](initial
 
 3. Commit the generated files and push to `main`. For Cloud Run, complete the first-deployment step below **before** pushing.
 
+Update the project's delivery context block (for FSS Stack, `agents-md/delivery.md`, or the existing project context directory). State that changes reaching `main` on GitHub deploy the selected application services and publish changed eligible packages through their configured workflows. Describe only delivery paths actually configured, retain any first-publish or first-deployment prerequisites, and tell agents to check the corresponding GitHub Actions runs. Rebuild and commit the generated agent context.
+
 Omit `variables` and its sync command if no Forum values are needed. If YAML lists encrypted `secrets` sources, run `pnpm exec arcnet secrets add --key KEY --store STORE --path PATH --repository OWNER/REPO` for each source before `arcnet check`.
 
 **First Cloud Run deployment:** An authorized operator must run `arcnet plan` and `arcnet deploy` locally before pushing. This creates GitHub's GCP trust relationship. Then add the resulting `identity` values to `arcnet.yaml` and push. [Environment prerequisites](initial-setup.md).
