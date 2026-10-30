@@ -23,32 +23,23 @@ jobs:
         run: test "${GITHUB_REF_NAME}" = "desktop-v$(node -p "require('./apps/desktop/package.json').version")"
       - run: pnpm --filter @example/desktop typecheck
       - run: pnpm --filter @example/desktop build
-      - name: Validate signing secrets
+      - name: Load and validate signing credentials
         env:
-          CSC_LINK: ${{ secrets.CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          ARCNET_STANDARD_SECRETS_KEY: ${{ secrets.ARCNET_STANDARD_SECRETS_KEY }}
+          ARCNET_PROJECT_SECRETS_KEY: ${{ secrets.ARCNET_PROJECT_SECRETS_KEY }}
         run: |
-          for name in CSC_LINK CSC_KEY_PASSWORD APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID; do
-            test -n "${!name}" || { echo "Missing secret: $name" >&2; exit 1; }
-          done
+          set -euo pipefail
+          pnpm exec arcnet env export --consumer desktop | pnpm exec code-signing github-env --stdin
       - name: Package signed app
         run: pnpm --filter @example/desktop exec electron-builder --mac --publish never
-        env:
-          CSC_LINK: ${{ secrets.CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
       - name: Verify artifacts
         run: |
           test -f apps/desktop/out/latest-mac.yml
-          ls apps/desktop/out/*.dmg apps/desktop/out/*-mac.zip
+          ls apps/desktop/out/*.dmg apps/desktop/out/*.zip
           APP=$(find apps/desktop/out -path '*.app' -type d -print -quit)
           test -n "$APP"
           codesign --verify --deep --strict "$APP"
+          spctl --assess --type execute "$APP"
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
