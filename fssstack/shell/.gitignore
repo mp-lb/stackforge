@@ -8,4 +8,3 @@ coverage
 .zap
 *.tsbuildinfo
 AGENTS.local.md
-AGENTS_WORKTREE.md

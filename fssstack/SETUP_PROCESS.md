@@ -353,7 +353,7 @@ zap task context-build
 git add context AGENTS.md CLAUDE.md
 ```
 
-Target projects commit both generated files. `AGENTS.local.md` and `AGENTS_WORKTREE.md` remain ignored; private additions must never be committed. Rebuild from source to restore shared outputs. The context task expands local imports, then remote links through `fm compile --stdin`; verify the resulting code style is present. Do not use blanket optional imports.
+Target projects commit both generated files. `AGENTS.local.md` remains ignored; private additions must never be committed. Worktree setup does not modify or compile agent context. Rebuild from source to restore shared outputs. The context task expands local imports, then remote links through `fm compile --stdin`; verify the resulting code style is present. Do not use blanket optional imports.
 
 ## Validate
 
