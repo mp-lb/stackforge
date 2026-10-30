@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   release:
-    runs-on: macos-latest
+    runs-on: blacksmith-6vcpu-macos-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
