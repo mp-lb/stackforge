@@ -11,7 +11,7 @@ Apply this after creating a new fssstack project.
 
 Keep the public defaults and the remote MAP Lab code-style import described in the [context contract](https://github.com/mp-lb/stackforge/blob/main/fssstack/standards/context-files.md). `standards.md` is just the lookup commands. Do not install workflow, backend or MAP Lab-prefixed files.
 
-Replace the Fssstack development link with the MAP Lab development block from `mp-lb/augmentations/context/development.md`; it includes our mise conventions. Record related owned repositories, build/link steps and any project-specific Forum sync mapping in local project context.
+Replace the Fssstack development link with `[MAP Lab development](https://hyperdoc.forumlabs.net/48616751-0d60-4389-a33d-b8851abc8c3b)` on its own line, with blank lines around it; it includes our mise conventions. Record related owned repositories, build/link steps and any project-specific Forum sync mapping in local project context.
 
 Merge Clerk, Electron and Shad augmentation instructions into the corresponding subject files. A dependency alone does not justify a block. Preserve product-specific rules and testing restrictions. Compile and commit sources plus both outputs.
 
