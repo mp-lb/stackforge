@@ -56,9 +56,19 @@ Mount the shared secrets store (`.forum/sync.yaml` + `fm sync --yes`), set the
 `sync-eas-env` job populates the EAS environment on every push — this must
 happen before the first build, which is why pushing main comes this early.
 
-Icons: one 1024×1024 squircle source image and `snippets/generate-icons.py`
-derives all six assets — full-bleed iOS icon, Android adaptive layers,
-splash, favicon.
+Icons: one 1024×1024 light squircle source image with a dark glyph produces all
+six assets — full-bleed iOS icon, Android adaptive layers, splash, favicon.
+Use the checked TypeScript authoring package installed above, with absolute paths:
+
+```bash
+zap --config <stackforge>/zap.yaml t mobile-generate-icons -- "$(pwd)/source.png" "$(pwd)/assets/images"
+```
+
+Python and Pillow are not required. Sharp handles image decoding and Lanczos
+resizing; use a separate output directory when previewing replacement assets.
+Keep target-project scripts in TypeScript under their owning package or
+`packages/scripts`, covered by normal lint/typechecks and exposed through thin
+Zap tasks using `tsx`; include `context/scripts.md` in the project's agent context.
 
 ## 2. Minimum submittable app (days, not weeks)
 
