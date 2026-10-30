@@ -1,0 +1,9 @@
+{
+  "extends": "@mp-lb/fssstack-config/tsconfig/node.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    "*.ts"
+  ]
+}

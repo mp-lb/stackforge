@@ -1,5 +1,22 @@
 project: stackforge
+profiles:
+  default:
+    services: []
+native:
+  mobile-scripts-watch:
+    cmd: pnpm --dir fssstack-mobile/packages/scripts exec tsc --noEmit --watch
 tasks:
+  mobile-scripts-setup:
+    cmds:
+      - pnpm --dir fssstack-mobile/packages/scripts install --frozen-lockfile
+  mobile-scripts-check:
+    cmds:
+      - pnpm --dir fssstack-mobile/packages/scripts lint
+      - pnpm --dir fssstack-mobile/packages/scripts typecheck
+      - pnpm --dir fssstack-mobile/packages/scripts test
+  mobile-apply-inputs:
+    cmds:
+      - fssstack-mobile/packages/scripts/node_modules/.bin/tsx fssstack-mobile/packages/scripts/applyInputs.ts {{REST}}
   context-build:
     cmds:
       - npx -y @mp-lb/mdcompile context/index.md --optional --silent | fm compile --stdin -o AGENTS.md
