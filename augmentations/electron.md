@@ -200,6 +200,35 @@ pnpm dlx shadcn@latest add https://shad.mp-lb.dev/r/full-screen-state.json
 
 This React component works only where its renderer and assets are available. To use it for a failed initial load, build it as a separate local renderer entry, package its HTML, JavaScript, and CSS, and load that local file from `showFailure`. Otherwise use a local HTML fallback; do not make offline recovery depend on installing the Shad component.
 
+## Offline renderer build safety
+
+Vite library mode preserves `process.env.NODE_ENV` in dependencies such as React.
+A sandboxed Electron renderer has no `process` global: the fallback itself can
+crash to a white screen even while main-process retries keep working.
+
+Use `offlineRenderer()` from `@mp-lb/electron-kit/vite` in the offline Vite
+configuration once the installed kit exposes that entry. Install the kit in the
+frontend package that owns the config and retain its existing React/CSS plugins:
+
+```ts
+import { offlineRenderer } from "@mp-lb/electron-kit/vite";
+
+// Within the existing offline config:
+// plugins: [offlineRenderer(), react(), tailwindcss(), ...]
+```
+
+The plugin replaces the environment check at build time and rejects emitted
+JavaScript that retains it. For an older kit without this entry, explicitly set
+`define: { "process.env.NODE_ENV": JSON.stringify("production") }` in the offline
+config. Never expose Node globals or disable sandboxing to fix the fallback.
+See [Vite library-mode environment behavior](https://vite.dev/guide/build#library-mode).
+
+Keep a regression test that builds the renderer and executes the resulting
+JavaScript without Node globals; a component test alone will not catch this
+bundling failure. Verify all fallback assets exist in the packaged archive and
+exercise offline startup and recovery. A source or web deployment cannot fix an
+already installed desktop bundle: rebuild and distribute a new desktop version.
+
 ## Verify
 
 Run the target project's lint, typecheck, tests, and desktop build through its normal task runner. Verify the packaged app, not just the TypeScript build:
