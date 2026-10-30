@@ -19,16 +19,7 @@ Use `@mp-lb/code-signing` for macOS signing validation. Use Forum and ArcNet onl
 | `APPLE_APP_SPECIFIC_PASSWORD` | App-specific password for that Apple account. |
 | `APPLE_TEAM_ID` | Apple Developer team that owns the signing certificate. |
 
-Our existing signing credentials are in `mp-lb/mp-lb:/projects/forum/secrets.json.enc`. To reuse them, copy only the signing credentials and desktop publishing token into the shared source, preserving unrelated values and encryption recipients:
-
-```sh
-arcnet desktop share --store mp-lb/mp-lb \
-  --from /projects/forum/secrets.json.enc \
-  --to /admin/standard-secrets.json.enc \
-  --apple-id hi@felixsebastian.dev --team-id CWZKS7THVN
-```
-
-This prompts for the Forum encryption password locally. Do not paste it into chat or commit plaintext. Certificate backups live under `mp-lb/mp-lb:/admin/certs`; they are encrypted base64 files, not ArcNet JSON secret sources. Reuse the existing Developer ID Application identity rather than creating one per app.
+The reusable signing credentials are in `mp-lb/mp-lb:/admin/standard-secrets.json.enc`. They were copied once from `/projects/forum/secrets.json.enc`; new projects consume the shared source and do not repeat that transfer. The notarization account is `hi@felixsebastian.dev`, team `CWZKS7THVN`. Certificate backups live under `mp-lb/mp-lb:/admin/certs`; they are encrypted base64 files, not ArcNet JSON secret sources. Reuse the existing Developer ID Application identity rather than creating one per app.
 
 3. Add a `desktop` consumer to the existing `.arcnet/arcnet.yaml`, preserving the other consumers:
 
