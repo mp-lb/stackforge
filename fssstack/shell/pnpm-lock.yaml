@@ -55,6 +55,12 @@ importers:
 
   packages/example-lib: {}
 
+  packages/scripts:
+    devDependencies:
+      tsx:
+        specifier: 4.20.6
+        version: 4.20.6
+
   packages/server:
     dependencies:
       '@example/fss-shell-core':

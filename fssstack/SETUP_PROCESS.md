@@ -12,6 +12,15 @@ Fetch the shell project files with the one-off CLI, then install Forum CLI as a 
 
 ```bash
 npx -y @mp-lb/forum-cli pull --direct --store mp-lb/fssstack --path shell --target .
+```
+
+Before running the install, select the exact Node version from `.node-version`
+and install the exact pnpm version from `package.json#packageManager`. The shell
+requires Node 22.13 or newer; `engines.node` is a compatibility declaration, not
+a tool installer. The public setup does not require mise. Keep general pnpm
+settings in `pnpm-workspace.yaml`, not `.npmrc`.
+
+```bash
 pnpm add -Dw --save-exact @mp-lb/forum-cli
 ```
 
@@ -335,15 +344,21 @@ a pointer to `audit.md` in the project's context source blocks so agents can
 find the process. Keep `/tmp/` gitignored for scratch files; audit reports are
 tracked and committed from an isolated worktree for project-owner integration.
 
-Create the project's `agents-md/` source blocks and `agents-md/index.md`.
-Include a project-specific `agents-md/delivery.md` based on
+Create the project's `context/` source blocks and `context/index.md`.
+Retain the shell's `context/scripts.md` and import it with `@scripts.md`.
+Keep `packages/scripts` private and included in workspace lint/typecheck; run
+`zap t scripts` and `zap t scripts-check` to verify the convention. New project
+scripts use TypeScript in their owning package or `packages/scripts`, with a
+thin Zap entry point using `tsx`. When migrating existing scripts, add and verify
+the replacement first, update all callers (including CI), then remove the old file.
+Include a project-specific `context/delivery.md` based on
 [`agents-md/delivery.md`](./agents-md/delivery.md), and import it from the index.
 Adapt it to the project's actual packages and configured workflows; retain the
 block even when no packages are publishable. Build and commit the project context:
 
 ```bash
 zap task context-build
-git add agents-md AGENTS.base.md AGENTS.md CLAUDE.md
+git add context AGENTS.base.md AGENTS.md CLAUDE.md
 ```
 
 Root `AGENTS.md` and `CLAUDE.md` are committed generated outputs and must not be

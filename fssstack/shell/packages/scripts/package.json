@@ -1,0 +1,11 @@
+{
+  "name": "@example/fss-shell-scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "tsx": "4.20.6"
+  }
+}
