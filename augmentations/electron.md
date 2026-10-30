@@ -6,7 +6,7 @@ Apply this MAP Lab augmentation after the [FSS Stack Electron extension](../fsss
 
 ## Signing credentials
 
-Use Forum and ArcNet for our macOS signing credentials. The base Electron extension defines the signing inputs and release checks; this augmentation defines where we store them and how CI receives them.
+Use Forum and ArcNet for our macOS signing credentials. The base Electron extension supplies the app and local packaging. This augmentation adds signing, release publishing, downloads, and updates.
 
 1. Complete the shared secrets and variables setup in [ArcNet setup](../arcnet/SETUP.md), using the project slug and repository from `fssstack.yaml`. Minimal ArcNet is sufficient for a desktop-only project; use full ArcNet when also deploying hosted applications.
 2. Store reusable company signing credentials in `/admin/standard-secrets.json.enc` in `mp-lb/mp-lb`. Use `/projects/<project-slug>/secrets.json.enc` for project-specific credentials or overrides. Preserve existing values and recipients when editing encrypted files. Do not assume the shared file already contains the signing credentials; if they are missing, have the operator supply them before attempting a signed release.
@@ -34,10 +34,20 @@ Use Forum and ArcNet for our macOS signing credentials. The base Electron extens
    ```
 
 4. Run `pnpm exec arcnet secrets sync` and commit the refreshed encrypted snapshots. Provisioning a new repository recipient changes the encrypted file, so sync again after provisioning its GitHub key. Validate with `pnpm exec arcnet env check --consumer desktop --password` locally, or with the provisioned source keys in CI. Never commit plaintext credentials.
-5. Adapt the base release workflow to pass the existing source keys, normally `ARCNET_STANDARD_SECRETS_KEY` and `ARCNET_PROJECT_SECRETS_KEY`, from GitHub secrets. Load `pnpm exec arcnet env export --consumer desktop` through a pipe into a script that validates the five inputs, masks their values in GitHub Actions, and writes them to `GITHUB_ENV` using multiline-safe delimiters. Use `set -euo pipefail` so decryption failure stops the release. Do not print the exported JSON or duplicate the signing values as individual GitHub secrets.
+5. Adapt the [release workflow template](electron/desktop-release.yml) to pass the existing source keys, normally `ARCNET_STANDARD_SECRETS_KEY` and `ARCNET_PROJECT_SECRETS_KEY`, from GitHub secrets. Load `pnpm exec arcnet env export --consumer desktop` through a pipe into a script that validates the five inputs, masks their values in GitHub Actions, and writes them to `GITHUB_ENV` using multiline-safe delimiters. Use `set -euo pipefail` so decryption failure stops the release. Do not print the exported JSON or duplicate the signing values as individual GitHub secrets.
 6. Test an unsigned local package first, then run the signed release workflow. Verify the packaged application with `codesign --verify --deep --strict` and `spctl --assess --type execute`. Publish the DMG, ZIP, and update manifest together. Verify the actual download and update URLs without authentication before exposing them in the landing page or updater. For private source repositories, publish public downloads in a separate public releases repository with appropriately scoped CI write access.
 
 A successful web deployment does not mean a desktop release exists. Missing signing inputs block the signed release; do not silently publish an unsigned build instead.
+
+## Release distribution and landing page
+
+This distribution setup belongs to the augmentation, not the base FSS Stack extension.
+
+1. Choose the GitHub repository that will hold releases. If application source is private, use a separate public `<project>-releases` repository. Give CI write access to that repository; the source repository's default `GITHUB_TOKEN` does not grant cross-repository access.
+2. Configure electron-builder's GitHub publish owner/repo to match the releases repository. Enable DMG and ZIP targets, hardened runtime, and notarization for signed macOS releases. Adapt the [release workflow](electron/desktop-release.yml) to the target package, our available runners, the ArcNet credential-loading step above, and the destination repository. Its example trigger is a `desktop-vX.Y.Z` tag matching the desktop package version; use the project's established release trigger when one exists.
+3. Publish the signed DMG, ZIP, and update manifest as one release. Keep asset names stable if using `/releases/latest/download/<asset-name>` links. Configure the updater to read from this same public repository.
+4. Add a minimal landing page with the app name, icon, and download button. Link directly to the published GitHub asset; a backend is unnecessary for a stable asset name. A Next.js page that needs dynamic asset selection can use the optional [download redirect route](electron/desktop-download-route.ts). Keep GitHub credentials out of public frontend code.
+5. Deploy the landing page through full ArcNet. Before showing an enabled download button, verify that its URL downloads the expected signed artifact without authentication. If no release exists, show an unavailable state rather than a broken link. Also verify the ZIP and update manifest URLs, and test update installation from an older installed version when available.
 
 ## Install and build
 

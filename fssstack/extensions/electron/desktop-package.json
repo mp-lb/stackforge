@@ -33,14 +33,7 @@
         "dmg",
         "zip"
       ],
-      "category": "public.app-category.productivity",
-      "hardenedRuntime": true,
-      "notarize": true
-    },
-    "publish": {
-      "provider": "github",
-      "owner": "owner",
-      "repo": "repository"
+      "category": "public.app-category.productivity"
     }
   }
 }

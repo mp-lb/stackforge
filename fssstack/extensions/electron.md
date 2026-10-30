@@ -8,8 +8,6 @@ Use this when a desktop window should load the same hosted frontend as the brows
 | [`desktop-package.json`](./electron/desktop-package.json) | `apps/desktop/package.json` | Package metadata, scripts, dependencies, and electron-builder configuration. |
 | [`desktop-tsconfig.json`](./electron/desktop-tsconfig.json) | `apps/desktop/tsconfig.json` | CommonJS/Node overrides extending the target’s shared FSS Stack config. |
 | [`desktop-tsup.config.ts`](./electron/desktop-tsup.config.ts) | `apps/desktop/tsup.config.ts` | Main-process build configuration. |
-| [`desktop-release.yml`](./electron/desktop-release.yml) | `.github/workflows/release-desktop.yml` | macOS signed-release workflow. |
-| [`desktop-download-route.ts`](./electron/desktop-download-route.ts) | `apps/landing-page/src/app/download/desktop/route.ts` | Optional Next.js endpoint that redirects to the current macOS download. |
 
 When a Stackforge checkout is unavailable, download a template from its raw GitHub URL. For example:
 
@@ -18,7 +16,7 @@ mkdir -p apps/desktop/src
 curl --fail --location --output apps/desktop/src/main.ts https://raw.githubusercontent.com/mp-lb/stackforge/main/fssstack/extensions/electron/desktop-main.ts
 ```
 
-Edit the copied files for the project: set the package name, `build.appId`, `build.productName`, GitHub publish owner/repo, and the hosted HTTPS URL in `desktop-main.ts`. Add a macOS icon and set `build.mac.icon` before a public release. Before installing, approve the copied package's native install scripts in `pnpm-workspace.yaml`:
+Edit the copied files for the project: set the package name, `build.appId`, `build.productName`, and the hosted HTTPS URL in `desktop-main.ts`. Add a macOS icon and set `build.mac.icon` before a public release. Before installing, approve the copied package's native install scripts in `pnpm-workspace.yaml`:
 
 ```yaml
 allowBuilds:
@@ -48,12 +46,10 @@ tasks:
       - pnpm --filter @example/desktop package:local
 ```
 
-`zap task desktop-package` compiles the desktop entry point and creates an unsigned local `.app` without notarizing or publishing. It uses the host architecture: `apps/desktop/out/mac-arm64/<ProductName>.app` on Apple Silicon or `out/mac/<ProductName>.app` on Intel. The FSS Stack shell ignores `out/` in Git. Rebuilding replaces the app at that path, so quit it first. It is not installed in Applications or opened automatically. The regular workspace build only updates compiled `dist/` files and does not refresh the packaged app. The existing `package` script and release workflow retain signed release packaging.
+`zap task desktop-package` compiles the desktop entry point and creates an unsigned local `.app` without notarizing or publishing. It uses the host architecture: `apps/desktop/out/mac-arm64/<ProductName>.app` on Apple Silicon or `out/mac/<ProductName>.app` on Intel. The FSS Stack shell ignores `out/` in Git. Rebuilding replaces the app at that path, so quit it first. It is not installed in Applications or opened automatically. The regular workspace build only updates compiled `dist/` files and does not refresh the packaged app. Distribution and release automation are configured separately.
 
 The packaged app loads its configured hosted production URL. For a project that has only local services, retain the explicit `DESKTOP_DEV_URL` requirement in packaged mode too, and add a project-specific `desktop-open` Zap task that passes the resolved URL via `open --env DESKTOP_DEV_URL=... <app-path>`. Resolve the app path from the product name and host architecture. Do not bake a checkout's port into the bundle or introduce a default port. Such a bundle is a local preview and must not be published as a standalone app.
 
-For macOS GitHub Releases, copy [`desktop-release.yml`](./electron/desktop-release.yml) to `.github/workflows/release-desktop.yml`. Set its pnpm version to the target repo's `packageManager` and replace the example package filter. Review it against the project's release process. Configure `CSC_LINK`, `CSC_KEY_PASSWORD`, `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, and `APPLE_TEAM_ID` as GitHub Actions secrets. Set the desktop package version and push a matching `desktop-vX.Y.Z` tag; CI signs, notarizes, and publishes DMG, ZIP, and update metadata.
-
-If the landing page is Next.js App Router and Releases are public, optionally copy [`desktop-download-route.ts`](./electron/desktop-download-route.ts) into the matching route path, set the GitHub owner/repo, and link a button to `/download/desktop`. Other landing-page frameworks should expose a small server endpoint for release metadata. A shared `useDesktopReleases()` hook can consume that endpoint; keep GitHub credentials server-side. Private Releases require an authenticated download flow.
+The base extension ends with a working Electron app and local packaging. Signing credentials, release hosting, download landing pages, and automatic updates belong to the consuming project’s distribution setup.
 
 The main-process template has Node integration off, context isolation and sandboxing on. Desktop auth, deep links, offline behavior, auto-update UI, and Windows/Linux releases require project-specific design. Make those changes by following the project architecture, not by blindly inserting source text.
