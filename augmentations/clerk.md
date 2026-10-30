@@ -47,13 +47,13 @@ Before handing off, the agent must provide a filled-in checklist: project ID, pr
 | --- | --- |
 | App name | The product's current display name |
 | User support email | `support@mp-lb.dev` |
-| Developer contact email | `privacy@mp-lb.dev` |
+| Developer contact email | `admin@mp-lb.dev` |
 | Audience | External, unless the product explicitly restricts access to our Workspace |
 | Authorized domain | The verified parent domain of the app and Clerk hosts, such as `mp-lb.dev` |
 | Scopes | `openid`, email, and profile only for basic sign-in |
 | Client type | Web application, including Electron apps that sign in through a browser and Clerk |
 
-Google restricts which support addresses can be selected. Ensure the operator is eligible to use the configured mailbox or Google Group; do not invent an address or silently substitute one. Use real, published home, privacy-policy, and terms URLs when requested. `privacy@mp-lb.dev` is a contact address, not a privacy-policy URL.
+Google restricts which support addresses can be selected. Ensure the operator is eligible to use the configured mailbox or Google Group; do not invent an address or silently substitute one. Use real, published home, privacy-policy, and terms URLs when requested. `admin@mp-lb.dev` is a contact address, not a privacy-policy URL.
 
 The human follows these steps:
 
