@@ -24,6 +24,10 @@ For each file, add its `@filename.md` import to `context/index.md` exactly once.
 
 Capability-specific MapLab additions belong with their Clerk, Electron or Shad augmentation. Public extension instructions and payloads live at `extensions/<extension>/README.md` and `extensions/<extension>/context/` in `mp-lb/fssstack`.
 
+### Reconcile existing context
+
+Use the public [context contract](https://github.com/mp-lb/stackforge/blob/main/fssstack/standards/context-files.md) when aligning an existing project. The base is seven blocks; MapLab adds workflow, standards and code style, plus toolchain only when mise is configured. Consolidate legacy running, package-map, project-mode and agent-responsibility blocks into their standard homes. Preserve product-specific rules and testing restrictions. Do not copy every augmentation or extension into every project.
+
 ### Loading screen
 
 For each React frontend, apply the [Shad augmentation](shad.md) after shadcn/ui
