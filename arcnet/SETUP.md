@@ -2,9 +2,7 @@
 
 Start with a working Zap/pnpm/GitHub project and an [ArcNet environment](initial-setup.md).
 
-1. Ensure the MAP Lab Forum sources exist: the shared `/admin/standard-secrets.json.enc`, and `/projects/<project-slug>/secrets.json.enc` and `/projects/<project-slug>/variables.json` in `mp-lb/mp-lb`. Reuse existing files without overwriting them. If the project files are missing, initialize the variables file as `{}` and encrypt `{}` with `fm encrypt` for the secrets file before writing it to Forum. If the shared file or encryption credentials are unavailable, ask the operator for help; do not replace the shared file. These sources may already have been created by the FSS Stack augmentation. Attach only the sources and consumers this project needs, following the package command reference.
-
-2. Create `.arcnet/arcnet.yaml`. Start with this; add only the capabilities the project ships:
+1. Ensure `.arcnet/arcnet.yaml` contains the capabilities the project ships. If it already exists, extend it without replacing its variables, secrets, or other configuration. For a new file, start with:
 
    ```yaml
    version: 1
@@ -26,6 +24,8 @@ Start with a working Zap/pnpm/GitHub project and an [ArcNet environment](initial
    ```
 
    Match `project` to `zap.yaml`. Omit `services` or `vercel` when unused; omit both for a package-only project. Put each container's Dockerfile at `.arcnet/<service>.Dockerfile`.
+
+2. Ensure the MAP Lab Forum sources and their GitHub decryption keys are provisioned: shared `/admin/standard-secrets.json.enc` and project `/projects/<project-slug>/secrets.json.enc` and `/projects/<project-slug>/variables.json` in `mp-lb/mp-lb`. FSS Stack projects may already have completed this through the MAP Lab augmentation. Preserve existing sources and consumers; use `arcnet secrets add` for existing encrypted sources and `arcnet secrets init` only for a missing project secrets source. Initialize missing non-secret variables as `{}` without overwriting existing files. Install the ArcNet dependency before provisioning, then sync snapshots and validate. See the [command reference](https://github.com/mp-lb/tools/tree/main/packages/arcnet/docs/public).
 
 3. Install and check:
 
