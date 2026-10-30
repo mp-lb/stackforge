@@ -65,15 +65,15 @@ The human follows these steps:
 6. Open **Clients → Create client**, choose **Web application**, and give it the supplied app name. If an appropriate client already exists, edit it instead of creating a duplicate.
 7. Under **Authorized JavaScript origins**, add the exact frontend origin supplied by the agent. Under **Authorized redirect URIs**, add the exact Clerk callback supplied by the agent. These are different fields; do not interchange them.
 8. Click **Create** and download the client JSON while it is available. Save it to the ignored local location agreed with the agent. Do not paste the secret into chat or commit the file.
-9. Send the agent the file's absolute local path. The agent handles the Clerk configuration and encrypted backup below.
+9. Send the agent the file's absolute local path. The agent handles the Clerk configuration below.
 
 **Handoff complete:** the JSON contains the Web client's ID and secret, and the human has supplied its local path. Until then, report Google production setup as blocked on this manual step; do not claim sign-in is configured.
 
 For Berth: origin `https://app.berth.mp-lb.dev`, redirect `https://clerk.berth.mp-lb.dev/v1/oauth_callback`, project `arcnet-berth`.
 
-#### Agent: configure Clerk and store credentials
+#### Agent: configure Clerk
 
-After the human supplies the downloaded JSON path, validate that it belongs to the intended GCP project and contains the expected redirect URI. Back up the credentials in the project's encrypted Forum secrets while preserving existing values and recipients. Never put the client secret in browser environment variables.
+After the human supplies the downloaded JSON path, validate that it belongs to the intended GCP project and contains the expected redirect URI. Never put the client secret in browser environment variables.
 
 Use `pnpm dlx clerk@latest config schema --keys connection_oauth_google` to confirm the current schema. Prepare a private JSON patch from the downloaded Google's `web.client_id` and `web.client_secret`:
 
@@ -97,7 +97,7 @@ pnpm dlx clerk@latest config patch --app "$CLERK_APP_ID" \
   --instance prod --file "$CLERK_PATCH_FILE" --yes >/dev/null
 ```
 
-Delete temporary plaintext files after the encrypted backup and Clerk update are verified. Project creation/reuse and Clerk configuration are automatable; creating the Google consent screen and standard Web OAuth client is the manual handoff.
+Delete temporary plaintext files after the Clerk update is verified. Project creation/reuse and Clerk configuration are automatable; creating the Google consent screen and standard Web OAuth client is the manual handoff.
 
 #### Verify
 
