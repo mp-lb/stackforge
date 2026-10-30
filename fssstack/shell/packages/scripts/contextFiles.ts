@@ -137,6 +137,7 @@ function expandHome(path: string) {
 }
 
 function fail(message: string): never {
-  console.error(`${basename(process.argv[1])}: ${message}`);
+  const scriptName = basename(process.argv[1] ?? "contextFiles.ts");
+  console.error(`${scriptName}: ${message}`);
   process.exit(1);
 }
