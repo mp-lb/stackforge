@@ -269,8 +269,9 @@ const userId = payload.sub;
 After applying and validating this capability, install its context payloads. For existing files, compare and merge instead of overwriting project-specific instructions. These commands are for a first install from the target repository root:
 
 ```sh
+set -e
 mkdir -p context
-fm pull --direct --store mp-lb/fssstack --path extensions/clerk/context/clerk.md --target context/clerk.md
+fm read extensions/clerk/context/clerk.md --store mp-lb/fssstack > context/clerk.md
 grep -qxF '@clerk.md' context/index.md || printf '\n@clerk.md\n' >> context/index.md
 ```
 

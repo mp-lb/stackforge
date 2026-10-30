@@ -165,8 +165,9 @@ const user = await users.findOne({ name: "Alice" });
 After applying and validating this capability, install its context payloads. For existing files, compare and merge instead of overwriting project-specific instructions. These commands are for a first install from the target repository root:
 
 ```sh
+set -e
 mkdir -p context
-fm pull --direct --store mp-lb/fssstack --path extensions/mongodb/context/mongodb.md --target context/mongodb.md
+fm read extensions/mongodb/context/mongodb.md --store mp-lb/fssstack > context/mongodb.md
 grep -qxF '@mongodb.md' context/index.md || printf '\n@mongodb.md\n' >> context/index.md
 ```
 

@@ -4,6 +4,7 @@ import {
   copyFileSync,
   existsSync,
   mkdtempSync,
+  readFileSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
@@ -29,6 +30,11 @@ const outputs =
 if (command === "build") {
   const entry = findEntry();
   runMdcompile([entry, "-o", "AGENTS.base.md", "--silent"]);
+  writeFileSync(
+    "AGENTS.base.md",
+    `${readFileSync("AGENTS.base.md", "utf8").trimEnd()}\n`,
+  );
+
   writeLocalFiles(outputs, options.extraContext);
 } else {
   if (options.extraContext.length > 0) {

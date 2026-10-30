@@ -215,9 +215,10 @@ Run the target project's lint, typecheck, tests, and desktop build through its n
 After applying this augmentation, copy `context/maplab-electron.md` from `mp-lb/augmentations` into the project's `context/maplab-electron.md`, merge any existing customizations, and adapt it to the features actually installed:
 
 ```sh
-fm pull --direct --store mp-lb/augmentations --path context/maplab-electron.md --target context/maplab-electron.md
+set -e
+fm read context/maplab-electron.md --store mp-lb/augmentations > context/maplab-electron.md
 grep -qxF '@maplab-electron.md' context/index.md || printf '\n@maplab-electron.md\n' >> context/index.md
 zap task context-build
 ```
 
-The pull command is for first installation; compare and merge on updates. Commit the block and generated agent files with the capability changes.
+The write command is for first installation; compare and merge on updates. Commit the block and generated agent files with the capability changes.

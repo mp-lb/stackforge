@@ -83,8 +83,9 @@ Do not call Clerk from the frontend for privileged user-management operations. T
 After applying and validating this capability, install its context payloads. For existing files, compare and merge instead of overwriting project-specific instructions. These commands are for a first install from the target repository root:
 
 ```sh
+set -e
 mkdir -p context
-fm pull --direct --store mp-lb/fssstack --path extensions/clerk-rbac/context/clerk-rbac.md --target context/clerk-rbac.md
+fm read extensions/clerk-rbac/context/clerk-rbac.md --store mp-lb/fssstack > context/clerk-rbac.md
 grep -qxF '@clerk-rbac.md' context/index.md || printf '\n@clerk-rbac.md\n' >> context/index.md
 ```
 

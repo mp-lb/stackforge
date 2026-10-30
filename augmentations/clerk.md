@@ -112,9 +112,10 @@ References: [Clerk Google setup](https://clerk.com/docs/guides/configure/auth-st
 After applying this augmentation, copy `context/maplab-clerk.md` from `mp-lb/augmentations` into the project's `context/maplab-clerk.md`, merge any existing customizations, and adapt it to the features actually installed:
 
 ```sh
-fm pull --direct --store mp-lb/augmentations --path context/maplab-clerk.md --target context/maplab-clerk.md
+set -e
+fm read context/maplab-clerk.md --store mp-lb/augmentations > context/maplab-clerk.md
 grep -qxF '@maplab-clerk.md' context/index.md || printf '\n@maplab-clerk.md\n' >> context/index.md
 zap task context-build
 ```
 
-The pull command is for first installation; compare and merge on updates. Commit the block and generated agent files with the capability changes.
+The write command is for first installation; compare and merge on updates. Commit the block and generated agent files with the capability changes.

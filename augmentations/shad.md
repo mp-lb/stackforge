@@ -56,9 +56,10 @@ component rather than maintaining an app-specific loading-screen copy.
 After applying this augmentation, copy `context/maplab-shad.md` from `mp-lb/augmentations` into the project's `context/maplab-shad.md`, merge any existing customizations, and adapt it to the features actually installed:
 
 ```sh
-fm pull --direct --store mp-lb/augmentations --path context/maplab-shad.md --target context/maplab-shad.md
+set -e
+fm read context/maplab-shad.md --store mp-lb/augmentations > context/maplab-shad.md
 grep -qxF '@maplab-shad.md' context/index.md || printf '\n@maplab-shad.md\n' >> context/index.md
 zap task context-build
 ```
 
-The pull command is for first installation; compare and merge on updates. Commit the block and generated agent files with the capability changes.
+The write command is for first installation; compare and merge on updates. Commit the block and generated agent files with the capability changes.

@@ -237,8 +237,9 @@ Always close workers and Redis connections in test cleanup.
 After applying and validating this capability, install its context payloads. For existing files, compare and merge instead of overwriting project-specific instructions. These commands are for a first install from the target repository root:
 
 ```sh
+set -e
 mkdir -p context
-fm pull --direct --store mp-lb/fssstack --path extensions/bull/context/bull.md --target context/bull.md
+fm read extensions/bull/context/bull.md --store mp-lb/fssstack > context/bull.md
 grep -qxF '@bull.md' context/index.md || printf '\n@bull.md\n' >> context/index.md
 ```
 

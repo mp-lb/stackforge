@@ -59,8 +59,9 @@ The main-process template has Node integration off, context isolation and sandbo
 After applying and validating this capability, install its context payloads. For existing files, compare and merge instead of overwriting project-specific instructions. These commands are for a first install from the target repository root:
 
 ```sh
+set -e
 mkdir -p context
-fm pull --direct --store mp-lb/fssstack --path extensions/electron/context/electron.md --target context/electron.md
+fm read extensions/electron/context/electron.md --store mp-lb/fssstack > context/electron.md
 grep -qxF '@electron.md' context/index.md || printf '\n@electron.md\n' >> context/index.md
 ```
 

@@ -260,8 +260,9 @@ when the current QA slice needs them.
 After applying and validating this capability, install its context payloads. For existing files, compare and merge instead of overwriting project-specific instructions. These commands are for a first install from the target repository root:
 
 ```sh
+set -e
 mkdir -p context
-fm pull --direct --store mp-lb/fssstack --path extensions/playwright/context/playwright.md --target context/playwright.md
+fm read extensions/playwright/context/playwright.md --store mp-lb/fssstack > context/playwright.md
 grep -qxF '@playwright.md' context/index.md || printf '\n@playwright.md\n' >> context/index.md
 ```
 

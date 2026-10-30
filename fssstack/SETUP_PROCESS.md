@@ -283,7 +283,8 @@ not part of this template.
 For projects with a docs site, fetch the conditional block into `context/docs-website.md`:
 
 ```sh
-fm pull --direct --store mp-lb/fssstack --path context/docs-website.md --target context/docs-website.md
+set -e
+fm read context/docs-website.md --store mp-lb/fssstack > context/docs-website.md
 ```
 
 Adapt its generation/check tasks and source paths to the actual docs site, add `@docs-website.md` to `context/index.md` once, and rebuild after setup. Copying a file alone does not include it in compiled context. Do not install docs-site guidance in projects without a docs site.
@@ -341,7 +342,7 @@ tracked and committed from an isolated worktree for project-owner integration.
 
 Keep the shell's complete `context/` directory and explicit `context/index.md`. Its first block, `context/context.md`, explains how to maintain context. Adapt `project.md`, `development.md`, `validation.md`, `documentation.md` and `delivery.md` to the assembled project; retain `scripts.md`. Do not import every technology's instructions into every project.
 
-Add conditional payloads from `context/ui.md` for React frontends, `context/backend.md` for backends, and `context/library-cli.md` for libraries/CLIs. Fetch each with `fm pull --direct --store mp-lb/fssstack --path context/<block>.md --target context/<block>.md`, specialize it, and add its import exactly once. Docs sites additionally use the block described above. Only describe tasks and workflows actually configured.
+Add conditional payloads from `context/ui.md` for React frontends, `context/backend.md` for backends, and `context/library-cli.md` for libraries/CLIs. Fetch each with `fm read context/<block>.md --store mp-lb/fssstack > context/<block>.md`, specialize it, and add its import exactly once. Docs sites additionally use the block described above. Only describe tasks and workflows actually configured.
 
 Keep `packages/scripts` private and included in workspace checks. Run `zap t scripts` and `zap t scripts-check` to verify the script convention. See [Context files](standards/context-files.md) for the compilation contract.
 

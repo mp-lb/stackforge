@@ -19,8 +19,9 @@ Record external DNS dependencies in the runbook rather than assuming access to a
 After applying and validating this capability, install its context payloads. For existing files, compare and merge instead of overwriting project-specific instructions. These commands are for a first install from the target repository root:
 
 ```sh
+set -e
 mkdir -p context
-fm pull --direct --store mp-lb/fssstack --path extensions/custom-domains/context/domains.md --target context/domains.md
+fm read extensions/custom-domains/context/domains.md --store mp-lb/fssstack > context/domains.md
 grep -qxF '@domains.md' context/index.md || printf '\n@domains.md\n' >> context/index.md
 ```
 

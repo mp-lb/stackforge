@@ -66,8 +66,9 @@ const redis = getRedis(env.REDIS_URL);
 After applying and validating this capability, install its context payloads. For existing files, compare and merge instead of overwriting project-specific instructions. These commands are for a first install from the target repository root:
 
 ```sh
+set -e
 mkdir -p context
-fm pull --direct --store mp-lb/fssstack --path extensions/redis/context/redis.md --target context/redis.md
+fm read extensions/redis/context/redis.md --store mp-lb/fssstack > context/redis.md
 grep -qxF '@redis.md' context/index.md || printf '\n@redis.md\n' >> context/index.md
 ```
 

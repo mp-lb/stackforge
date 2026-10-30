@@ -12,11 +12,12 @@ Apply this after creating a new fssstack project.
 Keep the public shell's context maintenance and baseline blocks. Install MapLab's focused payloads from this store after base setup:
 
 ```sh
+set -e
 mkdir -p context
-fm pull --direct --store mp-lb/augmentations --path context/maplab-workflow.md --target context/maplab-workflow.md
-fm pull --direct --store mp-lb/augmentations --path context/maplab-standards.md --target context/maplab-standards.md
-fm pull --direct --store mp-lb/augmentations --path context/maplab-code-style.md --target context/maplab-code-style.md
-fm pull --direct --store mp-lb/augmentations --path context/maplab-toolchain.md --target context/maplab-toolchain.md
+fm read context/maplab-workflow.md --store mp-lb/augmentations > context/maplab-workflow.md
+fm read context/maplab-standards.md --store mp-lb/augmentations > context/maplab-standards.md
+fm read context/maplab-code-style.md --store mp-lb/augmentations > context/maplab-code-style.md
+fm read context/maplab-toolchain.md --store mp-lb/augmentations > context/maplab-toolchain.md
 ```
 
 For each file, add its `@filename.md` import to `context/index.md` exactly once. Merge existing customized blocks instead of overwriting them. Only retain the mise block where mise is configured. Record the project's actual Forum store/sync mapping (or lack of one) in `context/documentation.md`. Run `zap task context-build` and commit sources plus all three outputs. Never import the old mixed global block.

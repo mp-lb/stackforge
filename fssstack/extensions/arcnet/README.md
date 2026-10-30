@@ -20,10 +20,11 @@ Use the [hello-world reference project](https://github.com/mp-lb/stackforge/tree
 After applying and validating this capability, install its context payloads. For existing files, compare and merge instead of overwriting project-specific instructions. These commands are for a first install from the target repository root:
 
 ```sh
+set -e
 mkdir -p context
-fm pull --direct --store mp-lb/fssstack --path extensions/arcnet/context/arcnet.md --target context/arcnet.md
+fm read extensions/arcnet/context/arcnet.md --store mp-lb/fssstack > context/arcnet.md
 grep -qxF '@arcnet.md' context/index.md || printf '\n@arcnet.md\n' >> context/index.md
-fm pull --direct --store mp-lb/fssstack --path extensions/arcnet/context/secrets.md --target context/secrets.md
+fm read extensions/arcnet/context/secrets.md --store mp-lb/fssstack > context/secrets.md
 grep -qxF '@secrets.md' context/index.md || printf '\n@secrets.md\n' >> context/index.md
 ```
 

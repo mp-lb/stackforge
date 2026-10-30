@@ -230,8 +230,9 @@ export const createPresignedS3GetUrl = async (input: {
 After applying and validating this capability, install its context payloads. For existing files, compare and merge instead of overwriting project-specific instructions. These commands are for a first install from the target repository root:
 
 ```sh
+set -e
 mkdir -p context
-fm pull --direct --store mp-lb/fssstack --path extensions/s3/context/s3.md --target context/s3.md
+fm read extensions/s3/context/s3.md --store mp-lb/fssstack > context/s3.md
 grep -qxF '@s3.md' context/index.md || printf '\n@s3.md\n' >> context/index.md
 ```
 
