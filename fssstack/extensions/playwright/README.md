@@ -255,15 +255,6 @@ when the current QA slice needs them.
   is deliberately a smoke test.
 - Prefer one clear user workflow per spec over large tours of the whole app.
 
-## Install agent context
+## Agent context
 
-After applying and validating this capability, install its context payloads. For existing files, compare and merge instead of overwriting project-specific instructions. These commands are for a first install from the target repository root:
-
-```sh
-set -e
-mkdir -p context
-fm read extensions/playwright/context/playwright.md --store mp-lb/fssstack > context/playwright.md
-grep -qxF '@playwright.md' context/index.md || printf '\n@playwright.md\n' >> context/index.md
-```
-
-Adapt the blocks to the installed package paths, services, tasks and configuration. Remove assumptions that do not apply. Then run `zap task context-build` and commit the source blocks and all three generated agent files.
+Record test commands, service lifecycle and execution restrictions in `context/validation.md`. Preserve existing permission requirements. Run `zap task context-build` if context changes.

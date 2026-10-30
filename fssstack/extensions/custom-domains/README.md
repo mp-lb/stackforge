@@ -14,15 +14,6 @@ For ArcNet projects, read `fm read SETUP.md --store mp-lb/arcnet` and `fm read d
 
 Record external DNS dependencies in the runbook rather than assuming access to a client's registrar. Read current provider documentation before executing provider-specific changes.
 
-## Install agent context
+## Agent context
 
-After applying and validating this capability, install its context payloads. For existing files, compare and merge instead of overwriting project-specific instructions. These commands are for a first install from the target repository root:
-
-```sh
-set -e
-mkdir -p context
-fm read extensions/custom-domains/context/domains.md --store mp-lb/fssstack > context/domains.md
-grep -qxF '@domains.md' context/index.md || printf '\n@domains.md\n' >> context/index.md
-```
-
-Adapt the blocks to the installed package paths, services, tasks and configuration. Remove assumptions that do not apply. Then run `zap task context-build` and commit the source blocks and all three generated agent files.
+Record actual hostnames, provider ownership and any unusual domain-change requirements in `context/delivery.md`. Run `zap task context-build` if context changes.

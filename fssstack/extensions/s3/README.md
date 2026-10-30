@@ -224,16 +224,6 @@ export const createPresignedS3GetUrl = async (input: {
 };
 ```
 
+## Agent context
 
-## Install agent context
-
-After applying and validating this capability, install its context payloads. For existing files, compare and merge instead of overwriting project-specific instructions. These commands are for a first install from the target repository root:
-
-```sh
-set -e
-mkdir -p context
-fm read extensions/s3/context/s3.md --store mp-lb/fssstack > context/s3.md
-grep -qxF '@s3.md' context/index.md || printf '\n@s3.md\n' >> context/index.md
-```
-
-Adapt the blocks to the installed package paths, services, tasks and configuration. Remove assumptions that do not apply. Then run `zap task context-build` and commit the source blocks and all three generated agent files.
+Do not install a context block just because this dependency is present. Keep setup and usage details here; record only unusual project-specific operational constraints in the existing project or development instructions. Run `zap task context-build` if context changes.

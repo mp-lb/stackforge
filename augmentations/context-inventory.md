@@ -1,38 +1,36 @@
 # Context inventory
 
-Last reconciled: 30 October 2026. Owner: the project’s maintainer; Stackforge owns the shared defaults and extension payloads. Update this inventory when onboarding a project, installing/removing a capability, or adding a product-specific block.
+Reconciled 30 October 2026. Stackforge owns the shared defaults and extension installation policy; project maintainers own local facts and product-specific rules. Factory aliases Berth.
 
-## Scope and defaults
+## Default set
 
-This inventory covers 13 primary FSS Stack checkouts and the related Shad and Forum Mobile consumers. Factory is the Berth checkout’s alias. Archived/duplicate checkouts are excluded. Stackforge itself is an authoring workbench, not a generated target.
+All 15 consumers have eight local defaults: `context`, `project`, `development`, `validation`, `scripts`, `documentation`, `delivery` and the short `standards` lookup. Code style is one remote Forum import, expanded during context build. Forum retains its tech-debt path override in `project.md`.
 
-All rows use the nine defaults: `context`, `project`, `standards`, `code-style`, `development`, `validation`, `scripts`, `documentation`, `delivery`. MAP Lab’s public standards and code style ship with FSS Stack. All rows also receive MapLab’s `maplab-workflow` and `maplab-toolchain` blocks and mise configuration. Existing package managers and version pins are preserved; Forum Mobile remains npm-based.
+Mise setup is merged into development, beneath Zapper. Related owned repositories are described in project. Workflow and generic backend blocks are removed. MAP Lab Clerk, Electron and loading-UI additions are merged into their existing subject files. No separate MAP Lab-prefixed or toolchain blocks remain.
 
-## Extension coverage
+## Current context counts
 
-The installed context is checked against owning packages plus actual initialization/configuration. `fssstack.yaml` is setup input and is often stale; empty extension lists do not describe current capability use. “domains” is the custom-domains extension; “secrets” is included with ArcNet and not counted as a separate extension. These are repository configuration findings, not a certification of live provider state.
+Counts include `index.md`, exclude the remote style source and do not measure installed dependencies.
 
-| Project | Extension context | Evidence / qualification |
-| --- | --- | --- |
-| berth | arcnet, clerk, mongodb, redis, bull, electron, domains | `apps/api`, `apps/web`, `apps/desktop`, `packages/server`, `zap.yaml`, `.arcnet/arcnet.yaml`. |
-| contract-analyser | None | CLI workbench; no configured extension capability. |
-| forum | arcnet, clerk, clerk-rbac, mongodb, redis, bull, s3, playwright, electron, domains | Backend authentication/role resolution, `packages/job-system`, desktop app, E2E package and ArcNet configuration. |
-| fssstack-start | arcnet, domains | ArcNet configuration and its declared domain; no app database/auth extension. |
-| helloworld | None | Shell application examples; no configured extension capability. |
-| inproduct | arcnet, mongodb, s3, playwright, domains | ArcNet configuration; storage package Mongo/S3 adapters (library capability, not a deployed database); `tests/docs/playwright.config.ts`. |
-| lexiquest | arcnet, clerk, clerk-rbac, mongodb, redis, bull, s3, domains | Server/worker packages, Clerk metadata role lookup in `packages/server/src/auth.ts`, ArcNet configuration. |
-| maddi | clerk, clerk-rbac, mongodb, redis, bull, s3, playwright | Server, DB and worker packages; `accessPrincipal.ts` role resolver; E2E package. No ArcNet config. |
-| mdkit | arcnet, domains | ArcNet configuration and its declared domains; no configured auth/database capability. |
-| nexus | mongodb, redis, bull, s3 | Server and domain packages own Mongo, queues/Redis and S3. App-owned authorization is not Clerk RBAC. |
-| tools | arcnet | ArcNet configuration. `electron-kit`, `mobile-clerk` and `fssstack-testing` are reusable library implementations/helpers, not installed desktop/auth/database/browser-test applications; do not add misleading runtime blocks. |
-| zapper | arcnet, domains | ArcNet configuration and its declared domains; VM E2E tests are not Playwright. |
-| zog | arcnet, mongodb, domains | ArcNet configuration and Mongo-backed library behavior; Mongo context is scoped to that library. |
-| shad | arcnet, domains | `.arcnet/arcnet.yaml` declares the Vercel docs/registry site and `shad.mp-lb.dev`. |
-| forum-mobile | clerk | `app/_layout.tsx` Clerk provider/token cache; `app/sign-in.tsx`; `lib/TrpcProvider.tsx` and `lib/trpc.ts`. Native client; authorization is enforced by Forum backend. |
+| Project | Previous files | Current files | Separate extension context |
+| --- | ---: | ---: | --- |
+| berth | 26 | 14 | arcnet, clerk, electron |
+| contract-analyser | 14 | 11 | None |
+| forum | 30 | 16 | arcnet, clerk, clerk-rbac, electron |
+| fssstack-start | 17 | 12 | arcnet |
+| helloworld | 14 | 10 | None |
+| inproduct | 21 | 12 | arcnet |
+| lexiquest | 25 | 14 | arcnet, clerk, clerk-rbac |
+| maddi | 31 | 21 | clerk, clerk-rbac |
+| mdkit | 17 | 11 | arcnet |
+| nexus | 20 | 12 | None |
+| tools | 15 | 11 | arcnet |
+| zapper | 17 | 12 | arcnet |
+| zog | 17 | 11 | arcnet |
+| shad | 16 | 11 | arcnet |
+| forum-mobile | 13 | 10 | clerk |
 
-The audit covers all ten available extensions. Six missing blocks were added: Clerk RBAC in Forum, LexiQuest and Maddi; Playwright in InProduct; Clerk in Forum Mobile; and custom domains in Shad. Existing blocks were retained with their local adaptations. Installation is an atomic documentation step: copy the extension payload, specialize it, import it, and rebuild alongside the capability change.
-
-RBAC blocks describe each installed model rather than imposing the setup example: Forum separates global roles from workspace permissions; LexiQuest reads verified users’ metadata on requests; Maddi preserves its explicit-user denial, local fallback and revocation behavior. InProduct’s docs-browser tests keep their existing explicit browser-test permission requirement.
+All ten extensions were reviewed. Redis, MongoDB, S3 and BullMQ no longer install context blocks. Playwright details live in validation; domain facts live in delivery; secret synchronization lives in ArcNet. Installation evidence remains in code/configuration, not an instruction block for each dependency. Library adapters do not imply deployed services.
 
 ## Project-specific blocks
 
@@ -55,12 +53,8 @@ These are intentional additions, owned by the named project. They were preserved
 
 All other audited projects have no separate product-specific blocks. Do not remove a product block merely to equalize counts; merge only when its responsibility belongs in a standard block and its unique constraints are preserved.
 
-## Mise policy
+## Mise and maintenance
 
-Mise is required by the MapLab augmentation in every audited project. The public shell remains independent of mise. Node is selected from `.node-version`; pnpm projects read `package.json#packageManager`. npm projects use the npm bundled with the selected Node. The configuration does not duplicate those pins.
+All 15 consumers retain mise with their existing version pins and package managers. Forum Mobile remains npm-based. The public shell stays independent of mise; the augmentation adds it to every adopting project.
 
-The 13 FSS Stack projects already used this setup. Shad’s partial pnpm-only setup now reads its existing pnpm pin and an explicit Node 22.23.4 pin, consistent with its Node 22 CI configuration. Forum Mobile selects Node 22.17.1 from its existing EAS build profiles and retains npm. No existing Node/pnpm pins were upgraded.
-
-## Maintenance checks
-
-Confirm all nine defaults and the two augmentation blocks are reachable exactly once. Compare extension imports with actual implementation/configuration, including prerequisites and ArcNet’s secrets block. Record library-only cases explicitly. Keep this product-block table current. Compile with each project’s `zap task context-build`, review the diff, and commit all three shared outputs with the source changes. Test permissions in validation remain authoritative.
+When updating context, preserve product-specific knowledge and existing execution restrictions. Verify required imports resolve once, the shared remote style expands, all three outputs match, and there are no orphaned or boilerplate dependency blocks. Update this inventory when responsibilities change.

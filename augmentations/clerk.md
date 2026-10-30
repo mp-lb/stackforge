@@ -109,13 +109,4 @@ References: [Clerk Google setup](https://clerk.com/docs/guides/configure/auth-st
 
 ## Agent context
 
-After applying this augmentation, copy `context/maplab-clerk.md` from `mp-lb/augmentations` into the project's `context/maplab-clerk.md`, merge any existing customizations, and adapt it to the features actually installed:
-
-```sh
-set -e
-fm read context/maplab-clerk.md --store mp-lb/augmentations > context/maplab-clerk.md
-grep -qxF '@maplab-clerk.md' context/index.md || printf '\n@maplab-clerk.md\n' >> context/index.md
-zap task context-build
-```
-
-The write command is for first installation; compare and merge on updates. Commit the block and generated agent files with the capability changes.
+Merge the recurring instructions from `context/clerk.md` in this store into the project’s existing `context/clerk.md`. Preserve local rules and include only installed behavior. Do not create a separate MAP Lab-prefixed block. Run `zap task context-build` and commit source and generated files together.

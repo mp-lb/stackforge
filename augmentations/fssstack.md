@@ -9,22 +9,11 @@ Apply this after creating a new fssstack project.
 
 ### Agent context
 
-Keep all nine public-shell context blocks, including `standards.md` and `code-style.md`: FSS Stack ships MAP Lab's public standards by default. Install MapLab's focused payloads from this store after base setup:
+Keep the public defaults and the remote MAP Lab code-style import described in the [context contract](https://github.com/mp-lb/stackforge/blob/main/fssstack/standards/context-files.md). `standards.md` is just the lookup commands. Do not install workflow, backend or MAP Lab-prefixed files.
 
-```sh
-set -e
-mkdir -p context
-fm read context/maplab-workflow.md --store mp-lb/augmentations > context/maplab-workflow.md
-fm read context/maplab-toolchain.md --store mp-lb/augmentations > context/maplab-toolchain.md
-```
+Merge `context/development.md` from this store into the existing development instructions after configuring mise. Mise selects tools; Zapper runs on top. Record related owned source repositories and any necessary build/link steps in `context/project.md`, not a separate mandatory toolchain file. Record the actual Forum store/sync mapping in `context/documentation.md`.
 
-For each file, add its `@filename.md` import to `context/index.md` exactly once. Merge existing customized blocks instead of overwriting them. Install mise configuration and the toolchain block in every project receiving this augmentation; do not make it an optional per-project choice. Record the project's actual Forum store/sync mapping (or lack of one) in `context/documentation.md`. Run `zap task context-build` and commit sources plus all three outputs. Never import the old mixed global block.
-
-Capability-specific MapLab additions belong with their Clerk, Electron or Shad augmentation. Public extension instructions and payloads live at `extensions/<extension>/README.md` and `extensions/<extension>/context/` in `mp-lb/fssstack`.
-
-### Reconcile existing context
-
-Use the public [context contract](https://github.com/mp-lb/stackforge/blob/main/fssstack/standards/context-files.md) when aligning an existing project. The base is nine blocks, including MAP Lab’s public standards and code style. This augmentation adds workflow and mise toolchain guidance to every project. Consolidate legacy running, package-map, project-mode and agent-responsibility blocks into their standard homes. Preserve product-specific rules and testing restrictions. Do not copy every augmentation or extension into every project.
+Merge Clerk, Electron and Shad augmentation instructions into the corresponding subject files. A dependency alone does not justify a block. Preserve product-specific rules and testing restrictions. Compile and commit sources plus all three outputs.
 
 ### Loading screen
 
@@ -79,4 +68,4 @@ with the project contract; never maintain independent tool pins in CI.
 
 ### Existing project audit
 
-When adding an extension, install and specialize its context payload in the same change, add the import once, rebuild, and update [Context inventory](context-inventory.md). Check implementation and configuration rather than relying on a possibly stale `fssstack.yaml` list. Keep project-specific blocks and record their purpose; do not replace them with generic defaults.
+Compare context with actual implementation and configuration. Keep separate blocks only for recurring, non-obvious instructions; do not install one for every dependency. Record meaningful extension guidance and retained project-specific knowledge in [Context inventory](context-inventory.md). Rebuild when context changes.

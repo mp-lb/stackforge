@@ -1,7 +1,7 @@
-# Conditional context payloads
+# Context sources
 
-The always-present baseline lives in `shell/context/`. Project setup adds `ui.md`, `backend.md`, `library-cli.md` and `docs-website.md` only when the selected project types need them. Adapt commands and paths, import each block explicitly, then compile.
+The shell owns eight local default files and an index importing MAP Lab's public code style remotely from `context/code-style.md` in this store. Do not copy the shared style source into target projects.
 
-Optional capabilities own their payloads under `extensions/<extension>/context/`. MAP Lab’s public standards and code style ship in the shell baseline. MapLab workflow, mise setup, account choices and documentation-layout additions belong to the augmentation store.
+Install `ui.md`, `library-cli.md` or `docs-website.md` only where their instructions apply. There is no generic backend payload. Specialize actual paths and commands during setup; installed instructions describe operation, not how to adapt themselves.
 
-The canonical ownership and legacy-block mapping are in [Context files](../standards/context-files.md). Do not recreate generic global, tech-stack, process-management or Forum blocks here; their applicable rules belong in the shell baseline, selected project type or organization augmentation.
+Extensions may own context, templates or other payloads. Only Clerk, Clerk RBAC, ArcNet and Electron currently need separate context payloads. MAP Lab augmentation merges local mise setup and capability-specific conventions into existing subject files. See [Context files](../standards/context-files.md).

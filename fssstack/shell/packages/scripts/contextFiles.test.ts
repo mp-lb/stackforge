@@ -90,3 +90,73 @@ test("context build and copy respect selected outputs, extra files, and temporar
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+test("remote style expands and fetch failures preserve previous shared outputs", () => {
+  const root = realpathSync(
+    mkdtempSync(join(tmpdir(), "context-remote-test-")),
+  );
+
+  try {
+    mkdirSync(join(root, "bin"));
+    mkdirSync(join(root, "context"));
+    const link = "[Style](https://hyperdoc.forumlabs.net/test-style)\n";
+    writeFileSync(join(root, "context/index.md"), link);
+    const quote = (value: string) => `'${value.replaceAll("'", "'\\''")}'`;
+    writeFileSync(
+      join(root, "bin/npx"),
+      `#!/bin/sh\nexec ${quote(process.execPath)} --experimental-strip-types ${quote(fileURLToPath(new URL("./mockMdcompile.ts", import.meta.url)))} "$@"\n`,
+      { mode: 0o755 },
+    );
+
+    writeFileSync(
+      join(root, "bin/fm"),
+      '#!/bin/sh\ncat > "$CONTEXT_TEST_INPUT"\nif [ "$CONTEXT_TEST_FAIL" = "1" ]; then exit 1; fi\nprintf "Remote style rules\\n"\n',
+      { mode: 0o755 },
+    );
+
+    const run = (fail: boolean) =>
+      spawnSync(
+        process.execPath,
+        [
+          "--import",
+          import.meta.resolve("tsx"),
+          fileURLToPath(new URL("./contextFiles.ts", import.meta.url)),
+          "build",
+        ],
+        {
+          cwd: root,
+          encoding: "utf8",
+          timeout: 10000,
+          env: {
+            ...process.env,
+            PATH: `${join(root, "bin")}:${process.env.PATH}`,
+            CONTEXT_TEST_LOG: join(root, "compiler-log"),
+            CONTEXT_TEST_INPUT: join(root, "remote-input"),
+            CONTEXT_TEST_FAIL: fail ? "1" : "0",
+          },
+        },
+      );
+
+    const success = run(false);
+    assert.equal(success.status, 0, success.stderr);
+    assert.equal(readFileSync(join(root, "remote-input"), "utf8"), link);
+
+    for (const file of ["AGENTS.base.md", "AGENTS.md", "CLAUDE.md"]) {
+      assert.equal(
+        readFileSync(join(root, file), "utf8"),
+        "Remote style rules\n",
+      );
+    }
+
+    assert.notEqual(run(true).status, 0);
+
+    for (const file of ["AGENTS.base.md", "AGENTS.md", "CLAUDE.md"]) {
+      assert.equal(
+        readFileSync(join(root, file), "utf8"),
+        "Remote style rules\n",
+      );
+    }
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});

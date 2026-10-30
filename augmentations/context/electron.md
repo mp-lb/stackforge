@@ -1,4 +1,4 @@
-## MapLab desktop conventions
+### Desktop conventions
 
 This project applies MapLab's Electron augmentation. Preserve its Electron Kit integration, packaged offline fallback, window state and browser-auth handoff where configured. Keep hosted frontend compatibility with supported installed desktop versions.
 

@@ -53,13 +53,4 @@ component rather than maintaining an app-specific loading-screen copy.
 
 ## Agent context
 
-After applying this augmentation, copy `context/maplab-shad.md` from `mp-lb/augmentations` into the project's `context/maplab-shad.md`, merge any existing customizations, and adapt it to the features actually installed:
-
-```sh
-set -e
-fm read context/maplab-shad.md --store mp-lb/augmentations > context/maplab-shad.md
-grep -qxF '@maplab-shad.md' context/index.md || printf '\n@maplab-shad.md\n' >> context/index.md
-zap task context-build
-```
-
-The write command is for first installation; compare and merge on updates. Commit the block and generated agent files with the capability changes.
+Merge the recurring instructions from `context/ui.md` in this store into the project’s existing `context/ui.md`. Preserve local rules and include only installed behavior. Do not create a separate MAP Lab-prefixed block. Run `zap task context-build` and commit source and generated files together.

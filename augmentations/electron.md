@@ -212,13 +212,4 @@ Run the target project's lint, typecheck, tests, and desktop build through its n
 
 ## Agent context
 
-After applying this augmentation, copy `context/maplab-electron.md` from `mp-lb/augmentations` into the project's `context/maplab-electron.md`, merge any existing customizations, and adapt it to the features actually installed:
-
-```sh
-set -e
-fm read context/maplab-electron.md --store mp-lb/augmentations > context/maplab-electron.md
-grep -qxF '@maplab-electron.md' context/index.md || printf '\n@maplab-electron.md\n' >> context/index.md
-zap task context-build
-```
-
-The write command is for first installation; compare and merge on updates. Commit the block and generated agent files with the capability changes.
+Merge the recurring instructions from `context/electron.md` in this store into the project’s existing `context/electron.md`. Preserve local rules and include only installed behavior. Do not create a separate MAP Lab-prefixed block. Run `zap task context-build` and commit source and generated files together.
