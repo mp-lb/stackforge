@@ -84,7 +84,7 @@ logger, tRPC router) — keep that wiring; you are only renaming.
 If the project has multiple backends, repeat the copy + edit for every backend. Remove `apps/example-backend` after all requested backends exist, unless the requested backend slug is `example-backend`.
 
 When the selected extensions include Clerk or MongoDB, apply
-extensions/clerk.md and extensions/mongodb.md to each selected backend before
+extensions/clerk/README.md and extensions/mongodb/README.md to each selected backend before
 validation. Those instructions are part of assembly: do not defer their package,
 route/provider, environment-placeholder, database-service, or reset-task wiring
 to a later hand edit of the finished project.
@@ -278,20 +278,15 @@ creating them implicitly. Bringing a docs site up to internal house style
 (shared theme and generated-reference wiring) is a separate augmented flow,
 not part of this template.
 
-### AGENTS.md docs layer
+### Docs-site context
 
-A project with a docs site also needs its `AGENTS.md` to tell agents how the
-generated-docs workflow works. That guidance is a conditional layer, not part of
-the base template — copy it into the project's `docs/agents-md/` layers folder:
+For projects with a docs site, fetch the conditional block into `context/docs-website.md`:
 
-```bash
-pnpm exec fm pull --direct --store mp-lb/fssstack --path agents-md/docs-website.md --target docs/agents-md/docs-website.md
+```sh
+fm pull --direct --store mp-lb/fssstack --path context/docs-website.md --target context/docs-website.md
 ```
 
-This is the conditional-snippet pattern: a project gets
-`docs/agents-md/docs-website.md` only when it has a docs site. The AGENTS.md
-compiler composes everything in `docs/agents-md/` into the final `AGENTS.md`, so
-once the file is in place our responsibility ends.
+Adapt its generation/check tasks and source paths to the actual docs site, add `@docs-website.md` to `context/index.md` once, and rebuild after setup. Copying a file alone does not include it in compiled context. Do not install docs-site guidance in projects without a docs site.
 
 ## Delete examples
 
@@ -344,30 +339,18 @@ a pointer to `audit.md` in the project's context source blocks so agents can
 find the process. Keep `/tmp/` gitignored for scratch files; audit reports are
 tracked and committed from an isolated worktree for project-owner integration.
 
-Create the project's `context/` source blocks and `context/index.md`.
-Retain the shell's `context/scripts.md` and import it with `@scripts.md`.
-Keep `packages/scripts` private and included in workspace lint/typecheck; run
-`zap t scripts` and `zap t scripts-check` to verify the convention. New project
-scripts use TypeScript in their owning package or `packages/scripts`, with a
-thin Zap entry point using `tsx`. When migrating existing scripts, add and verify
-the replacement first, update all callers (including CI), then remove the old file.
-Include a project-specific `context/delivery.md` based on
-[`agents-md/delivery.md`](./agents-md/delivery.md), and import it from the index.
-Adapt it to the project's actual packages and configured workflows; retain the
-block even when no packages are publishable. Build and commit the project context:
+Keep the shell's complete `context/` directory and explicit `context/index.md`. Its first block, `context/context.md`, explains how to maintain context. Adapt `project.md`, `development.md`, `validation.md`, `documentation.md` and `delivery.md` to the assembled project; retain `scripts.md`. Do not import every technology's instructions into every project.
 
-```bash
+Add conditional payloads from `context/ui.md` for React frontends, `context/backend.md` for backends, and `context/library-cli.md` for libraries/CLIs. Fetch each with `fm pull --direct --store mp-lb/fssstack --path context/<block>.md --target context/<block>.md`, specialize it, and add its import exactly once. Docs sites additionally use the block described above. Only describe tasks and workflows actually configured.
+
+Keep `packages/scripts` private and included in workspace checks. Run `zap t scripts` and `zap t scripts-check` to verify the script convention. See [Context files](standards/context-files.md) for the compilation contract.
+
+```sh
 zap task context-build
 git add context AGENTS.base.md AGENTS.md CLAUDE.md
 ```
 
-Root `AGENTS.md` and `CLAUDE.md` are committed generated outputs and must not be
-gitignored. Keep them in sync with `AGENTS.base.md` when project instructions
-change. `AGENTS.local.md` and `AGENTS_WORKTREE.md` remain ignored for local
-instructions. A developer can run `zap task context-copy` to restore the
-committed base context. If they run `zap task context-build -- ~/some/global.md`
-to append private context, the resulting changes to the tracked agent files
-are local only and must not be committed.
+Target projects commit all three generated files. `AGENTS.local.md` and `AGENTS_WORKTREE.md` remain ignored; private additions must never be committed. `zap task context-copy` restores shared outputs. Do not use blanket optional imports or assume the local compiler expands Forum links.
 
 ## Validate
 
@@ -392,7 +375,7 @@ project-specific validation.
 
 After the base project validates, apply any selected extensions from the extension docs.
 
-For each extension slug, read the matching doc from `docs/extensions/<slug>.md` and apply it as a follow-up layer. Extensions are allowed to require project-specific judgment; keep the base setup complete and committed before taking responsibility for extension-specific behavior.
+For each extension slug, read `fm read extensions/<slug>/README.md --store mp-lb/fssstack` and apply it as a follow-up layer. Extensions are allowed to require project-specific judgment; keep the base setup complete and committed before taking responsibility for extension-specific behavior.
 
 Commit:
 
@@ -400,3 +383,5 @@ Commit:
 git add .
 git commit -m init
 ```
+
+Each selected extension installs its own context payloads and any other files using the mappings in its README. Recompile and commit context after applying each capability. MapLab working conventions are a separate augmentation, not part of the public shell.

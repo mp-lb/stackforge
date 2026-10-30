@@ -1,64 +1,27 @@
 # Context files
 
-Fssstack projects keep agent context easy to inspect, easy to regenerate, and
-safe for each developer to customize locally.
+The shell ships a complete `context/index.md` with small local source blocks: `context`, `project`, `development`, `validation`, `scripts`, `documentation` and `delivery`. Context maintenance is the first import and is independent of any organization augmentation.
 
-The committed source of truth is split in two:
+## Composition and outputs
 
-- `agents-md/` contains the project-level source blocks.
-- `AGENTS.base.md`, `AGENTS.md`, and `CLAUDE.md` are generated from those blocks
-  and committed to git. Root `AGENTS.md` and `CLAUDE.md` must not be gitignored.
+Use explicit `@filename.md` imports in `context/index.md`. A file is included only when imported. Required local imports must exist; do not use blanket optional compilation. Keep the repository self-contained by copying the selected shell, project-type, extension and augmentation payloads locally. Longer standards can be read on demand.
 
-Optional local instruction files are not committed:
+`zap task context-build` compiles the index into `AGENTS.base.md`, then writes identical `AGENTS.md` and `CLAUDE.md` outputs. Commit all three generated files with source changes in target projects. Do not hand-edit or gitignore the generated files. `zap task context-copy` restores both root files from the base without recompiling.
 
-- `AGENTS.local.md`
-- `AGENTS_WORKTREE.md`
+The shell compiler uses mdcompile for local imports. It does not expand standalone Forum links. If an existing project deliberately composes remote content, preserve its explicit Forum compilation stage until that content has been migrated to local blocks. Compile it once into the base, then copy the base to both outputs.
 
-Keep private or machine-specific content in local files. The committed root
-agent files contain the shared project instructions that every clone should
-have immediately.
+## Local additions
 
-## Tasks
+The compiler accepts `--agents` or `--claude` to select an output. With neither flag it writes both. `zap task context-build -- ~/personal.md` appends explicitly selected private context to the local agent files, never to the shared base. Use `--optional-extra` only for deliberately optional personal files. Private additions must not be committed; restore shared outputs with `zap task context-copy`.
 
-Each project should expose two Zap tasks:
+`AGENTS.local.md` and `AGENTS_WORKTREE.md` remain ignored. They are not automatically imported by the compiler; use the project's documented explicit local/worktree mechanism.
 
-- `zap task context-build [extra-context ...]` builds the project source blocks
-  into `AGENTS.base.md`, then copies that result to `AGENTS.md` and `CLAUDE.md`.
-- `zap task context-copy` copies the committed `AGENTS.base.md` to `AGENTS.md`
-  and `CLAUDE.md` without rebuilding.
+## Adding capabilities
 
-Both tasks may accept output flags for agent-specific files:
+Each extension lives at `extensions/<extension>/README.md`, with `context/` payloads and any templates alongside it. Follow its source-to-target mapping, adapt project details, import each block exactly once and rebuild. On updates, merge with customized installed blocks. Setup documents are not themselves always-loaded context.
 
-- `--agents` writes only `AGENTS.md`.
-- `--claude` writes only `CLAUDE.md`.
+Project-type setup owns conditional frontend, backend, CLI/library and docs-site guidance. MapLab augmentation owns organization workflow, standards and account choices. Product facts and specialized validation policies remain project-local.
 
-When neither flag is present, both root files are written.
+## Migration checks
 
-`context-build` may also accept one or more extra context paths. These are
-appended after the project-level blocks before writing the local agent files.
-This is for private instruction files a developer explicitly chooses for their
-own working copy; no shared external checkout is required. It changes the
-tracked root agent files locally, so review the diff and do not commit private
-context. Run `zap task context-copy` to restore the shared version.
-
-## Workflow
-
-The root agent files are available immediately after cloning. After changing
-project source blocks, run `zap task context-build` and commit all three
-generated files. To restore the committed base context, run:
-
-```bash
-zap task context-copy
-```
-
-That copies `AGENTS.base.md` to the root agent files.
-
-Developers who want personal or global context can instead run:
-
-```bash
-zap task context-build ~/some/global.md
-```
-
-The important invariant is that reviewers see the same project context in
-`AGENTS.base.md`, `AGENTS.md`, and `CLAUDE.md`, with the source blocks in
-`agents-md/`. Private additions are never committed.
+Remove obsolete missing imports after reviewing their replacement. Preserve production-state and testing constraints. Verify required imports resolve, no block is imported twice, extension paths use the directory entry point, and the three shared outputs match. Context compilation must fail rather than silently omit a required block.

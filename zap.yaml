@@ -19,5 +19,10 @@ tasks:
       - fssstack-mobile/packages/scripts/node_modules/.bin/tsx fssstack-mobile/packages/scripts/applyInputs.ts {{REST}}
   context-build:
     cmds:
-      - npx -y @mp-lb/mdcompile context/index.md --optional --silent | fm compile --stdin -o AGENTS.md
-      - npx -y @mp-lb/mdcompile context/index.md --optional --silent | fm compile --stdin -o CLAUDE.md
+      - npx -y @mp-lb/mdcompile context/index.md --silent -o AGENTS.base.md
+      - cp AGENTS.base.md AGENTS.md
+      - cp AGENTS.base.md CLAUDE.md
+  context-copy:
+    cmds:
+      - cp AGENTS.base.md AGENTS.md
+      - cp AGENTS.base.md CLAUDE.md

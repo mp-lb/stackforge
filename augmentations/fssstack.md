@@ -7,7 +7,20 @@ Apply this after creating a new fssstack project.
 
 ## Instructions
 
-- Docs folder
+### Agent context
+
+Keep the public shell's context maintenance and baseline blocks. Install MapLab's focused payloads from this store after base setup:
+
+```sh
+mkdir -p context
+fm pull --direct --store mp-lb/augmentations --path context/maplab-workflow.md --target context/maplab-workflow.md
+fm pull --direct --store mp-lb/augmentations --path context/maplab-standards.md --target context/maplab-standards.md
+fm pull --direct --store mp-lb/augmentations --path context/maplab-toolchain.md --target context/maplab-toolchain.md
+```
+
+For each file, add its `@filename.md` import to `context/index.md` exactly once. Merge existing customized blocks instead of overwriting them. Only retain the mise block where mise is configured. Record the project's actual Forum store/sync mapping (or lack of one) in `context/documentation.md`. Run `zap task context-build` and commit sources plus all three outputs. Never import the old mixed global block.
+
+Capability-specific MapLab additions belong with their Clerk, Electron or Shad augmentation. Public extension instructions and payloads live at `extensions/<extension>/README.md` and `extensions/<extension>/context/` in `mp-lb/fssstack`.
 
 ### Loading screen
 

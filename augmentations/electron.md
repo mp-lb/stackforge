@@ -2,7 +2,7 @@
 
 ## When to use
 
-Apply this MAP Lab augmentation after the [FSS Stack Electron extension](../fssstack/extensions/electron.md) has added an Electron shell. Adapt these instructions to the application's existing desktop package and frontend; do not replace their main process or preload wholesale. The base extension remains usable without this augmentation.
+Apply this MAP Lab augmentation after the [FSS Stack Electron extension](../fssstack/extensions/electron/README.md) has added an Electron shell. Adapt these instructions to the application's existing desktop package and frontend; do not replace their main process or preload wholesale. The base extension remains usable without this augmentation.
 
 ## Signing credentials
 
@@ -209,3 +209,15 @@ Run the target project's lint, typecheck, tests, and desktop build through its n
 - Trigger a React error and a renderer failure and check that recovery and reporting work.
 - If auth is enabled, verify browser sign-in, callback state validation, one-time ticket consumption, repeat attempts, and delivery while the renderer is still starting. Exercise the installed protocol on each supported OS.
 - If releasing macOS builds, verify signing and notarization using the project's release workflow.
+
+## Agent context
+
+After applying this augmentation, copy `context/maplab-electron.md` from `mp-lb/augmentations` into the project's `context/maplab-electron.md`, merge any existing customizations, and adapt it to the features actually installed:
+
+```sh
+fm pull --direct --store mp-lb/augmentations --path context/maplab-electron.md --target context/maplab-electron.md
+grep -qxF '@maplab-electron.md' context/index.md || printf '\n@maplab-electron.md\n' >> context/index.md
+zap task context-build
+```
+
+The pull command is for first installation; compare and merge on updates. Commit the block and generated agent files with the capability changes.

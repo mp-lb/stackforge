@@ -2,7 +2,7 @@
 
 ## When to use
 
-Apply this after the [FSS Stack Clerk extension](../fssstack/extensions/clerk.md) has added Clerk to the code.
+Apply this after the [FSS Stack Clerk extension](../fssstack/extensions/clerk/README.md) has added Clerk to the code.
 
 ## Instance setup
 
@@ -106,3 +106,15 @@ Delete temporary plaintext files after the encrypted backup and Clerk update are
 - If Google blocks access, record its specific error code: missing/incorrect credentials, redirect mismatch, Testing audience restrictions, organization restrictions, and embedded browsers require different fixes. Do not treat every authorization error as a missing project.
 
 References: [Clerk Google setup](https://clerk.com/docs/guides/configure/auth-strategies/social-connections/google), [Google consent screen](https://developers.google.com/workspace/guides/configure-oauth-consent), [Google OAuth client management scope](https://docs.cloud.google.com/iam/docs/workforce-manage-oauth-app).
+
+## Agent context
+
+After applying this augmentation, copy `context/maplab-clerk.md` from `mp-lb/augmentations` into the project's `context/maplab-clerk.md`, merge any existing customizations, and adapt it to the features actually installed:
+
+```sh
+fm pull --direct --store mp-lb/augmentations --path context/maplab-clerk.md --target context/maplab-clerk.md
+grep -qxF '@maplab-clerk.md' context/index.md || printf '\n@maplab-clerk.md\n' >> context/index.md
+zap task context-build
+```
+
+The pull command is for first installation; compare and merge on updates. Commit the block and generated agent files with the capability changes.

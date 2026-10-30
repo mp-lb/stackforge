@@ -76,6 +76,7 @@ test("context build and copy respect selected outputs, extra files, and temporar
       .split("\n")
       .map((line) => JSON.parse(line));
 
+    assert.ok(calls.every((args) => !args.includes("--optional")));
     const temporaryEntry = calls.at(-1)![2];
     assert.equal(existsSync(temporaryEntry), false);
     assert.notEqual(run("build", "missing.md").status, 0);

@@ -1,3 +1,5 @@
+@context.md
+
 # Stackforge
 
 Always read this file when starting new chats.

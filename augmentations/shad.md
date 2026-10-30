@@ -50,3 +50,15 @@ readiness renders this screen before either sign-in or application content.
 Check light/dark themes, reduced motion, viewport centering, and its accessible
 loading label. New projects and existing consumers use this same registry
 component rather than maintaining an app-specific loading-screen copy.
+
+## Agent context
+
+After applying this augmentation, copy `context/maplab-shad.md` from `mp-lb/augmentations` into the project's `context/maplab-shad.md`, merge any existing customizations, and adapt it to the features actually installed:
+
+```sh
+fm pull --direct --store mp-lb/augmentations --path context/maplab-shad.md --target context/maplab-shad.md
+grep -qxF '@maplab-shad.md' context/index.md || printf '\n@maplab-shad.md\n' >> context/index.md
+zap task context-build
+```
+
+The pull command is for first installation; compare and merge on updates. Commit the block and generated agent files with the capability changes.

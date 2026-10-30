@@ -4,4 +4,4 @@ Stackforge authors shared Forum content. Its two sync targets publish `fssstack/
 
 Do not add `AGENTS.md` inside `fssstack/` or generate setup scripts. Edit the relevant source documents or templates, run focused validation, commit the change, and publish the mapped files. The setup process must remain followable from the published instructions.
 
-Read shared standards with `fm read <file>.md --store mp-lb/dev` and shared extensions with `fm read extensions/<file>.md --store mp-lb/fssstack`.
+Read shared standards with `fm read <file>.md --store mp-lb/dev` and shared extensions with `fm read extensions/<extension>/README.md --store mp-lb/fssstack`.

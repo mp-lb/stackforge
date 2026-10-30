@@ -28,7 +28,7 @@ const outputs =
 
 if (command === "build") {
   const entry = findEntry();
-  runMdcompile([entry, "-o", "AGENTS.base.md", "--optional", "--silent"]);
+  runMdcompile([entry, "-o", "AGENTS.base.md", "--silent"]);
   writeLocalFiles(outputs, options.extraContext);
 } else {
   if (options.extraContext.length > 0) {
