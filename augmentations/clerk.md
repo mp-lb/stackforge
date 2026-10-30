@@ -20,7 +20,7 @@ Development uses Clerk's shared Google credentials. Production needs an app-spec
 
 #### Agent: prepare the project
 
-Reuse the GCP project recorded in the application's ArcNet configuration and variable snapshots. Do not derive a replacement from a renamed display name. Berth currently uses `arcnet-factory`, retained from its original `factory` slug; do not create `arcnet-berth` for the same deployment.
+Reuse the GCP project recorded in the application's ArcNet configuration and variable snapshots. Do not derive a replacement from a renamed display name. Berth uses `arcnet-berth`.
 
 For a new application with no configured project, choose `arcnet-<project-slug>`, then create it only if missing. Run with the organization's authenticated GCP account; add the appropriate `--organization` or `--folder` to creation when required. Billing and deployment provisioning remain part of ArcNet setup.
 
@@ -69,7 +69,7 @@ The human follows these steps:
 
 **Handoff complete:** the JSON contains the Web client's ID and secret, and the human has supplied its local path. Until then, report Google production setup as blocked on this manual step; do not claim sign-in is configured.
 
-For Berth: origin `https://app.berth.mp-lb.dev`, redirect `https://clerk.berth.mp-lb.dev/v1/oauth_callback`, project `arcnet-factory`.
+For Berth: origin `https://app.berth.mp-lb.dev`, redirect `https://clerk.berth.mp-lb.dev/v1/oauth_callback`, project `arcnet-berth`.
 
 #### Agent: configure Clerk and store credentials
 
