@@ -15,6 +15,7 @@ Keep the public shell's context maintenance and baseline blocks. Install MapLab'
 mkdir -p context
 fm pull --direct --store mp-lb/augmentations --path context/maplab-workflow.md --target context/maplab-workflow.md
 fm pull --direct --store mp-lb/augmentations --path context/maplab-standards.md --target context/maplab-standards.md
+fm pull --direct --store mp-lb/augmentations --path context/maplab-code-style.md --target context/maplab-code-style.md
 fm pull --direct --store mp-lb/augmentations --path context/maplab-toolchain.md --target context/maplab-toolchain.md
 ```
 
