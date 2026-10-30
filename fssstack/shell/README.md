@@ -4,8 +4,8 @@ This repository is an FSS Stack project. It is a pnpm workspace with application
 
 ## Prerequisites
 
-- Node.js 20 or newer
-- pnpm 11
+- Node.js 22.13 or newer; use the exact development version in `.node-version`
+- The exact pnpm version in `package.json#packageManager`
 - Zapper (`zap`) for local service orchestration
 
 ## Install
@@ -80,3 +80,24 @@ its findings to `docs/audits/YYYY-MM-DD-fssstack.md` in an isolated worktree for
 - Use workspace package names with `pnpm --filter` for focused commands.
 - Check service logs and port assignments through Zapper while debugging local runs.
 - Update the docs in `docs/` when changing project conventions or release behavior.
+
+## Tool versions
+
+`.node-version` is the exact development and CI Node pin. `engines.node` in
+`package.json` declares compatibility; it does not install or select Node.
+`packageManager` in that file is the exact pnpm pin. Keep `pnpm-lock.yaml`
+committed and use `pnpm install --frozen-lockfile` in CI.
+
+Use a version manager of your choice. For nvm, run
+`nvm install "$(cat .node-version)"` and `nvm use "$(cat .node-version)"`.
+Install the pinned pnpm version before installing dependencies. Mise integration
+is provided by the house augmentation, not required by this public shell.
+
+Dependency policy belongs in `pnpm-workspace.yaml`: `saveExact: true` for
+external dependencies and explicit `workspace:*` references for internal ones.
+The base has no `.npmrc`; add one only for a concrete npm or registry/auth need,
+and never commit credentials. pnpm 11 ignores general settings in `.npmrc`.
+
+When changing the Node pin, check dependency engine requirements and rerun the
+project checks. CI reads `.node-version`; deployment providers and container
+images must use a compatible Node major, configured by the deployment layer.

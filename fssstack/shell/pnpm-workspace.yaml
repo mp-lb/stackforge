@@ -6,3 +6,6 @@ allowBuilds:
   esbuild: true
   msw: true
   unrs-resolver: true
+
+# Save exact external versions; internal dependencies use workspace:*.
+saveExact: true
