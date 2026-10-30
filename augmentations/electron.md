@@ -206,8 +206,8 @@ Vite library mode preserves `process.env.NODE_ENV` in dependencies such as React
 A sandboxed Electron renderer has no `process` global: the fallback itself can
 crash to a white screen even while main-process retries keep working.
 
-Use `offlineRenderer()` from `@mp-lb/electron-kit/vite` in the offline Vite
-configuration once the installed kit exposes that entry. Install the kit in the
+Use Electron Kit 0.1.3 or newer and add `offlineRenderer()` from
+`@mp-lb/electron-kit/vite` to the offline Vite configuration. Install the kit in the
 frontend package that owns the config and retain its existing React/CSS plugins:
 
 ```ts
