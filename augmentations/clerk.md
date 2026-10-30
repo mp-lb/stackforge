@@ -18,7 +18,7 @@ Configure each provider separately for development and production. Enabling a bu
 
 Development uses Clerk's shared Google credentials. Production needs an app-specific Google Web application OAuth client, with its client ID and secret configured in Clerk.
 
-#### GCP project
+#### Agent: prepare the project
 
 Reuse the GCP project recorded in the application's ArcNet configuration and variable snapshots. Do not derive a replacement from a renamed display name. Berth currently uses `arcnet-factory`, retained from its original `factory` slug; do not create `arcnet-berth` for the same deployment.
 
@@ -37,9 +37,11 @@ gcloud projects describe "$GCP_PROJECT_ID" --format='value(projectId,lifecycleSt
 
 Require `ACTIVE` before continuing. Stop on authentication, permission, or project-ID collision errors; do not silently choose another ID.
 
-#### Google Auth Platform
+#### Manual: configure Google and create the client
 
-Configure branding and create the client in the [Google Cloud Console](https://console.cloud.google.com/auth/overview). Google's documented standard OAuth setup is a Console operation. `gcloud iam oauth-clients` manages Workforce Identity Federation clients and is not a substitute for Google sign-in. Do not automate private Console APIs.
+**This step must be done by the human in Google Cloud Console. There is no supported `gcloud` command for this standard Google sign-in client.** `gcloud iam oauth-clients` is for Workforce Identity Federation. Do not substitute it or automate private Console APIs.
+
+Before handing off, the agent must provide a filled-in checklist: project ID, project-specific Branding and Clients links, app name, contact emails, authorized domain, frontend origin, and the exact redirect URI from the production Clerk connection. Resolve the values first; do not send placeholders or ask the human to discover them. Explain that the human returns only the local path of the downloaded JSON file, never the client secret in chat.
 
 | Setting | Default |
 | --- | --- |
@@ -53,13 +55,25 @@ Configure branding and create the client in the [Google Cloud Console](https://c
 
 Google restricts which support addresses can be selected. Ensure the operator is eligible to use the configured mailbox or Google Group; do not invent an address or silently substitute one. Use real, published home, privacy-policy, and terms URLs when requested. `privacy@mp-lb.dev` is a contact address, not a privacy-policy URL.
 
-1. Configure Branding, Audience, and Data Access. In Testing, add the intended test users. Before general release, publish the audience and complete any verification Google requires.
-2. Create or reuse the project's Web application client. Add the real frontend origin under authorized JavaScript origins, and copy the exact OAuth redirect URI from the production Clerk Google connection into authorized redirect URIs.
-3. Download the client JSON into an ignored local file. Keep a backup in the project's encrypted Forum secrets, preserving existing encryption recipients. Never put the client secret in browser environment variables or commit the downloaded JSON.
+The human follows these steps:
+
+1. Open the supplied Google Cloud Console link and confirm the selected project ID.
+2. Open **Google Auth Platform → Branding**. If prompted, click **Get started**. Enter the supplied app name, user support email, audience, and developer contact email; acknowledge Google's terms and create the configuration.
+3. Complete **Branding** with the supplied authorized domain and real homepage, privacy-policy, and terms URLs where requested. If the support email is not selectable, tell the agent rather than substituting an unrelated address.
+4. Under **Audience**, use **External** for public products. While in **Testing**, add the Google accounts that will test sign-in. Before general release, use **Publish app** and complete any verification Google requires.
+5. Under **Data Access**, use only the basic sign-in scopes: OpenID, email, and profile.
+6. Open **Clients → Create client**, choose **Web application**, and give it the supplied app name. If an appropriate client already exists, edit it instead of creating a duplicate.
+7. Under **Authorized JavaScript origins**, add the exact frontend origin supplied by the agent. Under **Authorized redirect URIs**, add the exact Clerk callback supplied by the agent. These are different fields; do not interchange them.
+8. Click **Create** and download the client JSON while it is available. Save it to the ignored local location agreed with the agent. Do not paste the secret into chat or commit the file.
+9. Send the agent the file's absolute local path. The agent handles the Clerk configuration and encrypted backup below.
+
+**Handoff complete:** the JSON contains the Web client's ID and secret, and the human has supplied its local path. Until then, report Google production setup as blocked on this manual step; do not claim sign-in is configured.
 
 For Berth: origin `https://app.berth.mp-lb.dev`, redirect `https://clerk.berth.mp-lb.dev/v1/oauth_callback`, project `arcnet-factory`.
 
-#### Configure Clerk
+#### Agent: configure Clerk and store credentials
+
+After the human supplies the downloaded JSON path, validate that it belongs to the intended GCP project and contains the expected redirect URI. Back up the credentials in the project's encrypted Forum secrets while preserving existing values and recipients. Never put the client secret in browser environment variables.
 
 Use `pnpm dlx clerk@latest config schema --keys connection_oauth_google` to confirm the current schema. Prepare a private JSON patch from the downloaded Google's `web.client_id` and `web.client_secret`:
 
