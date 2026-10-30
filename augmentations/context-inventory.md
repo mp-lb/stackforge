@@ -2,37 +2,11 @@
 
 Reconciled 30 October 2026. Stackforge owns the shared defaults and extension installation policy; project maintainers own local facts and product-specific rules. Factory aliases Berth.
 
-## Default set
+## Shared and local context
 
-All 15 consumers have eight local defaults: `context`, `project`, `development`, `validation`, `scripts`, `documentation`, `delivery` and the short `standards` lookup. Code style is one remote Forum import, expanded during context build. Forum retains its tech-debt path override in `project.md`.
+Reconciled 31 October 2026. Projects import shared standards, scripts and documentation from Forum, and use remote development, validation, UI and ArcNet blocks where they apply. `project.md` and project-specific development, validation, UI, documentation and delivery details remain local. The former library/CLI block has been removed.
 
-Context builds call the shared Tools `mdcompile` CLI and Forum `fm compile` directly. Only `AGENTS.md` and `CLAUDE.md` are generated. Each project has one `context-build` task, with no copied compiler implementation or copy/proxy tasks.
-
-Mise setup is merged into development, beneath Zapper. Related owned repositories are described in project. Workflow and generic backend blocks are removed. MAP Lab Clerk, Electron and loading-UI additions are merged into their existing subject files. No separate MAP Lab-prefixed or toolchain blocks remain.
-
-## Current context counts
-
-Counts include `index.md`, exclude the remote style source and do not measure installed dependencies.
-
-| Project | Previous files | Current files | Separate extension context |
-| --- | ---: | ---: | --- |
-| berth | 26 | 14 | arcnet, clerk, electron |
-| contract-analyser | 14 | 11 | None |
-| forum | 30 | 16 | arcnet, clerk, clerk-rbac, electron |
-| fssstack-start | 17 | 12 | arcnet |
-| helloworld | 14 | 10 | None |
-| inproduct | 21 | 12 | arcnet |
-| lexiquest | 25 | 14 | arcnet, clerk, clerk-rbac |
-| maddi | 31 | 21 | clerk, clerk-rbac |
-| mdkit | 17 | 11 | arcnet |
-| nexus | 20 | 12 | None |
-| tools | 15 | 11 | arcnet |
-| zapper | 17 | 12 | arcnet |
-| zog | 17 | 11 | arcnet |
-| shad | 16 | 11 | arcnet |
-| forum-mobile | 13 | 10 | clerk |
-
-All ten extensions were reviewed. Redis, MongoDB, S3 and BullMQ no longer install context blocks. Playwright details live in validation; domain facts live in delivery; secret synchronization lives in ArcNet. Installation evidence remains in code/configuration, not an instruction block for each dependency. Library adapters do not imply deployed services.
+The FSS Stack shell imports the standard blocks remotely for new projects. ArcNet context lives in `mp-lb/arcnet`; compilation expands Forum links after local blocks and writes matching `AGENTS.md` and `CLAUDE.md`.
 
 ## Project-specific blocks
 
@@ -53,7 +27,7 @@ These are intentional additions, owned by the named project. They were preserved
 | maddi | `langfuse.md` | Maddi tracing and prompt ownership. |
 | nexus | `toolbox.md` | Nexus Toolbox package boundaries and API verification requirements. |
 
-All other audited projects have no separate product-specific blocks. Do not remove a product block merely to equalize counts; merge only when its responsibility belongs in a standard block and its unique constraints are preserved.
+Other projects may retain local blocks for their specific operational details. Do not remove a product block merely to equalize counts; merge only when its responsibility belongs in a standard block and its unique constraints are preserved.
 
 ## Mise and maintenance
 
