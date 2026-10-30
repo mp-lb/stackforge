@@ -6,7 +6,38 @@ Apply this MAP Lab augmentation after the [FSS Stack Electron extension](../fsss
 
 ## Signing credentials
 
-For a signed macOS release, configure the certificate and Apple notarization credentials required by the base extension's release workflow. Use the project's approved encrypted secrets and CI wiring; do not put credentials in source files. Test an unsigned local package first. Follow the [base extension's release instructions](../fssstack/extensions/electron.md) for the required credential names and workflow.
+Use Forum and ArcNet for our macOS signing credentials. The base Electron extension defines the signing inputs and release checks; this augmentation defines where we store them and how CI receives them.
+
+1. Complete the shared secrets and variables setup in [ArcNet setup](../arcnet/SETUP.md), using the project slug and repository from `fssstack.yaml`. Minimal ArcNet is sufficient for a desktop-only project; use full ArcNet when also deploying hosted applications.
+2. Store reusable company signing credentials in `/admin/standard-secrets.json.enc` in `mp-lb/mp-lb`. Use `/projects/<project-slug>/secrets.json.enc` for project-specific credentials or overrides. Preserve existing values and recipients when editing encrypted files. Do not assume the shared file already contains the signing credentials; if they are missing, have the operator supply them before attempting a signed release.
+
+| Input | Value |
+| --- | --- |
+| `CSC_LINK` | Base64-encoded Developer ID Application `.p12` certificate, including its private key. |
+| `CSC_KEY_PASSWORD` | Password used to export the `.p12` certificate. |
+| `APPLE_ID` | Apple account used for notarization. |
+| `APPLE_APP_SPECIFIC_PASSWORD` | App-specific password for that Apple account. |
+| `APPLE_TEAM_ID` | Apple Developer team that owns the signing certificate. |
+
+3. Add a `desktop` consumer to the existing `.arcnet/arcnet.yaml`, preserving the other consumers:
+
+   ```yaml
+   secrets:
+     # Retain the sources provisioned by ArcNet setup.
+     consumers:
+       desktop:
+         CSC_LINK: CSC_LINK
+         CSC_KEY_PASSWORD: CSC_KEY_PASSWORD
+         APPLE_ID: APPLE_ID
+         APPLE_APP_SPECIFIC_PASSWORD: APPLE_APP_SPECIFIC_PASSWORD
+         APPLE_TEAM_ID: APPLE_TEAM_ID
+   ```
+
+4. Run `pnpm exec arcnet secrets sync` and commit the refreshed encrypted snapshots. Provisioning a new repository recipient changes the encrypted file, so sync again after provisioning its GitHub key. Validate with `pnpm exec arcnet env check --consumer desktop --password` locally, or with the provisioned source keys in CI. Never commit plaintext credentials.
+5. Adapt the base release workflow to pass the existing source keys, normally `ARCNET_STANDARD_SECRETS_KEY` and `ARCNET_PROJECT_SECRETS_KEY`, from GitHub secrets. Load `pnpm exec arcnet env export --consumer desktop` through a pipe into a script that validates the five inputs, masks their values in GitHub Actions, and writes them to `GITHUB_ENV` using multiline-safe delimiters. Use `set -euo pipefail` so decryption failure stops the release. Do not print the exported JSON or duplicate the signing values as individual GitHub secrets.
+6. Test an unsigned local package first, then run the signed release workflow. Verify the packaged application with `codesign --verify --deep --strict` and `spctl --assess --type execute`. Publish the DMG, ZIP, and update manifest together. Verify the actual download and update URLs without authentication before exposing them in the landing page or updater. For private source repositories, publish public downloads in a separate public releases repository with appropriately scoped CI write access.
+
+A successful web deployment does not mean a desktop release exists. Missing signing inputs block the signed release; do not silently publish an unsigned build instead.
 
 ## Install and build
 
