@@ -17,6 +17,9 @@ tasks:
   mobile-apply-inputs:
     cmds:
       - fssstack-mobile/packages/scripts/node_modules/.bin/tsx fssstack-mobile/packages/scripts/applyInputs.ts {{REST}}
+  mobile-generate-icons:
+    cmds:
+      - fssstack-mobile/packages/scripts/node_modules/.bin/tsx fssstack-mobile/packages/scripts/generateIcons.ts {{REST}}
   context-build:
     cmds:
       - npx -y @mp-lb/mdcompile context/index.md --silent -o AGENTS.base.md
