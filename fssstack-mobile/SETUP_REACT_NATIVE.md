@@ -311,12 +311,12 @@ secrets:
   npm install), and `eas` (what gets pushed to the EAS environment).
 
 Workflows decrypt with `@mp-lb/doctrine-secrets` and export mapped keys with
-`@mp-lb/tools-env-mapper`, which masks secret-sourced values:
+`@mp-lb/env-mapper`, which masks secret-sourced values:
 
 ```bash
 npx -y @mp-lb/doctrine-secrets decrypt docs/secrets.json.enc --secret "$SECRETS_KEY" > secrets.json
-npm install --prefix ./env-mapper @mp-lb/tools-env-mapper
-node ./env-mapper/node_modules/@mp-lb/tools-env-mapper/dist/cli.js github-env release \
+npm install --prefix ./env-mapper @mp-lb/env-mapper
+node ./env-mapper/node_modules/@mp-lb/env-mapper/dist/cli.js github-env release \
   --secrets secrets.json --public .env.production --map env-map.yaml
 ```
 

@@ -3,7 +3,7 @@
 Tools are registered functions. Treat them like routes: named, typed, validated,
 inspectable boundaries between the agent and application behavior.
 
-Use `@mp-lb/tools-agent-framework` tool definitions for new agent tools.
+Use `@mp-lb/agent-framework` tool definitions for new agent tools.
 
 ## Tool Shape
 

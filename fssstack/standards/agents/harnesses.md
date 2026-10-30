@@ -35,5 +35,5 @@ The consuming application owns:
 - retries and cancellation
 - product-specific UI updates
 
-`@mp-lb/tools-agent-framework` should help render and inspect the agent
+`@mp-lb/agent-framework` should help render and inspect the agent
 definition, but it should not force a particular loop.

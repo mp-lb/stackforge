@@ -8,7 +8,7 @@ name: Release
 #
 # Secrets come from the shared encrypted file (docs/secrets.json.enc, synced
 # from the felixsebastian/doctrine store). The only GitHub secret is
-# SECRETS_KEY. tools-env-mapper exports the keys listed in env-map.yaml and
+# SECRETS_KEY. env-mapper exports the keys listed in env-map.yaml and
 # masks secret-sourced values.
 #
 # The sync-eas-env job runs on every push to main (not just releases) so the
@@ -52,8 +52,8 @@ jobs:
       - name: Load env (release)
         run: |
           cd "$RUNNER_TEMP"
-          npm install --prefix "$RUNNER_TEMP/env-mapper" @mp-lb/tools-env-mapper > /dev/null
-          node "$RUNNER_TEMP/env-mapper/node_modules/@mp-lb/tools-env-mapper/dist/cli.js" github-env release \
+          npm install --prefix "$RUNNER_TEMP/env-mapper" @mp-lb/env-mapper > /dev/null
+          node "$RUNNER_TEMP/env-mapper/node_modules/@mp-lb/env-mapper/dist/cli.js" github-env release \
             --secrets "$RUNNER_TEMP/secrets.json" \
             --public "$GITHUB_WORKSPACE/.env.production" \
             --map "$GITHUB_WORKSPACE/env-map.yaml"
@@ -72,7 +72,7 @@ jobs:
       # GITHUB_ENV syntax, which matches dotenv for simple KEY=value pairs.
       - name: Sync env to EAS
         run: |
-          node "$RUNNER_TEMP/env-mapper/node_modules/@mp-lb/tools-env-mapper/dist/cli.js" github-env eas \
+          node "$RUNNER_TEMP/env-mapper/node_modules/@mp-lb/env-mapper/dist/cli.js" github-env eas \
             --secrets "$RUNNER_TEMP/secrets.json" \
             --public "$GITHUB_WORKSPACE/.env.production" \
             --map "$GITHUB_WORKSPACE/env-map.yaml" \
@@ -105,8 +105,8 @@ jobs:
       - name: Load env (release)
         run: |
           cd "$RUNNER_TEMP"
-          npm install --prefix "$RUNNER_TEMP/env-mapper" @mp-lb/tools-env-mapper > /dev/null
-          node "$RUNNER_TEMP/env-mapper/node_modules/@mp-lb/tools-env-mapper/dist/cli.js" github-env release \
+          npm install --prefix "$RUNNER_TEMP/env-mapper" @mp-lb/env-mapper > /dev/null
+          node "$RUNNER_TEMP/env-mapper/node_modules/@mp-lb/env-mapper/dist/cli.js" github-env release \
             --secrets "$RUNNER_TEMP/secrets.json" \
             --public "$GITHUB_WORKSPACE/.env.production" \
             --map "$GITHUB_WORKSPACE/env-map.yaml"

@@ -10,7 +10,7 @@ An agent is:
 - context: deliberate serialization of logs and runtime state
 - harness: the loop that runs the agent, such as chat, voice, workflow, or evals
 
-Use `@mp-lb/tools-agent-framework` for new agent definitions. The framework is
+Use `@mp-lb/agent-framework` for new agent definitions. The framework is
 the source-code convention layer: it defines prompt parts, tool registration,
 context contracts, prompt rendering, and inspectable agent metadata.
 

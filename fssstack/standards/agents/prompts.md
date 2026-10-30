@@ -1,7 +1,7 @@
 # Agent Prompts
 
 Prompts are source code. They live in the application repository, are reviewed
-with code, and are loaded from disk by `@mp-lb/tools-agent-framework`.
+with code, and are loaded from disk by `@mp-lb/agent-framework`.
 
 ## Prompt Location
 

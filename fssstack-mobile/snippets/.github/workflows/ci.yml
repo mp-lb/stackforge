@@ -30,8 +30,8 @@ jobs:
       - name: Load env (ci)
         run: |
           cd "$RUNNER_TEMP"
-          npm install --prefix "$RUNNER_TEMP/env-mapper" @mp-lb/tools-env-mapper > /dev/null
-          node "$RUNNER_TEMP/env-mapper/node_modules/@mp-lb/tools-env-mapper/dist/cli.js" github-env ci \
+          npm install --prefix "$RUNNER_TEMP/env-mapper" @mp-lb/env-mapper > /dev/null
+          node "$RUNNER_TEMP/env-mapper/node_modules/@mp-lb/env-mapper/dist/cli.js" github-env ci \
             --secrets "$RUNNER_TEMP/secrets.json" \
             --public "$GITHUB_WORKSPACE/.env.production" \
             --map "$GITHUB_WORKSPACE/env-map.yaml"

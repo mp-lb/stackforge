@@ -38,7 +38,7 @@ Install the admin package in apps that render an agent admin/debug screen:
 pnpm add @mp-lb/agents-admin
 ```
 
-Use `@mp-lb/tools-evals` for local eval artifacts and eval runners.
+Use `@mp-lb/evals` for local eval artifacts and eval runners.
 
 ## Langfuse Setup
 

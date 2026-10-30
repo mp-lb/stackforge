@@ -2,7 +2,7 @@
 
 Agent behavior should be covered by local evals.
 
-Use `@mp-lb/tools-evals` for eval run artifacts, file-backed storage, route
+Use `@mp-lb/evals` for eval run artifacts, file-backed storage, route
 handlers, React hooks, and Zap-backed background execution.
 
 ## Scope

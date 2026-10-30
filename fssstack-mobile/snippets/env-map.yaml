@@ -1,4 +1,4 @@
-# Which env vars each consumer needs. tools-env-mapper merges committed
+# Which env vars each consumer needs. env-mapper merges committed
 # .env.production with the decrypted shared secrets file
 # (docs/secrets.json.enc) and exports only the mapped keys; values that come
 # from secrets are masked in GitHub Actions output.
