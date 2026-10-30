@@ -4,4 +4,3 @@ fssstack/shell/**/dist
 fssstack/shell/.codex
 fssstack/shell/.zap
 fssstack/shell/.env.local
-fssstack/shell/.fssstack-release-result.json

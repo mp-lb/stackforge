@@ -28,6 +28,7 @@ jobs:
       - run: pnpm lint && pnpm typecheck && pnpm test
       - run: pnpm build
       - name: Publish changed package builds
+        id: publish
         # fssstack-publish-command
         run: node scripts/auto-publish.mjs
         env:
@@ -35,3 +36,5 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Verify exact public versions
         run: node scripts/verify-publication.mjs
+        env:
+          FSSSTACK_RELEASE_RESULT: ${{ steps.publish.outputs.release_report }}
