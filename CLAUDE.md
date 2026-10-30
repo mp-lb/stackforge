@@ -4,6 +4,8 @@ Agent instructions are compiled from reusable blocks in `context/`, with `contex
 
 Edit the blocks and index in `context/`, then run `zap task context-build` to regenerate `AGENTS.md` and `CLAUDE.md`.
 
+
+
 # Stackforge
 
 Always read this file when starting new chats.

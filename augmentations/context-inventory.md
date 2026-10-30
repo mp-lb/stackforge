@@ -6,7 +6,7 @@ Reconciled 30 October 2026. Stackforge owns the shared defaults and extension in
 
 Reconciled 31 October 2026. Projects import shared standards, scripts and documentation from Forum, and use remote development, validation, UI and ArcNet blocks where they apply. `project.md` and project-specific development, validation, UI, documentation and delivery details remain local. The former library/CLI block has been removed.
 
-The FSS Stack shell imports the standard blocks remotely for new projects. ArcNet context lives in `mp-lb/arcnet`; compilation expands Forum links after local blocks and writes matching `AGENTS.md` and `CLAUDE.md`.
+The FSS Stack shell imports the standard blocks remotely for new projects. Agent context and the default development and validation blocks live in `mp-lb/fssstack`; MAP Lab overrides development in `mp-lb/augmentations`. ArcNet and delivery context live in `mp-lb/arcnet`; compilation expands Forum links after local blocks and writes matching `AGENTS.md` and `CLAUDE.md`.
 
 ## Project-specific blocks
 

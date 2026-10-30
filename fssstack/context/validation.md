@@ -1,5 +1,3 @@
 ## Validation
 
-Run `zap task check` for lint and typechecking, `zap task test` for relevant tests, and `zap task build` for build-sensitive changes. Run focused checks where the project provides them, and report any checks that could not run.
-
-Do not invent task names or claim that a build proves runtime behavior.
+Run the applicable configured checks, tests and builds; use `zap task check`, `zap task test` and `zap task build` where available. Run focused checks and follow project-specific validation instructions; report checks that could not run.

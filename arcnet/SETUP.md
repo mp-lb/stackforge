@@ -82,7 +82,7 @@ Review and commit the configuration, encrypted snapshots, variable snapshots, ge
 
 3. Commit the generated files and push to `main`. For Cloud Run, complete the first-deployment step below **before** pushing.
 
-Update the project's delivery context block (for FSS Stack, `context/delivery.md`, or the existing project context directory). State that changes reaching `main` on GitHub deploy the selected application services and publish changed eligible packages through their configured workflows. Describe only delivery paths actually configured, retain any first-publish or first-deployment prerequisites, and tell agents to check the corresponding GitHub Actions runs. Rebuild and commit the generated agent context.
+Add the shared ArcNet delivery link to the project context index: `[Delivery](https://hyperdoc.forumlabs.net/0a66417d-d743-45af-ba2f-3a56adb43509)`, on its own line with blank lines around it. Keep any project-specific release exceptions in local context, then rebuild and commit the generated agent context.
 
 Keep the shared setup sources and snapshots in place when adding deployment capabilities.
 

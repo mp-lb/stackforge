@@ -21,6 +21,8 @@ After applying and validating ArcNet, add this standalone link to `context/index
 
 ```markdown
 [ArcNet](https://hyperdoc.forumlabs.net/232107c4-d98b-4065-851f-9e29d9b5497e)
+
+[Delivery](https://hyperdoc.forumlabs.net/0a66417d-d743-45af-ba2f-3a56adb43509)
 ```
 
 Keep project-specific delivery details locally, then run `zap task context-build` and commit the sources and generated agent files.

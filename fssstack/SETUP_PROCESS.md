@@ -340,7 +340,7 @@ a pointer to `audit.md` in the project's context source blocks so agents can
 find the process. Keep `/tmp/` gitignored for scratch files; audit reports are
 tracked and committed from an isolated worktree for project-owner integration.
 
-Keep the shell's `context/index.md`, `context/context.md` and project-specific `context/project.md`. Shared standards, development, validation, scripts, documentation and code style are compiled from Forum links in the index. Add local project-specific details and adapt `delivery.md` to the actual release process; do not copy shared blocks into the project.
+Keep the shell's `context/index.md` and project-specific `context/project.md`. Agent context itself is a shared remote block. Shared standards, development, validation, scripts, documentation and code style are compiled from Forum links in the index. Add local project-specific details; do not copy shared blocks into the project. ArcNet supplies shared delivery guidance when installed.
 
 For shadcn frontends, add the remote link `[Frontend UI](https://hyperdoc.forumlabs.net/e161b5b1-76b2-4656-84fe-a193af43ae58)` on its own line, separated by blank lines. Keep any project-specific UI details locally. Docs sites additionally use the block described above.
 

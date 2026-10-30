@@ -1,4 +1,6 @@
-@context.md
+
+[Agent context](https://hyperdoc.forumlabs.net/a89f6f27-3e1a-4186-a7b7-2104576a4577)
+
 
 # Stackforge
 
