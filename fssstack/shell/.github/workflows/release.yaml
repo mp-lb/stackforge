@@ -30,11 +30,11 @@ jobs:
       - name: Publish changed package builds
         id: publish
         # fssstack-publish-command
-        run: node scripts/auto-publish.mjs
+        run: pnpm exec tsx packages/scripts/autoPublish.ts --github-output="$GITHUB_OUTPUT"
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Verify exact public versions
-        run: node scripts/verify-publication.mjs
+        run: pnpm exec tsx packages/scripts/verifyPublication.ts
         env:
           FSSSTACK_RELEASE_RESULT: ${{ steps.publish.outputs.release_report }}

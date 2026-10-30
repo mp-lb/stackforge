@@ -14,6 +14,15 @@ tasks:
     desc: Introduce this project
     cmds:
       - pnpm --dir packages/scripts exec tsx index.ts
+  publish-packages:
+    cmds:
+      - pnpm exec tsx packages/scripts/autoPublish.ts {{REST}}
+  verify-publication:
+    cmds:
+      - pnpm exec tsx packages/scripts/verifyPublication.ts
+  augment-docs-site:
+    cmds:
+      - pnpm exec tsx packages/scripts/augmentDocsSite.ts {{REST}}
   scripts-test:
     cmds:
       - pnpm --dir packages/scripts test
@@ -24,10 +33,10 @@ tasks:
       - pnpm --dir packages/scripts run typecheck
   context-build:
     cmds:
-      - node scripts/context-files.mjs build {{REST}}
+      - pnpm exec tsx packages/scripts/contextFiles.ts build {{REST}}
   context-copy:
     cmds:
-      - node scripts/context-files.mjs copy {{REST}}
+      - pnpm exec tsx packages/scripts/contextFiles.ts copy {{REST}}
   setup:
     cmds:
       - pnpm install
