@@ -33,10 +33,14 @@ tasks:
       - pnpm --dir packages/scripts run typecheck
   context-build:
     cmds:
-      - pnpm exec tsx packages/scripts/contextFiles.ts build {{REST}}
-  context-copy:
-    cmds:
-      - pnpm exec tsx packages/scripts/contextFiles.ts copy {{REST}}
+      - |
+        set -eu
+        context_temp=$(mktemp -d)
+        trap 'rm -rf "$context_temp"' EXIT
+        mdcompile context/index.md --silent -o "$context_temp/local.md"
+        fm compile --stdin -o "$context_temp/shared.md" < "$context_temp/local.md"
+        cp "$context_temp/shared.md" AGENTS.md
+        cp "$context_temp/shared.md" CLAUDE.md
   setup:
     cmds:
       - pnpm install
@@ -65,5 +69,4 @@ tasks:
     cmds:
       - pnpm install
       - cp "$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")/.env" . 2>/dev/null || true
-      - '[ ! -f AGENTS.base.md ] || zap task context-copy'
       - grep -qxF '@AGENTS_WORKTREE.md' AGENTS.md || printf '\n@AGENTS_WORKTREE.md\n' >> AGENTS.md

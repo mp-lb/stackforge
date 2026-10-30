@@ -89,4 +89,4 @@ fm read extensions/clerk-rbac/context/clerk-rbac.md --store mp-lb/fssstack > con
 grep -qxF '@clerk-rbac.md' context/index.md || printf '\n@clerk-rbac.md\n' >> context/index.md
 ```
 
-Adapt the blocks to the installed package paths, services, tasks and configuration. Remove assumptions that do not apply. Then run `zap task context-build` and commit the source blocks and all three generated agent files.
+Adapt the blocks to the installed package paths, services, tasks and configuration. Remove assumptions that do not apply. Then run `zap task context-build` and commit the source blocks and both generated agent files.

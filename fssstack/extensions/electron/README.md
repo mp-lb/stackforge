@@ -65,4 +65,4 @@ fm read extensions/electron/context/electron.md --store mp-lb/fssstack > context
 grep -qxF '@electron.md' context/index.md || printf '\n@electron.md\n' >> context/index.md
 ```
 
-Adapt the blocks to the installed package paths, services, tasks and configuration. Remove assumptions that do not apply. Then run `zap task context-build` and commit the source blocks and all three generated agent files.
+Adapt the blocks to the installed package paths, services, tasks and configuration. Remove assumptions that do not apply. Then run `zap task context-build` and commit the source blocks and both generated agent files.

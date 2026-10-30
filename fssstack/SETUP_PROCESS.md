@@ -344,14 +344,16 @@ Keep the shell's complete `context/` directory and explicit `context/index.md`. 
 
 Add conditional payloads from `context/ui.md` for shadcn frontends and `context/library-cli.md` for libraries/CLIs. Fetch each with `fm read context/<block>.md --store mp-lb/fssstack > context/<block>.md`, specialize it, and add its import exactly once. Docs sites additionally use the block described above. Only describe tasks and workflows actually configured.
 
+Ensure `mdcompile` (from `@mp-lb/mdcompile` in Tools) and the current Forum `fm` CLI are available on PATH before running context compilation. The context task calls these shared CLIs directly.
+
 Keep `packages/scripts` private and included in workspace checks. Run `zap t scripts` and `zap t scripts-check` to verify the script convention. See [Context files](standards/context-files.md) for the compilation contract.
 
 ```sh
 zap task context-build
-git add context AGENTS.base.md AGENTS.md CLAUDE.md
+git add context AGENTS.md CLAUDE.md
 ```
 
-Target projects commit all three generated files. `AGENTS.local.md` and `AGENTS_WORKTREE.md` remain ignored; private additions must never be committed. `zap task context-copy` restores shared outputs. The context task expands local imports, then remote links through `fm compile --stdin`; verify the resulting code style is present. Do not use blanket optional imports.
+Target projects commit both generated files. `AGENTS.local.md` and `AGENTS_WORKTREE.md` remain ignored; private additions must never be committed. Rebuild from source to restore shared outputs. The context task expands local imports, then remote links through `fm compile --stdin`; verify the resulting code style is present. Do not use blanket optional imports.
 
 ## Validate
 

@@ -22,10 +22,11 @@ tasks:
       - fssstack-mobile/packages/scripts/node_modules/.bin/tsx fssstack-mobile/packages/scripts/generateIcons.ts {{REST}}
   context-build:
     cmds:
-      - npx -y @mp-lb/mdcompile context/index.md --silent -o AGENTS.base.md
-      - cp AGENTS.base.md AGENTS.md
-      - cp AGENTS.base.md CLAUDE.md
-  context-copy:
-    cmds:
-      - cp AGENTS.base.md AGENTS.md
-      - cp AGENTS.base.md CLAUDE.md
+      - |
+        set -eu
+        context_temp=$(mktemp -d)
+        trap 'rm -rf "$context_temp"' EXIT
+        mdcompile context/index.md --silent -o "$context_temp/local.md"
+        fm compile --stdin -o "$context_temp/shared.md" < "$context_temp/local.md"
+        cp "$context_temp/shared.md" AGENTS.md
+        cp "$context_temp/shared.md" CLAUDE.md

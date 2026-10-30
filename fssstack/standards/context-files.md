@@ -51,11 +51,11 @@ Product-specific blocks remain project-owned. Keep a separate inventory of their
 
 Keep blank lines around remote links. Put context maintenance first, shared style before project overrides, then other defaults, conditional instructions and product-specific knowledge. Every local source file must be reachable exactly once. Reference documents belong in `docs/`.
 
-`zap task context-build` expands local imports with mdcompile, then remote links with `fm compile --stdin`, and writes matching `AGENTS.base.md`, `AGENTS.md` and `CLAUDE.md`. Forum access and an up-to-date shared `fm` CLI on PATH outside project `node_modules/.bin` are required to refresh remote rules. Missing local files or failed remote reads fail compilation; never silently omit required instructions. The committed generated outputs remain readable offline. Review changes to shared remote content when rebuilding.
+`zap task context-build` calls the shared `mdcompile` CLI from Tools to expand local imports, then `fm compile --stdin` from Forum to expand remote links. There is no project-local compiler implementation. Keep both shared CLIs available on PATH; MAP Lab checkouts can use the linked builds from `~/Work/tools` and `~/Work/forum`.
 
-Commit source and generated files together. `zap task context-copy` restores the two agent files from the shared base without network access. Do not edit generated files manually. Do not create `AGENTS.md` inside Stackforge's `fssstack/` authoring tree.
+Compilation uses temporary files outside the repository and replaces `AGENTS.md` and `CLAUDE.md` only after both compilation steps succeed. Missing local imports or unreadable remote sources fail the task. Never silently omit required instructions. The two generated files match and remain readable offline; refreshes of remote content require Forum access.
 
-The shell compiler supports `--agents` or `--claude` to select an output and explicit extra context paths for private working copies. `--optional-extra` applies only to deliberately optional private files, never shared imports. Private additions must not be committed; restore shared outputs before committing.
+Commit source changes and both generated files together. Rebuild from source to restore shared outputs; do not hand-edit them. Keep personal instructions in the agent's personal configuration, outside the committed project context. Do not create `AGENTS.md` inside Stackforge's `fssstack/` authoring tree.
 
 ## Reconciliation
 

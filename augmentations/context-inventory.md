@@ -6,6 +6,8 @@ Reconciled 30 October 2026. Stackforge owns the shared defaults and extension in
 
 All 15 consumers have eight local defaults: `context`, `project`, `development`, `validation`, `scripts`, `documentation`, `delivery` and the short `standards` lookup. Code style is one remote Forum import, expanded during context build. Forum retains its tech-debt path override in `project.md`.
 
+Context builds call the shared Tools `mdcompile` CLI and Forum `fm compile` directly. Only `AGENTS.md` and `CLAUDE.md` are generated. Each project has one `context-build` task, with no copied compiler implementation or copy/proxy tasks.
+
 Mise setup is merged into development, beneath Zapper. Related owned repositories are described in project. Workflow and generic backend blocks are removed. MAP Lab Clerk, Electron and loading-UI additions are merged into their existing subject files. No separate MAP Lab-prefixed or toolchain blocks remain.
 
 ## Current context counts
@@ -57,4 +59,4 @@ All other audited projects have no separate product-specific blocks. Do not remo
 
 All 15 consumers retain mise with their existing version pins and package managers. Forum Mobile remains npm-based. The public shell stays independent of mise; the augmentation adds it to every adopting project.
 
-When updating context, preserve product-specific knowledge and existing execution restrictions. Verify required imports resolve once, the shared remote style expands, all three outputs match, and there are no orphaned or boilerplate dependency blocks. Update this inventory when responsibilities change.
+When updating context, preserve product-specific knowledge and existing execution restrictions. Verify required imports resolve once, the shared remote style expands, both outputs match, and there are no orphaned or boilerplate dependency blocks. Update this inventory when responsibilities change.

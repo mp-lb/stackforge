@@ -26,4 +26,4 @@ fm read extensions/arcnet/context/arcnet.md --store mp-lb/fssstack > context/arc
 grep -qxF '@arcnet.md' context/index.md || printf '\n@arcnet.md\n' >> context/index.md
 ```
 
-Adapt the blocks to the installed package paths, services, tasks and configuration. Remove assumptions that do not apply. Record minimal/full mode and actual source/consumer locations, and update `context/delivery.md` with only the configured publishing and deployment paths. Then run `zap task context-build` and commit the source blocks and all three generated agent files.
+Adapt the blocks to the installed package paths, services, tasks and configuration. Remove assumptions that do not apply. Record minimal/full mode and actual source/consumer locations, and update `context/delivery.md` with only the configured publishing and deployment paths. Then run `zap task context-build` and commit the source blocks and both generated agent files.
