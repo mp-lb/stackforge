@@ -9,6 +9,12 @@ Apply this after creating a new fssstack project.
 
 - Docs folder
 
+### Loading screen
+
+For each React frontend, apply the [Shad augmentation](shad.md) after shadcn/ui
+and Tailwind are initialized. Wire its `FullScreenLoading` into application
+and session readiness gates, including root Suspense fallbacks where present.
+
 ### Local tool selection with mise
 
 The public shell owns `.node-version`, `package.json#engines.node`,

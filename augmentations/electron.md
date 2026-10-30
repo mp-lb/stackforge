@@ -64,6 +64,19 @@ The kit is ESM. When the desktop package uses the extension's CommonJS `tsup` bu
 
 Use the dedicated `@mp-lb/electron-kit/preload` entry in a sandboxed preload. Do not import the package root there: the root also exports main-process code that uses Node modules unavailable to a sandboxed preload. Verify the bundled preload only requires modules Electron exposes to sandboxed preloads.
 
+## Loading screen
+
+Apply the [Shad augmentation](shad.md) to the renderer. Re-run its install
+command from the frontend package to ensure `FullScreenLoading` and the
+standard dot-matrix loader are present, preserving customized files when
+prompted. Use `FullScreenLoading` for session readiness before showing browser
+sign-in or the signed-in app, and for root Suspense/startup gates.
+
+This presentation belongs to Shad and the renderer, not Electron Kit. The kit
+remains headless. Use the same loading screen in desktop and web; do not add a
+plain “Loading <app>…” branch. This React loading screen does not replace the
+packaged offline fallback described below.
+
 ## Window state
 
 After `app.whenReady()`, restore the previous position and dimensions when constructing the main window, then attach persistence immediately:
