@@ -76,7 +76,7 @@ Git. The public shell carries no deployment opinions. Do not mix
 deployment-specific cloud configuration into the local-development shell unless
 the target repo genuinely needs it to run locally.
 
-## Root Commands
+## Root commands
 
 The root has no `package.json`. Use the owning folder:
 
@@ -86,8 +86,10 @@ The root has no `package.json`. Use the owning folder:
 - Shell test: `pnpm -C fssstack/shell test`
 - Shell build: `pnpm -C fssstack/shell build`
 
-The root `zap.yaml` is only a convenience wrapper for the shell example. The
-target repo shell has its own `fssstack/shell/zap.yaml`.
+The root `zap.yaml` provides authoring tasks and mobile-script checks. Run
+`zap t mobile-scripts-setup` once, then `zap t mobile-scripts-check`; use
+`zap t mobile-apply-inputs -- <inputs.env> <target-directory>` for mobile setup.
+Target projects use the separate `fssstack/shell/zap.yaml`.
 
 ## Documentation
 
@@ -123,3 +125,7 @@ inside the generated target repo.
 When a change alters the basic `fssstack.yaml` input contract, update the
 separate [FSS Stack Start repository](https://github.com/mp-lb/fssstack-start)
 as part of that work.
+
+## Scripts
+
+Write project scripts in TypeScript in the package that owns the behaviour, or `packages/scripts` when there is no natural owner, and include them in normal lint and typecheck checks. Expose each script as a thin Zap task that invokes it with `tsx` (for example, `zap t somemigration` runs `packages/scripts/somemigration.ts`); keep CI callers aligned when moving scripts.

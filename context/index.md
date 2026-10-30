@@ -15,3 +15,5 @@ Stackforge is the authoring workbench for the FSS Stack setup system. It is not 
 @documentation.md
 
 @validation-expectations.md
+
+@scripts.md

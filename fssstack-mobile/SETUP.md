@@ -27,10 +27,11 @@ and run `npm install` explicitly so the standalone mobile repo starts with
 
 Copy everything in `snippets/` over the new repo (workflows go to
 `.github/workflows/`, and `zap.yaml` is the local Zapper wrapper), then
-interpolate:
+interpolate (install the authoring scripts once first):
 
 ```bash
-node <stackforge>/fssstack-mobile/scripts/apply-inputs.mjs inputs.env .
+zap --config <stackforge>/zap.yaml t mobile-scripts-setup
+zap --config <stackforge>/zap.yaml t mobile-apply-inputs -- "$(pwd)/inputs.env" "$(pwd)"
 ```
 
 Link EAS and re-run interpolation for the project ID:
@@ -39,7 +40,7 @@ Link EAS and re-run interpolation for the project ID:
 npm install -g eas-cli && eas login
 eas init --force    # creates/links under EXPO_OWNER; default MAP Lab owner is mp-lb
 eas update:configure
-node <stackforge>/fssstack-mobile/scripts/apply-inputs.mjs inputs.env .
+zap --config <stackforge>/zap.yaml t mobile-apply-inputs -- "$(pwd)/inputs.env" "$(pwd)"
 ```
 
 Add `.env.production` (committed; no secrets):
