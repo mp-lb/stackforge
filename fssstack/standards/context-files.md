@@ -1,22 +1,24 @@
 # Context files
 
-The shell ships a complete `context/index.md` with small local source blocks: `context`, `project`, `development`, `validation`, `scripts`, `documentation` and `delivery`. Context maintenance is the first import and is independent of any organization augmentation.
+The shell ships a complete `context/index.md` with small local source blocks: `context`, `project`, `standards`, `code-style`, `development`, `validation`, `scripts`, `documentation` and `delivery`. Context maintenance is the first import and is independent of any organization augmentation.
 
 ## Standard block contract
 
-Every FSS Stack project has these seven content blocks. The filenames identify responsibilities, not identical text: specialize commands, paths and constraints to the repository.
+Every FSS Stack project has these nine content blocks. The filenames identify responsibilities, not identical text: specialize commands, paths and constraints to the repository.
 
 | Block | Owns | Does not own |
 | --- | --- | --- |
 | `context.md` | How to add, edit, remove, compile and commit blocks; extension payload locations; private additions | Product rules or organization policy |
 | `project.md` | Purpose, scope, package map, architecture boundaries, related repositories, production/compatibility and data constraints | Startup commands or generic code style |
+| `standards.md` | MAP Lab’s public engineering standards shipped with FSS Stack; how to find and apply them | Organization accounts, private store requirements or team workflow |
+| `code-style.md` | Default naming, decomposition, file organization and tech-debt conventions | Product architecture or setup instructions |
 | `development.md` | Install/run/debug workflow, service management, hot reload, environment ownership, local tool pins | Test policy, publishing or context compilation instructions |
 | `validation.md` | Actual check/test/build commands, required evidence, E2E/eval permissions and resource/spending limits | Product domain definitions or deployment triggers |
 | `scripts.md` | Script language, location, ownership, lint/typecheck participation and task exposure | A duplicate list of all project commands |
 | `documentation.md` | Documentation sources, generation/freshness checks, navigation and actual sync mapping | Copied documentation or release instructions |
 | `delivery.md` | Actual deployment/publication targets, triggers, prerequisites, holds and verification; explicitly state when absent | Permission to deploy or publish merely because a workflow exists |
 
-The baseline is small because it answers seven recurring questions in every project. `scripts` stays separate because it governs how automation is written, while `development` governs how the checkout runs. `delivery` stays present even in a local-only workbench so absence is explicit.
+The baseline is small because it answers nine recurring questions in every project. `scripts` stays separate because it governs how automation is written, while `development` governs how the checkout runs. `delivery` stays present even in a local-only workbench so absence is explicit.
 
 ## Optional blocks and ownership
 
@@ -26,8 +28,7 @@ Add a block only when it carries instructions relevant to the installed project.
 | --- | --- | --- |
 | Project-type setup | `ui`, `backend`, `library-cli`, `docs-website` | Actual frontend, API, published library/CLI or documentation site; specialize the package paths and commands |
 | Extension | `arcnet` + `secrets`, `bull`, `clerk`, `clerk-rbac`, `domains`, `electron`, `mongodb`, `playwright`, `redis`, `s3` | Capability is configured; install from its extension folder; retain prerequisites and actual local/provider differences |
-| MapLab augmentation | `maplab-workflow`, `maplab-standards`, `maplab-code-style` | Project adopts MapLab working conventions; these are not public-shell defaults |
-| MapLab toolchain augmentation | `maplab-toolchain` | mise is configured; do not assert it for an npm/Expo checkout without mise |
+| MapLab augmentation | `maplab-workflow`, `maplab-toolchain` | Every project using this augmentation receives both workflow conventions and mise setup |
 | MapLab capability augmentation | `maplab-clerk`, `maplab-electron`, `maplab-shad` | The corresponding MapLab augmentation has actually been applied |
 | Project | Domain vocabulary, business rules, engine/aggregate boundaries, scenario model, observability | Distinct product knowledge that cannot be expressed as a short part of a standard block |
 
@@ -48,7 +49,8 @@ Use this mapping instead of retaining synonymous files alongside the baseline:
 | `documentation-freshness` | `documentation.md` |
 | `ui-components` | `ui.md` |
 | `cli-changes` | `library-cli.md` |
-| Generic `code-organization` | MapLab's `maplab-code-style.md`; preserve genuine project overrides there |
+| `maplab-standards`, `maplab-code-style` | Rename to default `standards.md` and `code-style.md`; preserve local overrides |
+| Generic `code-organization` | `code-style.md`; preserve genuine project overrides there |
 | `the-template` | Replace obsolete template-sync guidance with current Stackforge provenance in `project.md` |
 
 Preserve unique rules and explicit restrictions when merging. Do not infer current production status from old template text or promote a project's disposable-data policy into a shared default. Remove unused files after checking nested imports and repository references; an unimported file does not supply instructions. Keep product-specific blocks where their distinct content warrants one.
@@ -73,8 +75,14 @@ The compiler accepts `--agents` or `--claude` to select an output. With neither 
 
 Each extension lives at `extensions/<extension>/README.md`, with `context/` payloads and any templates alongside it. Follow its source-to-target mapping, adapt project details, import each block exactly once and rebuild. On updates, merge with customized installed blocks. Setup documents are not themselves always-loaded context.
 
-Project-type setup owns conditional frontend, backend, CLI/library and docs-site guidance. MapLab augmentation owns organization workflow, standards and account choices. Product facts and specialized validation policies remain project-local.
+Project-type setup owns conditional frontend, backend, CLI/library and docs-site guidance. FSS Stack ships MAP Lab’s public standards and code style by default. MapLab augmentation owns team workflow, mandatory mise setup and account choices. Product facts and specialized validation policies remain project-local.
 
 ## Migration checks
 
 Remove obsolete missing imports after reviewing their replacement. Preserve production-state and testing constraints. Verify required imports resolve, no block is imported twice, extension paths use the directory entry point, and the three shared outputs match. Context compilation must fail rather than silently omit a required block.
+
+## Extension completeness and project inventory
+
+For existing projects, compare the index with implemented capabilities: application initialization, test configuration, deployment configuration and the owning package. Treat `fssstack.yaml` as setup input, not an authoritative live extension inventory. A stale empty extension list must not hide installed capabilities; a test helper or adapter dependency must not imply a deployed service. Add missing blocks from the extension payloads and specialize them to the installed implementation. Keep testing permissions in validation.
+
+Track project-specific blocks separately with their purpose and owner. Preserve them when updating defaults. The MapLab augmentation maintains its audited project/extension inventory; new projects and capability changes must update that inventory alongside the local context.

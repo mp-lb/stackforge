@@ -340,7 +340,7 @@ a pointer to `audit.md` in the project's context source blocks so agents can
 find the process. Keep `/tmp/` gitignored for scratch files; audit reports are
 tracked and committed from an isolated worktree for project-owner integration.
 
-Keep the shell's complete `context/` directory and explicit `context/index.md`. Its first block, `context/context.md`, explains how to maintain context. Adapt `project.md`, `development.md`, `validation.md`, `documentation.md` and `delivery.md` to the assembled project; retain `scripts.md`. Do not import every technology's instructions into every project.
+Keep the shell's complete `context/` directory and explicit `context/index.md`. Its first block, `context/context.md`, explains how to maintain context. Adapt `project.md`, `development.md`, `validation.md`, `documentation.md` and `delivery.md` to the assembled project; retain `scripts.md`, `standards.md` and `code-style.md`. FSS Stack ships MAP Lab’s public engineering standards and code style as defaults. Do not import every technology's instructions into every project.
 
 Add conditional payloads from `context/ui.md` for React frontends, `context/backend.md` for backends, and `context/library-cli.md` for libraries/CLIs. Fetch each with `fm read context/<block>.md --store mp-lb/fssstack > context/<block>.md`, specialize it, and add its import exactly once. Docs sites additionally use the block described above. Only describe tasks and workflows actually configured.
 
