@@ -6,7 +6,7 @@ Apply this MAP Lab augmentation after the [FSS Stack Electron extension](../fsss
 
 ## Signing credentials
 
-Use Forum and ArcNet for our macOS signing credentials. The base Electron extension supplies the app and local packaging. This augmentation adds signing, release publishing, downloads, and updates.
+Use `@mp-lb/code-signing` for macOS signing validation. Use Forum and ArcNet only to retrieve credentials and provision repository access. The public signing package has no knowledge of our stores, paths, accounts, or deployment setup. The base Electron extension supplies the app and local packaging. This augmentation adds signing, release publishing, downloads, and updates.
 
 1. Complete the shared secrets and variables setup in [ArcNet setup](../arcnet/SETUP.md), using the project slug and repository from `fssstack.yaml`. Minimal ArcNet is sufficient for a desktop-only project; use full ArcNet when also deploying hosted applications.
 2. Store reusable company signing credentials in `/admin/standard-secrets.json.enc` in `mp-lb/mp-lb`. Use `/projects/<project-slug>/secrets.json.enc` for project-specific credentials or overrides. Preserve existing values and recipients when editing encrypted files. Do not assume the shared file already contains the signing credentials; if they are missing, have the operator supply them before attempting a signed release.
@@ -18,6 +18,17 @@ Use Forum and ArcNet for our macOS signing credentials. The base Electron extens
 | `APPLE_ID` | Apple account used for notarization. |
 | `APPLE_APP_SPECIFIC_PASSWORD` | App-specific password for that Apple account. |
 | `APPLE_TEAM_ID` | Apple Developer team that owns the signing certificate. |
+
+Our existing signing credentials are in `mp-lb/mp-lb:/projects/forum/secrets.json.enc`. To reuse them, copy only the signing credentials and desktop publishing token into the shared source, preserving unrelated values and encryption recipients:
+
+```sh
+arcnet desktop share --store mp-lb/mp-lb \
+  --from /projects/forum/secrets.json.enc \
+  --to /admin/standard-secrets.json.enc \
+  --apple-id hi@felixsebastian.dev --team-id CWZKS7THVN
+```
+
+This prompts for the Forum encryption password locally. Do not paste it into chat or commit plaintext. Certificate backups live under `mp-lb/mp-lb:/admin/certs`; they are encrypted base64 files, not ArcNet JSON secret sources. Reuse the existing Developer ID Application identity rather than creating one per app.
 
 3. Add a `desktop` consumer to the existing `.arcnet/arcnet.yaml`, preserving the other consumers:
 
@@ -34,7 +45,7 @@ Use Forum and ArcNet for our macOS signing credentials. The base Electron extens
    ```
 
 4. Run `pnpm exec arcnet secrets sync` and commit the refreshed encrypted snapshots. Provisioning a new repository recipient changes the encrypted file, so sync again after provisioning its GitHub key. Validate with `pnpm exec arcnet env check --consumer desktop --password` locally, or with the provisioned source keys in CI. Never commit plaintext credentials.
-5. Adapt the [release workflow template](electron/desktop-release.yml) to pass the existing source keys, normally `ARCNET_STANDARD_SECRETS_KEY` and `ARCNET_PROJECT_SECRETS_KEY`, from GitHub secrets. Load `pnpm exec arcnet env export --consumer desktop` through a pipe into a script that validates the five inputs, masks their values in GitHub Actions, and writes them to `GITHUB_ENV` using multiline-safe delimiters. Use `set -euo pipefail` so decryption failure stops the release. Do not print the exported JSON or duplicate the signing values as individual GitHub secrets.
+5. Adapt the [release workflow template](electron/desktop-release.yml) to pass the existing source keys, normally `ARCNET_STANDARD_SECRETS_KEY` and `ARCNET_PROJECT_SECRETS_KEY`, from GitHub secrets. Install `@mp-lb/code-signing` as a development dependency. Load and validate credentials with `pnpm exec arcnet env export --consumer desktop | pnpm exec code-signing github-env --stdin`. For local preflight use `pnpm exec arcnet env export --consumer desktop --password | pnpm exec code-signing check --stdin`. The signing package accepts JSON or environment variables from any secret provider; it does not retrieve secrets or publish releases. Use `set -euo pipefail` so decryption failure stops the release. Do not print the exported JSON or duplicate the signing values as individual GitHub secrets.
 6. Test an unsigned local package first, then run the signed release workflow. Verify the packaged application with `codesign --verify --deep --strict` and `spctl --assess --type execute`. Publish the DMG, ZIP, and update manifest together. Verify the actual download and update URLs without authentication before exposing them in the landing page or updater. For private source repositories, publish public downloads in a separate public releases repository with appropriately scoped CI write access.
 
 A successful web deployment does not mean a desktop release exists. Missing signing inputs block the signed release; do not silently publish an unsigned build instead.
