@@ -11,7 +11,7 @@ Apply this after creating a new fssstack project.
 
 Keep the public defaults and the remote MAP Lab code-style import described in the [context contract](https://github.com/mp-lb/stackforge/blob/main/fssstack/standards/context-files.md). `standards.md` is just the lookup commands. Do not install workflow, backend or MAP Lab-prefixed files.
 
-Merge `context/development.md` from this store into the existing development instructions after configuring mise. Mise selects tools; Zapper runs on top. Record related owned source repositories and any necessary build/link steps in `context/project.md`, not a separate mandatory toolchain file. Record the actual Forum store/sync mapping in `context/documentation.md`.
+The shared development context covers mise and Zapper; reference it remotely in `context/index.md`. Record related owned repositories, build/link steps and any project-specific Forum sync mapping in local project context.
 
 Merge Clerk, Electron and Shad augmentation instructions into the corresponding subject files. A dependency alone does not justify a block. Preserve product-specific rules and testing restrictions. Compile and commit sources plus both outputs.
 

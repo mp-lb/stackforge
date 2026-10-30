@@ -340,9 +340,9 @@ a pointer to `audit.md` in the project's context source blocks so agents can
 find the process. Keep `/tmp/` gitignored for scratch files; audit reports are
 tracked and committed from an isolated worktree for project-owner integration.
 
-Keep the shell's complete `context/` directory and explicit `context/index.md`. Its first block, `context/context.md`, explains how to maintain context. Adapt `project.md`, `development.md`, `validation.md`, `documentation.md` and `delivery.md` to the assembled project; retain `scripts.md`, the short `standards.md` lookup and the remote MAP Lab code-style link in the index. FSS Stack ships MAP Lab’s public engineering standards and code style as defaults. Do not import every technology's instructions into every project.
+Keep the shell's `context/index.md`, `context/context.md` and project-specific `context/project.md`. Shared standards, development, validation, scripts, documentation and code style are compiled from Forum links in the index. Add local project-specific details and adapt `delivery.md` to the actual release process; do not copy shared blocks into the project.
 
-Add conditional payloads from `context/ui.md` for shadcn frontends and `context/library-cli.md` for libraries/CLIs. Fetch each with `fm read context/<block>.md --store mp-lb/fssstack > context/<block>.md`, specialize it, and add its import exactly once. Docs sites additionally use the block described above. Only describe tasks and workflows actually configured.
+For shadcn frontends, add the remote link `[Frontend UI](https://hyperdoc.forumlabs.net/e161b5b1-76b2-4656-84fe-a193af43ae58)` on its own line, separated by blank lines. Keep any project-specific UI details locally. Docs sites additionally use the block described above.
 
 Ensure `mdcompile` (from `@mp-lb/mdcompile` in Tools) and the current Forum `fm` CLI are available on PATH before running context compilation. The context task calls these shared CLIs directly.
 

@@ -53,4 +53,4 @@ component rather than maintaining an app-specific loading-screen copy.
 
 ## Agent context
 
-Merge the recurring instructions from `context/ui.md` in this store into the project’s existing `context/ui.md`. Preserve local rules and include only installed behavior. Do not create a separate MAP Lab-prefixed block. Run `zap task context-build` and commit source and generated files together.
+Import the shared UI context remotely in `context/index.md`. Keep project-specific loading-screen instructions locally, then run `zap task context-build` and commit source and generated files together.

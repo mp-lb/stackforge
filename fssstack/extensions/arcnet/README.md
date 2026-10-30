@@ -17,13 +17,10 @@ Use the [hello-world reference project](https://github.com/mp-lb/stackforge/tree
 
 ## Install agent context
 
-After applying and validating this capability, install its context payloads. For existing files, compare and merge instead of overwriting project-specific instructions. These commands are for a first install from the target repository root:
+After applying and validating ArcNet, add this standalone link to `context/index.md`, with blank lines around it:
 
-```sh
-set -e
-mkdir -p context
-fm read extensions/arcnet/context/arcnet.md --store mp-lb/fssstack > context/arcnet.md
-grep -qxF '@arcnet.md' context/index.md || printf '\n@arcnet.md\n' >> context/index.md
+```markdown
+[ArcNet](https://hyperdoc.forumlabs.net/232107c4-d98b-4065-851f-9e29d9b5497e)
 ```
 
-Adapt the blocks to the installed package paths, services, tasks and configuration. Remove assumptions that do not apply. Record minimal/full mode and actual source/consumer locations, and update `context/delivery.md` with only the configured publishing and deployment paths. Then run `zap task context-build` and commit the source blocks and both generated agent files.
+Keep project-specific delivery details locally, then run `zap task context-build` and commit the sources and generated agent files.

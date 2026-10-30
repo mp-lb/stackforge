@@ -4,11 +4,15 @@
 [MAP Lab code style](https://hyperdoc.forumlabs.net/ad089738-f27b-41ec-b77e-b4342f1773c6)
 
 @project.md
-@standards.md
 
+[Standards](https://hyperdoc.forumlabs.net/21d43359-696f-476d-aa4a-66802a8e7a14)
 
-@development.md
-@validation.md
-@scripts.md
-@documentation.md
+[Development](https://hyperdoc.forumlabs.net/c6d8ee59-8b41-4446-afc6-cdf8546301fb)
+
+[Validation](https://hyperdoc.forumlabs.net/e6f1e821-cfb5-4c7c-bd41-390ed322aa6c)
+
+[Scripts](https://hyperdoc.forumlabs.net/8dd67d4b-f36a-45b5-8277-5d468f063665)
+
+[Documentation](https://hyperdoc.forumlabs.net/80772fa0-248b-45ac-a690-f4fa086059a9)
+
 @delivery.md
