@@ -1,7 +1,6 @@
 name: Release desktop
 on:
-  push:
-    tags: ['desktop-v*']
+  workflow_dispatch:
 permissions:
   contents: write
 concurrency:
@@ -20,7 +19,12 @@ jobs:
           package_json_file: package.json
       - run: pnpm install --frozen-lockfile
       - name: Check release version
-        run: test "${GITHUB_REF_NAME}" = "desktop-v$(node -p "require('./apps/desktop/package.json').version")"
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          VERSION=$(node -p "require('./apps/desktop/package.json').version")
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          echo "DESKTOP_RELEASE_TAG=desktop-v$VERSION" >> "$GITHUB_ENV"
       - run: pnpm --filter @example/desktop typecheck
       - run: pnpm --filter @example/desktop build
       - name: Load and validate signing credentials
@@ -40,13 +44,13 @@ jobs:
           test -n "$APP"
           codesign --verify --deep --strict "$APP"
           spctl --assess --type execute "$APP"
-      - uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          repository: mp-lb/example-releases # Set to the public release repository.
-          token: ${{ secrets.DESKTOP_RELEASE_TOKEN }}
-          files: |
-            apps/desktop/out/*.dmg
-            apps/desktop/out/*.zip
-            apps/desktop/out/latest-mac.yml
-          fail_on_unmatched_files: true
+      - name: Publish public desktop release
+        env:
+          ARCNET_STANDARD_SECRETS_KEY: ${{ secrets.ARCNET_STANDARD_SECRETS_KEY }}
+          ARCNET_PROJECT_SECRETS_KEY: ${{ secrets.ARCNET_PROJECT_SECRETS_KEY }}
+        run: |
+          set -euo pipefail
+          # Configure desktopRelease with GH_TOKEN mapped to the scoped Forum secret.
+          pnpm exec arcnet env run --consumer desktopRelease -- gh release create "$DESKTOP_RELEASE_TAG" \
+            apps/desktop/out/*.dmg apps/desktop/out/*.zip apps/desktop/out/latest-mac.yml \
+            --repo mp-lb/example-releases --title "$DESKTOP_RELEASE_TAG"
