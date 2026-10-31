@@ -64,6 +64,12 @@ The kit is ESM. When the desktop package uses the extension's CommonJS `tsup` bu
 
 Use the dedicated `@mp-lb/electron-kit/preload` entry in a sandboxed preload. Do not import the package root there: the root also exports main-process code that uses Node modules unavailable to a sandboxed preload. Verify the bundled preload only requires modules Electron exposes to sandboxed preloads.
 
+## Updates dialog
+
+Electron Kit owns update checks, downloads, installation, and shared renderer state. Keep one `createAutoUpdater` controller for the app and consume it with `useUpdates`; dispose it when the renderer integration is torn down. Follow the [Electron Kit updater guide](https://github.com/mp-lb/tools/tree/main/packages/electron-kit#updates) for the main process, preload bridge, and renderer setup.
+
+Install the shadcn `dialog`, `button`, and `progress` components in the frontend package. Build a small application-owned dialog showing the app version and update status. While downloading, show a labeled `Progress` with the percentage clamped to 0–100. In the footer, show an outline **Check for updates** button, disabled while checking or downloading. When an update is ready, replace it with a primary **Reload update** or **Restart and update** button calling `installUpdate`; disable it while installation is in progress. Display updater errors and distinguish a desktop restart from a hosted-app reload. Use the application's theme and installed component variants.
+
 ## Loading screen
 
 Apply the [Shad augmentation](shad.md) to the renderer. Re-run its install
