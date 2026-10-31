@@ -50,7 +50,7 @@ jobs:
           ARCNET_PROJECT_SECRETS_KEY: ${{ secrets.ARCNET_PROJECT_SECRETS_KEY }}
         run: |
           set -euo pipefail
-          # Configure desktopRelease with GH_TOKEN mapped to the scoped Forum secret.
+          # Configure desktopRelease with GH_TOKEN mapped to DESKTOP_RELEASES_GITHUB_TOKEN in standard secrets.
           pnpm exec arcnet env run --consumer desktopRelease -- gh release create "$DESKTOP_RELEASE_TAG" \
             apps/desktop/out/*.dmg apps/desktop/out/*.zip apps/desktop/out/latest-mac.yml \
             --repo mp-lb/example-releases --title "$DESKTOP_RELEASE_TAG"
