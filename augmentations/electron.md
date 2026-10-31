@@ -45,7 +45,7 @@ A successful web deployment does not mean a desktop release exists. Missing sign
 
 This distribution setup belongs to the augmentation, not the base FSS Stack extension.
 
-1. Choose the GitHub repository that will hold releases. If application source is private, use a separate public `<project>-releases` repository. Give CI write access to that repository; the source repository's default `GITHUB_TOKEN` does not grant cross-repository access.
+1. Choose the GitHub repository that will hold releases. If application source is private, use a separate public `<project>-releases` repository. Give CI write access to that repository; the source repository's default `GITHUB_TOKEN` does not grant cross-repository access. Create a fine-grained GitHub token restricted to the releases repository with Contents read and write access, or use an equivalently scoped GitHub App. Store it as `DESKTOP_RELEASE_TOKEN` in the private source repository’s Actions secrets (for example, run `gh secret set DESKTOP_RELEASE_TOKEN --repo <owner>/<source-repo>` and enter it interactively). GitHub does not reveal existing secret values; do not attempt to copy one from another repository or use a broadly scoped interactive login token.
 2. Configure electron-builder's GitHub publish owner/repo to match the releases repository. Enable DMG and ZIP targets, hardened runtime, and notarization for signed macOS releases. Adapt the [release workflow](electron/desktop-release.yml) to the target package, our available runners, the ArcNet credential-loading step above, and the destination repository. Its example trigger is a `desktop-vX.Y.Z` tag matching the desktop package version; use the project's established release trigger when one exists.
 3. Publish the signed DMG, ZIP, and update manifest as one release. Keep asset names stable if using `/releases/latest/download/<asset-name>` links. Configure the updater to read from this same public repository.
 4. Add a minimal landing page with the app name, icon, and download button. Link directly to the published GitHub asset; a backend is unnecessary for a stable asset name. A Next.js page that needs dynamic asset selection can use the optional [download redirect route](electron/desktop-download-route.ts). Keep GitHub credentials out of public frontend code.
@@ -84,6 +84,8 @@ plain “Loading <app>…” branch. This React loading screen does not replace 
 packaged offline fallback described below.
 
 ## Window state
+
+If the app keeps its macOS window alive after closing it, use Electron Kit’s `keepWindowAvailable(app, window, nativeAutoUpdater)` with Electron’s native `autoUpdater`. It handles normal quits and updater-triggered quits before the window closes. If an app has a custom close handler, it must also allow `before-quit-for-update`; do not assume the normal `before-quit` event fires first. Verify normal close, quit, and restart-and-update in the packaged app.
 
 After `app.whenReady()`, restore the previous position and dimensions when constructing the main window, then attach persistence immediately:
 

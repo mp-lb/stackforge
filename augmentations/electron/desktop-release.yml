@@ -43,6 +43,8 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
+          repository: mp-lb/example-releases # Set to the public release repository.
+          token: ${{ secrets.DESKTOP_RELEASE_TOKEN }}
           files: |
             apps/desktop/out/*.dmg
             apps/desktop/out/*.zip
