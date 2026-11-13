@@ -8,3 +8,6 @@ coverage
 .zap
 *.tsbuildinfo
 AGENTS.local.md
+
+# Generated CI credentials must not affect source identity or enter Git.
+gha-creds-*.json

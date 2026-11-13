@@ -1,0 +1,16 @@
+# Keep local credentials and non-source files out of container build contexts.
+.git
+**/node_modules
+**/dist
+**/.next
+**/coverage
+**/.env
+**/.env.*
+.env.arcnet-keys.json
+gha-creds-*.json
+**/gha-creds-*.json
+.zap
+.vercel
+.arcnet/secrets
+.tmp
+tmp
