@@ -14,10 +14,4 @@ pnpm dlx shadcn@latest add dialog
 
 Use the shared theme tokens and existing component variants for colors, typography, spacing and radii. UI consistency takes priority over making one screen look different. Do not override theme-owned styles in individual components without a concrete reason; make intentional design-system changes at the shared theme or component level.
 
-MAP Lab's public Shad repository provides additional components at `https://shad.mp-lb.dev`. Consult its catalog before building an equivalent, for example:
-
-```sh
-pnpm dlx shadcn@latest add https://shad.mp-lb.dev/r/ui-states.json
-```
-
 CLI reference: https://ui.shadcn.com/docs/cli.
