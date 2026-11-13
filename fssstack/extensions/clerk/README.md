@@ -226,22 +226,27 @@ app.get("/api/protected", async (request, reply) => {
 If the backend uses tRPC, extract Clerk auth in the request context and expose app-owned auth fields to procedures:
 
 ```typescript
+// Replace <server-package> with the generated server workspace package name.
+import type { Logger } from "<server-package>";
+import type { FastifyRequest } from "fastify";
 import { getAuth } from "@clerk/fastify";
 import { createRequestContext } from "./createRequestContext";
 
-// Extend the existing app-owned AppContext type with these auth fields.
-// In the adapter's createContext callback, preserve the existing logger context:
-const context = createRequestContext(logger, req);
-const auth = getAuth(req);
-return {
-  ...context,
-  auth: {
-    userId: auth.userId,
-    sessionId: auth.sessionId,
-    claims: auth.sessionClaims,
-  },
+export const createAuthenticatedContext = (logger: Logger, req: FastifyRequest) => {
+  const context = createRequestContext(logger, req);
+  const auth = getAuth(req);
+  return {
+    ...context,
+    auth: {
+      userId: auth.userId,
+      sessionId: auth.sessionId,
+      claims: auth.sessionClaims,
+    },
+  };
 };
 ```
+
+Use it as the adapter callback: `createContext: ({ req }) => createAuthenticatedContext(logger, req)`.
 
 Procedures should depend on the app-owned context, not Clerk or Fastify. Add the app-specific auth shape to the server context type, then a protected procedure builder that rejects a missing verified user before invoking protected domain work. Preserve the existing logger. Supplying auth in context alone does not protect a procedure; explicitly use the protected builder for the generated authenticated hello-world call. Keep auth out of the base shell.
 
