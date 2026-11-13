@@ -16,6 +16,8 @@ Install Clerk in each backend app that verifies sessions:
 pnpm --filter=<backend-package> add @clerk/fastify
 ```
 
+If installation stops for a dependency install-script decision, review the named script and record the decision in the project's package-manager configuration before running unattended installs. Use `pnpm why <package>` to find the dependency path. This is package-manager setup, not evidence that the dependency is broken; `core-js` is a JavaScript compatibility/polyfill package. Keep any version-specific decision with the installation instructions rather than changing the application architecture.
+
 ## Local development
 
 1. Go to [clerk.com](https://clerk.com).
