@@ -144,7 +144,7 @@ The shadcn CLI owns the generic Vite, React, Tailwind, and shadcn/ui scaffold. T
   emitting stale `vite.config.js` / `.d.ts` files.
 - **Vitest** — the app's `vitest.config.ts` merges the React preset (`@mp-lb/fssstack-testing/vitest/react`) with the Vite plugin / aliases it needs.
 - **ESLint** — the root `eslint.config.js` already globs `apps/**`, so the app
-  needs no eslint config of its own; remove the one shadcn generates.
+  needs no eslint config of its own; remove the one shadcn generates. Remove unused app-level `@eslint/js` and other generated lint packages when they are replaced by the root preset. Keep any genuinely used lint dependencies compatible with the root ESLint major; verify peer compatibility after installation.
 - **Zap + ports** — add `<FRONTEND_SLUG>_PORT` to `zap.yaml` `ports:` and a
   native service that runs the dev server on that port:
   ```yaml
