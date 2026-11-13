@@ -1,9 +1,7 @@
-## Standards
+## Standards and extensions
 
-Read the relevant MAP Lab standards before changing the corresponding code. List them with `fm ls --store mp-lb/dev` and read one with `fm read <file>.md --store mp-lb/dev`.
+When asked to “read the xyz standard”, list the available standards with `fm ls standards --store mp-lb/fssstack`, then read the matching file with `fm read standards/<file>.md --store mp-lb/fssstack`. Read the relevant guidance before changing the corresponding code; do not guess a filename when the match is unclear.
 
-- `style-guide.md` and `component-decomposition.md`: code and component structure.
-- `crud.md`, `errors.md`, `trpc.md` and `logging.md`: backend APIs, services and error handling; list the store for current available guidance.
-- `event-schema.md` and `event-sourcing.md`: event schemas and event-sourced domains.
-- `libs.md`, `lib-release.md` and `clis.md`: libraries, publishing and command-line tools.
-- For agent context, read `standards/context-files.md` from `mp-lb/fssstack`.
+Discover extensions with `fm ls extensions --store mp-lb/fssstack`, then read `fm read extensions/<extension>/README.md --store mp-lb/fssstack` for setup or updates. Follow the installed project's configuration and preserve its specific behavior.
+
+Read guidance remotely as needed. Do not create a project Forum store or `.forum/` documentation sync configuration, or install local mirrors of standards, extensions, skills or examples. Keep project-specific documentation in `docs/`.

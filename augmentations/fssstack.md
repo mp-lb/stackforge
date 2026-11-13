@@ -9,7 +9,9 @@ Apply this after creating a new fssstack project.
 
 ### Agent context
 
-Keep the public defaults and the remote MAP Lab code-style import described in the [context contract](https://github.com/mp-lb/stackforge/blob/main/fssstack/standards/context-files.md). `standards.md` is just the lookup commands. Do not install workflow, backend or MAP Lab-prefixed files.
+Keep the public context defaults. Add `[MAP Lab code style](https://hyperdoc.forumlabs.net/ad089738-f27b-41ec-b77e-b4342f1773c6)` to `context/index.md` on its own line with blank lines around it. Do not install workflow, backend or MAP Lab-prefixed files.
+
+Merge `context/standards.md` from this store into a local `context/standards.md`, import it once from the index, and preserve the public remote Standards lookup block. This adds MAP Lab's standards store and augmentation lookup without putting company-specific policy into Fssstack. No project Forum store or `.forum/` documentation sync configuration is needed; do not install skills or examples mirrors.
 
 Replace the Fssstack development link with `[MAP Lab development](https://hyperdoc.forumlabs.net/48616751-0d60-4389-a33d-b8851abc8c3b)` on its own line, with blank lines around it; it includes our mise conventions. Record related owned repositories, build/link steps and any project-specific Forum sync mapping in local project context.
 

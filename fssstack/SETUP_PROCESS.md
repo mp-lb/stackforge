@@ -1,6 +1,6 @@
 # fssstack Setup
 
-Run this from a folder containing only the setup inputs (`fssstack.yaml` and `.forum/sync.yaml`). If other project files already exist, stop and ask the user for an empty folder or git repo.
+Run this from a folder containing only the setup inputs (`fssstack.yaml`). If other project files already exist, stop and ask the user for an empty folder or git repo.
 
 ## Project configuration
 
@@ -9,6 +9,10 @@ Read project values, apps, packages, and extensions from `fssstack.yaml`. Use `n
 ## Theme choice before scaffolding
 
 For shadcn frontends, explicitly ask: “Would you like to customize the shadcn theme? You can choose it at https://ui.shadcn.com/create.” Collect the chosen preset and record it in `shadcnPreset` before generating apps, or record the user's explicit choice to keep the default. Do not silently treat an existing default value as a theme decision. Preserve an already confirmed choice.
+
+## Remote guidance
+
+Target projects need no Forum store or `.forum/` sync configuration. Read shared standards and extensions remotely with explicit `--store` arguments. Do not mirror standards, extensions, skills or examples into the target repo. Keep project-specific documentation in `docs/`. The shell's shared Standards context explains discovery and lookup; preserve that remote block when compiling agent context. This is separate from any optional deployment tool's secrets/variable snapshots.
 
 ## Shell
 
@@ -319,7 +323,7 @@ Then, in `packages/<library slug>`:
 - set `private: false` and `publishConfig.access: public` only on packages that should publish to npm;
 - configure `NPM_TOKEN` (or trusted publishing) for the target repository. The release workflow was templated from `githubRepository` during shell setup and compares packed files on every push to `main`; no changeset is needed.
 
-A library that ships a command-line tool is still a library: add a package `bin`, a `#!/usr/bin/env node` shebang on the entrypoint, and `chmod +x dist/index.js` in the build (see `packages/example-cli` for the shape). There is no separate CLI package type. See `docs/standards/clis.md` for command-line behaviour on top of the library baseline.
+A library that ships a command-line tool is still a library: add a package `bin`, a `#!/usr/bin/env node` shebang on the entrypoint, and `chmod +x dist/index.js` in the build (see `packages/example-cli` for the shape). There is no separate CLI package type. Read `standards/clis.md` remotely from the `mp-lb/fssstack` Forum store for command-line behaviour on top of the library baseline.
 
 Remove `packages/example-lib` and `packages/example-cli` after all requested libraries exist, unless a requested library slug matches one of them.
 
@@ -344,7 +348,7 @@ a pointer to `audit.md` in the project's context source blocks so agents can
 find the process. Keep `/tmp/` gitignored for scratch files; audit reports are
 tracked and committed from an isolated worktree for project-owner integration.
 
-Keep the shell's `context/index.md` and project-specific `context/project.md`. Agent context itself is a shared remote block. Shared standards, development, validation, scripts, documentation and code style are compiled from Forum links in the index. Add local project-specific details; do not copy shared blocks into the project. ArcNet supplies shared delivery guidance when installed.
+Keep the shell's `context/index.md` and project-specific `context/project.md`. Agent context itself is a shared remote block. Shared standards lookup, development, validation, scripts and documentation are compiled from Forum links in the index. Add local project-specific details; do not copy shared blocks into the project. ArcNet supplies shared delivery guidance when installed.
 
 For shadcn frontends, add the remote link `[Frontend UI](https://hyperdoc.forumlabs.net/e161b5b1-76b2-4656-84fe-a193af43ae58)` on its own line, separated by blank lines. Keep any project-specific UI details locally. Docs sites additionally use the block described above.
 
@@ -357,7 +361,7 @@ zap task context-build
 git add context AGENTS.md CLAUDE.md
 ```
 
-Target projects commit both generated files. `AGENTS.local.md` remains ignored; private additions must never be committed. Worktree setup does not modify or compile agent context. Rebuild from source to restore shared outputs. The context task expands local imports, then remote links through `fm compile --stdin`; verify the resulting code style is present. Do not use blanket optional imports.
+Target projects commit both generated files. `AGENTS.local.md` remains ignored; private additions must never be committed. Worktree setup does not modify or compile agent context. Rebuild from source to restore shared outputs. The context task expands local imports, then remote links through `fm compile --stdin`; verify the remote lookup instructions are present. Do not use blanket optional imports.
 
 ## Validate
 

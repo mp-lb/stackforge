@@ -3,8 +3,6 @@
 [Agent context](https://hyperdoc.forumlabs.net/a89f6f27-3e1a-4186-a7b7-2104576a4577)
 
 
-[MAP Lab code style](https://hyperdoc.forumlabs.net/ad089738-f27b-41ec-b77e-b4342f1773c6)
-
 @project.md
 
 [Standards](https://hyperdoc.forumlabs.net/21d43359-696f-476d-aa4a-66802a8e7a14)
