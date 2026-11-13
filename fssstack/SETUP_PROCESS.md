@@ -86,6 +86,8 @@ Then, in `apps/<backend slug>`:
 - add or update the matching Zap native service in the root `zap.yaml`;
 - keep the unauthenticated `/health` endpoint returning `{ ok: true }`; it must not mutate example domain state.
 
+Set the backend's non-secret `FRONTEND_URLS` to the selected frontend origins using their actual Zapper-assigned URLs (comma-separated for multiple frontends). Wire the frontend's public API URL to the matching backend URL. Keep the origin list empty for backend-only projects; do not enable wildcard credentialed CORS.
+
 The example backend already builds on `@mp-lb/fssstack-platform` (server context,
 logger, tRPC router). Keep the Fastify structure lean: `index.ts` owns configuration, listen and shutdown; `createExampleBackend.ts` composes transport and module routers; request logging uses the existing structured event logger. Domain procedures stay in packages and receive the tRPC instance/context rather than importing app configuration or Fastify. The client-facing tRPC entrypoint exports types only; runtime router factories use `/server`. No authentication belongs in the base shell.
 
