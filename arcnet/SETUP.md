@@ -4,6 +4,14 @@ Start with a working Zap/pnpm/GitHub project and an [ArcNet environment](initial
 
 Choose **full** setup when deploying applications through ArcNet, or **minimal** setup for its secrets and variables infrastructure without application deployment. Both use the shared setup below. For FSS Stack, take the project slug and repository from `projectSlug` and `githubRepository` in `fssstack.yaml`.
 
+## Deployment preflight (full setup)
+
+Agree the intended live outcome, provider identities/accounts, domains, resources, cost assumptions, and external actions before provisioning. Check authentication freshness and access to the existing company billing account and state bucket; use existing projects as evidence before proposing a different billing account. Preserve authorization already given.
+
+Plan encrypted-source password handoffs and production authentication setup early. Record observed blockers and workarounds in the target project's `SETUP_GAPS.md`, with evidence and owning fixes. Distinguish missing prerequisites, tool defects, documentation defects, and execution mistakes.
+
+Before a container build, check Docker filesystem capacity separately from host disk space. Preserve unrelated images, containers and volumes. If the local image build is blocked, a scoped foundation/CI bootstrap may be needed: review partial state, establish and verify the deployment identity, then let authorized CI complete the image/service deployment. Do not blindly reapply or claim the full deployment succeeded.
+
 ## Shared setup
 
 For FSS Stack projects, read `projectSlug` and `githubRepository` from `fssstack.yaml`. Use those values for `<project-slug>` and `<owner/repo>` below. The GitHub repository must exist, and `fm` and `gh` must be authenticated with access to the Forum store and repository. Use the project's normal pnpm dependency workflow to install `@mp-lb/arcnet` in the workspace root; it provides the secrets tooling even when deployment is not configured.
@@ -86,6 +94,20 @@ Add the shared ArcNet delivery link to the project context index: `[Delivery](ht
 
 Keep the shared setup sources and snapshots in place when adding deployment capabilities.
 
+For container services, exclude local secrets, generated CI credentials, dependency directories and scratch files from the Docker build context. Keep generated CI credential files out of Git too. Review actual required CI permissions for state refresh, federation, service IAM, and quota-project usage; do not assume Editor covers every operation or grant billing-management roles for an unselected capability.
+
+For prebuilt static Vercel sites, distinguish the source build root from the provider root: a source subdirectory need not exist in ArcNet's temporary upload tree. Preserve SPA deep-route fallbacks in the prebuilt output. Choose one authoritative production delivery path and prevent an independent Git deployment from bypassing its checks. Verify the generated workflow gates deployment on the project's configured validation.
+
 **First Cloud Run deployment:** An authorized operator must run `arcnet plan` and `arcnet deploy` locally before pushing. This creates GitHub's GCP trust relationship. Then add the resulting `identity` values to `arcnet.yaml` and push. [Environment prerequisites](initial-setup.md).
 
 [Project files and supported capabilities](README.md) · [Command reference](https://github.com/mp-lb/tools/tree/main/packages/arcnet/docs/public)
+
+## Live completion checks
+
+Full setup completes when the selected services work at their real release URLs. A passing CI run or created provider resource is an intermediate milestone. Verify:
+
+- Landing/app HTTPS and a direct load of application routes.
+- Backend health including a real database check, rejection of unauthenticated access, and allowed frontend-origin requests.
+- A real production sign-in through the configured provider, callback, and authenticated app-to-API response. Plan use of the user's authenticated browser where appropriate; never request passwords or codes in chat. Follow any required human-only OAuth Console steps.
+- Custom domain ownership delegation and TLS separately from DNS/resource creation. If issuance is pending, an authorized native HTTPS hostname can keep the app functional; switch to the custom hostname only after verification.
+- Actual release URLs recorded in the project's work-management record, and the gap ledger reconciled with verification evidence. Publish focused shared-process corrections at the end, keeping unresolved owning-tool defects explicit.

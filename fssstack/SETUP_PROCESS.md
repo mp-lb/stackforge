@@ -6,6 +6,10 @@ Run this from a folder containing only the setup inputs (`fssstack.yaml` and `.f
 
 Read project values, apps, packages, and extensions from `fssstack.yaml`. Use `name`, `emoji`, and `description` for project metadata; `projectSlug` and `packagePrefix` for package naming; `githubRepository` for GitHub workflow templating; and `shadcnPreset` for frontend scaffolding. Each `frontends` entry provides the frontend slug in `name` and its framework in `type`. `backends` and `libs` contain backend and library slugs. Apply the selected `extensions` after the base project validates.
 
+## Theme choice before scaffolding
+
+For shadcn frontends, explicitly ask: “Would you like to customize the shadcn theme? You can choose it at https://ui.shadcn.com/create.” Collect the chosen preset and record it in `shadcnPreset` before generating apps, or record the user's explicit choice to keep the default. Do not silently treat an existing default value as a theme decision. Preserve an already confirmed choice.
+
 ## Shell
 
 Fetch the shell project files with the one-off CLI, then install Forum CLI as a local workspace dev dependency:
