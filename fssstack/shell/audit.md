@@ -90,11 +90,10 @@ Record both paths in the report. Keep setup inputs in `reference/` and source
 snapshots and command logs in the sibling `evidence/` directory so setup starts
 with only the expected input files.
 
-Fetch and read the current setup instructions and input configuration template:
+Fetch and read the current setup instructions:
 
 ```bash
 npx -y @mp-lb/forum-cli read --store mp-lb/fssstack SETUP_PROCESS.md > "$audit_workspace/evidence/SETUP_PROCESS.md"
-npx -y @mp-lb/forum-cli read --store mp-lb/fssstack sync.example.yaml > "$audit_workspace/reference/sync.yaml"
 ```
 
 Check that each fetch succeeded before using its output. Write the reconciled
