@@ -227,3 +227,17 @@ Creation order: accounts/credentials and existing MongoDB/Redis → GCP environm
 Teardown reverses the dependency order: stop project deploys, remove project workloads/bindings, preserve or explicitly retire data/backups, remove only environment-owned shared resources and DNS records, revoke credentials/trust, then remove the state bucket/network project last. Referenced resources must remain. Environment deletion must not be inferred from `zap arc destroy`: that command destroys the selected **project** state, not this complete environment. There is currently no end-to-end environment teardown command.
 
 Before shipping this lifecycle, prove it on a disposable environment: setup, repeat setup without duplicate resources, onboard hello-world, deploy via GitHub, verify project isolation, exercise partial-failure recovery, and tear down without affecting referenced resources. This document does not claim those environment lifecycle tests have run.
+
+## Project CI permission bootstrap
+
+The `github-ci` module grants the deploy identity project-scoped Editor, Workload Identity Pool Viewer and Cloud Run Admin, plus access to its state bucket. Editor alone cannot refresh the WIF pool or manage Cloud Run service IAM. Apply a new/updated module first with the authorized operator before relying on that identity in CI; these source changes do not alter existing cloud grants automatically.
+
+The MAP Lab preset intentionally leaves the module's `network-project` empty: project CI cannot maintain shared platform IAM. The environment operator must grant the project's deploy identity `roles/serviceusage.serviceUsageConsumer` on the actual quota project during bootstrap:
+
+```sh
+gcloud projects add-iam-policy-binding <quota-project> \
+  --member='serviceAccount:<project-deploy-service-account>' \
+  --role=roles/serviceusage.serviceUsageConsumer
+```
+
+Resolve both values from the reviewed project identity and environment preset. Verify access using the project CI identity before handoff. Do not substitute another quota project or grant shared-project Editor/Owner. Billing-management access remains opt-in for selected budget capabilities.
