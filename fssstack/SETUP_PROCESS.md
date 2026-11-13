@@ -110,6 +110,8 @@ CI=1 npx shadcn@4.21.4 init --preset <shadcnPreset> --template vite --cwd apps -
 
 The shadcn CLI creates each app at `apps/<client-name>` when run with `--cwd apps --name <client-name>`. Do not run it with `--cwd apps/<client-name> --name <client-name>`, because that creates an accidental nested `apps/<client-name>/<client-name>` scaffold.
 
+After each frontend scaffold, inspect `apps/<frontend slug>` for a newly created `.git` directory or file. Prevent Git initialization when the scaffolder supports it; otherwise remove only Git metadata created by this scaffold inside the new app. Preserve the target repo's root `.git` and any pre-existing repositories. Verify `git -C apps/<frontend slug> rev-parse --show-toplevel` resolves to the target monorepo before building.
+
 The shadcn CLI owns the generic Vite, React, Tailwind, and shadcn/ui scaffold. The fssstack overlay stays narrow — wire it to our shared config:
 
 - **Package name + Fssstack deps** — set `apps/<frontend slug>/package.json`
