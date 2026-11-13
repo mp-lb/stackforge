@@ -10,6 +10,18 @@ Apply this after the [FSS Stack Clerk extension](../fssstack/extensions/clerk/RE
 - Store each Clerk secret in the appropriate encrypted project secrets file in Forum. Sync the ArcNet snapshots after changes.
 - Keep our store locations, contact defaults, and provider setup conventions in this augmentation, not in public tooling.
 
+## CLI targeting and local secret files
+
+Inspect current help with `pnpm dlx clerk@latest --help` before relying on a globally installed CLI or an older skill. Use explicit `--app` and `--instance` for commands that support them. `deploy` has a different contract: verify the linked application first, then use `deploy --domain <domain> --yes`; do not pass an unsupported `--app` flag. Read `deploy status` before retrying production setup.
+
+Our tracked `.env.local` contains non-secret defaults. Never use the CLI's default env-pull output path. Confirm an ignored destination with `git check-ignore`, then pull development keys explicitly:
+
+```sh
+pnpm dlx clerk@latest env pull --app <app-id> --instance dev --file .env
+```
+
+For production use a separate ignored `.env.production` only when needed, with explicit application/instance targeting. Restrict local secret-file permissions and keep values out of command output, context and Git. A doctor warning about keys missing from `.env.local` does not justify copying secrets into that tracked file.
+
 ## Sign-in methods
 
 Configure each provider separately for development and production. Enabling a button is not proof that a production connection works.
