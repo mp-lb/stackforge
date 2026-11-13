@@ -341,6 +341,12 @@ pnpm exec eslint . --fix
 
 Only run shadcn component installs for frontend apps that actually exist, and use each real frontend slug. The `eslint . --fix` pass reformats anything the renames shifted (e.g. an import that now fits on one line), so the project lands lint-clean.
 
+## Verify a generated application
+
+When a web app and backend are selected, create a minimal hello-world screen in the generated target app that calls the backend's example tRPC procedure. Wire the real API URL from resolved project configuration, a typed client, and visible loading/error/success states. Keep domain logic in the package and HTTP/configuration at the app boundary. Verify the request reaches the backend; a blank screen or static greeting does not demonstrate the connection.
+
+If Clerk is selected, apply its extension first, obtain the current session token for the request and verify the protected procedure uses the backend-verified identity. Never add an authentication bypass to make the example work. This screen is assembled during setup; do not add a maintained frontend starter application to the shell.
+
 ## Create context files
 
 Keep the shell's root `audit.md` in every target project. It instructs future
