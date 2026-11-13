@@ -98,7 +98,9 @@ For container services, exclude local secrets, generated CI credentials, depende
 
 For prebuilt static Vercel sites, distinguish the source build root from the provider root: a source subdirectory need not exist in ArcNet's temporary upload tree. Preserve SPA deep-route fallbacks in the prebuilt output. Choose one authoritative production delivery path and prevent an independent Git deployment from bypassing its checks. Verify the generated workflow gates deployment on the project's configured validation.
 
-**First Cloud Run deployment:** An authorized operator must run `arcnet plan` and `arcnet deploy` locally before pushing. This creates GitHub's GCP trust relationship. Then add the resulting `identity` values to `arcnet.yaml` and push. [Environment prerequisites](initial-setup.md).
+**First Cloud Run deployment:** Before applying a service with a custom domain, delegate the already verified parent domain to the exact project deployment service account using `pnpm exec arcnet environment domain-owner --domain <parent-domain> --email <deploy-service-account> --quota-project <quota-project>`. Verify the command reports the intended owner; DNS access alone is insufficient. Use the environment's authorized operator/ADC and existing verified domain, not a replacement identity.
+
+An authorized operator must run `arcnet plan` and `arcnet deploy` locally before pushing. This creates GitHub's GCP trust relationship. Then add the resulting `identity` values to `arcnet.yaml` and push. [Environment prerequisites](initial-setup.md).
 
 [Project files and supported capabilities](README.md) · [Command reference](https://github.com/mp-lb/tools/tree/main/packages/arcnet/docs/public)
 
