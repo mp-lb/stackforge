@@ -27,8 +27,10 @@ docker:
     ports:
       - "${MONGO_PORT}:27017"
     volumes:
-      - mongodb-data:/data/db
+      - <project-slug>-mongodb-data:/data/db
 ```
+
+Replace `<project-slug>` with the actual project slug. Each project must have its own named volume; never reuse another project's database volume.
 
 Add `MONGODB_URL` and `MONGODB_DB_NAME` to `.env.local`:
 
