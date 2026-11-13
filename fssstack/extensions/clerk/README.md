@@ -196,14 +196,16 @@ export const Header = () => {
 
 ### Backend setup
 
+The base backend is already Fastify. Extend `src/readConfig.ts` with a required `clerkSecretKey` field mapped from `source.CLERK_SECRET_KEY`; keep environment reads in startup, not domain packages. In `createExampleBackend.ts`, register Clerk before the tRPC plugin, using the configuration passed into the app factory. Keep the base health route public. Do not replace the app, logging hooks or module-router composition.
+
 Register the Clerk plugin:
 
 ```typescript
 import { clerkPlugin, getAuth } from "@clerk/fastify";
-import { env } from "./config";
+// `config` is the validated application configuration passed into this function.
 
 await app.register(clerkPlugin, {
-  secretKey: env.CLERK_SECRET_KEY,
+  secretKey: config.clerkSecretKey,
 });
 
 app.get("/api/protected", async (request, reply) => {
@@ -223,21 +225,23 @@ If the backend uses tRPC, extract Clerk auth in the request context and expose a
 
 ```typescript
 import { getAuth } from "@clerk/fastify";
+import { createRequestContext } from "./createRequestContext";
 
-export const createContext = async ({ req }: { req: FastifyRequest }) => {
-  const auth = getAuth(req);
-
-  return {
-    auth: {
-      userId: auth.userId,
-      sessionId: auth.sessionId,
-      claims: auth.sessionClaims,
-    },
-  };
+// Extend the existing app-owned AppContext type with these auth fields.
+// In the adapter's createContext callback, preserve the existing logger context:
+const context = createRequestContext(logger, req);
+const auth = getAuth(req);
+return {
+  ...context,
+  auth: {
+    userId: auth.userId,
+    sessionId: auth.sessionId,
+    claims: auth.sessionClaims,
+  },
 };
 ```
 
-Procedures should depend on the app context, not direct Clerk API calls.
+Procedures should depend on the app-owned context, not Clerk or Fastify. Add the app-specific auth shape to the server context type, then a protected procedure builder that rejects a missing verified user before invoking protected domain work. Preserve the existing logger. Supplying auth in context alone does not protect a procedure; explicitly use the protected builder for the generated authenticated hello-world call. Keep auth out of the base shell.
 
 ### WebSocket authentication
 
@@ -255,10 +259,10 @@ Verify it on the backend:
 
 ```typescript
 import { verifyToken } from "@clerk/backend";
-import { env } from "./config";
+// `config` is the validated application configuration passed into this function.
 
 const payload = await verifyToken(token, {
-  secretKey: env.CLERK_SECRET_KEY,
+  secretKey: config.clerkSecretKey,
 });
 
 const userId = payload.sub;

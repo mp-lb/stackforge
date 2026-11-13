@@ -1,46 +1,32 @@
-import { createServer } from "node:http";
-import {
-  createCallerFactory,
-  createContext,
-  logger,
-} from "@example/fss-shell-server";
-import { appRouter } from "@example/fss-shell-trpc";
+import { createLogger } from "@example/fss-shell-server";
+import { createExampleBackend } from "./createExampleBackend";
+import { readConfig } from "./readConfig";
 
-const serviceName = "example-backend";
-const createCaller = createCallerFactory(appRouter);
+const logger = createLogger({ module: "@example/fss-shell-example-backend" });
 
-export const createExampleBackend = () =>
-  createServer((request, response) => {
-    if (request.url !== "/health") {
-      response.writeHead(404, { "content-type": "application/json" });
-      response.end(`${JSON.stringify({ error: "not_found" })}\n`);
+const main = async () => {
+  const config = readConfig(process.env);
+  const app = createExampleBackend(config, logger);
 
-      return;
-    }
+  const shutdown = () => {
+    void app.close().catch((error: unknown) => {
+      logger.error("backend.shutdown.failed", { error: String(error) });
+      process.exitCode = 1;
+    });
+  };
 
-    const caller = createCaller(createContext());
+  try {
+    await app.listen({ port: config.port, host: "0.0.0.0" });
+    process.once("SIGINT", shutdown);
+    process.once("SIGTERM", shutdown);
+    logger.info("backend.listening", { port: config.port });
+  } catch (error) {
+    await app.close();
+    throw error;
+  }
+};
 
-    caller
-      .greet({ name: serviceName })
-      .then((greeting) => {
-        response.writeHead(200, { "content-type": "application/json" });
-        response.end(`${JSON.stringify({ ok: true, ...greeting })}\n`);
-      })
-      .catch(() => {
-        response.writeHead(500, { "content-type": "application/json" });
-        response.end(`${JSON.stringify({ error: "internal" })}\n`);
-      });
-  });
-
-if (import.meta.url === `file://${process.argv[1]}`) {
-  const port = Number(process.env.EXAMPLE_BACKEND_PORT ?? 3101);
-  const server = createExampleBackend();
-
-  server.listen(port, "0.0.0.0", () => {
-    logger.info(
-      "backend.listening",
-      { port },
-      { source: { service: serviceName } },
-    );
-  });
-}
+void main().catch((error: unknown) => {
+  logger.error("backend.start.failed", { error: String(error) });
+  process.exitCode = 1;
+});

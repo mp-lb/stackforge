@@ -1,4 +1,4 @@
-import { logger } from "@mp-lb/fssstack-platform/logger/server";
+import type { Logger } from "@mp-lb/fssstack-platform/logger/server";
 import type { AppContext } from "./trpc";
 
-export const createContext = (): AppContext => ({ logger });
+export const createContext = (logger: Logger): AppContext => ({ logger });

@@ -103,11 +103,12 @@ try {
 
 ## Code
 
-Add `MONGODB_URL` to the backend app config schema while preserving the existing `FRONTEND_URLS` transform:
+Extend the backend application configuration in `src/readConfig.ts` while preserving its port and `frontendUrls` parsing. Add `mongoUrl` and `mongoDbName` to the schema, mapped from `source.MONGODB_URL` and `source.MONGODB_DB_NAME`:
 
 ```typescript
-// apps/<backend-service>/src/config.ts
-MONGODB_URL: z.string().url(),
+// Schema fields in apps/<backend-service>/src/readConfig.ts
+mongoUrl: z.string().url(),
+mongoDbName: z.string().min(1),
 ```
 
 Create a connection manager in your app:
@@ -125,9 +126,9 @@ export const getMongoClient = async (url: string): Promise<MongoClient> => {
   return client;
 };
 
-export const getDb = async (url: string): Promise<Db> => {
+export const getDb = async (url: string, databaseName: string): Promise<Db> => {
   const c = await getMongoClient(url);
-  return c.db();
+  return c.db(databaseName);
 };
 
 export const closeDb = async () => {
@@ -141,15 +142,14 @@ export const closeDb = async () => {
 Wire it up in your app startup:
 
 ```typescript
-import { env } from "./config";
+// `config` is the validated application configuration.
 import { getDb, closeDb } from "./db";
 
-const db = await getDb(env.MONGODB_URL);
+const db = await getDb(config.mongoUrl, config.mongoDbName);
 
-// Graceful shutdown
-process.on("SIGTERM", async () => {
+// Register resource cleanup with Fastify; startup already closes on signals.
+app.addHook("onClose", async () => {
   await closeDb();
-  process.exit(0);
 });
 ```
 

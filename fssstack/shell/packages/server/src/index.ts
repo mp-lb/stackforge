@@ -6,6 +6,7 @@ export {
 export { createContext } from "./context";
 export { NotFoundError } from "./errors";
 export {
+  t,
   createCallerFactory,
   publicProcedure,
   router,

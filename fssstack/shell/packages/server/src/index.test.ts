@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { createContext, NotFoundError } from ".";
+import { createContext, createLogger, NotFoundError } from ".";
 
 describe("server", () => {
   it("builds a context with a logger", () => {
-    const context = createContext();
+    const context = createContext(createLogger({ module: "test" }));
 
     expect(typeof context.logger.info).toBe("function");
   });

@@ -9,7 +9,7 @@ export type AppContext = {
   logger: Logger;
 };
 
-const t = createTrpc<AppContext>();
+export const t = createTrpc<AppContext>();
 
 export const router = t.router;
 export const publicProcedure = t.procedure;

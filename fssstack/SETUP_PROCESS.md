@@ -81,15 +81,13 @@ Then, in `apps/<backend slug>`:
 - set `package.json` `name` to `<package-scope>/<project-slug>-<backend slug>`
   (collapsing to `<package-scope>/<project-slug>` when the backend slug equals
   the project slug — see Package naming);
-- replace the `example-backend` service label in `src/index.ts` with the backend
-  slug;
-- replace `EXAMPLE_BACKEND_PORT` with `<BACKEND_SLUG>_PORT`;
+- update the package/module label in `src/index.ts`;
+- replace `EXAMPLE_BACKEND_PORT` in `src/readConfig.ts` with `<BACKEND_SLUG>_PORT` (keep `PORT` support for hosted runtimes);
 - add or update the matching Zap native service in the root `zap.yaml`;
-- keep `/health` returning the example greeting (or your own) so the service is
-  verifiable.
+- keep the unauthenticated `/health` endpoint returning `{ ok: true }`; it must not mutate example domain state.
 
 The example backend already builds on `@mp-lb/fssstack-platform` (server context,
-logger, tRPC router) — keep that wiring; you are only renaming.
+logger, tRPC router). Keep the Fastify structure lean: `index.ts` owns configuration, listen and shutdown; `createExampleBackend.ts` composes transport and module routers; request logging uses the existing structured event logger. Domain procedures stay in packages and receive the tRPC instance/context rather than importing app configuration or Fastify. The client-facing tRPC entrypoint exports types only; runtime router factories use `/server`. No authentication belongs in the base shell.
 
 If the project has multiple backends, repeat the copy + edit for every backend. Remove `apps/example-backend` after all requested backends exist, unless the requested backend slug is `example-backend`.
 

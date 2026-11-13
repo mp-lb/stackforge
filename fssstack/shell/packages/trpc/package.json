@@ -9,6 +9,10 @@
     ".": {
       "import": "./src/index.ts",
       "types": "./src/index.ts"
+    },
+    "./server": {
+      "import": "./src/createAppRouter.ts",
+      "types": "./src/createAppRouter.ts"
     }
   },
   "scripts": {
