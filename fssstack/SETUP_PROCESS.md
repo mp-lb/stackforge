@@ -41,7 +41,7 @@ scoped to the target repository from the initial setup.
 
 Keep the shell publishing workflow and scripts. If the selected project has no publishable libraries, set its workflow `PUBLISH_PACKAGES` environment value to `"false"` and keep packages private. Validation still runs; publishing and publication verification are skipped. Re-enable deliberately when a publishable package is added, rather than deleting and reconstructing the release baseline.
 
-The shell is a working monorepo: the root workspace config, the `docs/`
+The shell is compilable reference code: the root workspace config, the `docs/`
 baseline, the shared
 `etc/` config that re-exports our published presets, the internal `core` /
 `server` / `trpc` packages, an `apps/example-backend`, and a publishable

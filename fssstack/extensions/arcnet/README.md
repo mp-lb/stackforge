@@ -11,18 +11,6 @@ Apply after the base project validates. Use these conventions for the project-sp
 - **Workspace builds:** use Node 22+ and the root's exact pnpm version. Install with the committed lockfile and build the selected package plus its workspace dependencies with `pnpm --filter '<package-name>...' build`. Include the workspace manifests, shared config and required packages, not just the app directory.
 - **Container startup:** default to the app's existing production `start` script, never its watch/dev command. The shell uses `tsx` and source-exporting workspace packages: retain their required source and runtime dependencies in the image, including `tsx`. Do not assume TypeScript compilation alone makes `node dist/index.js` runnable. Exclude secrets and local `.env` files from the image.
 - **HTTP backends:** listen on `0.0.0.0`, honor the hosting provider's `PORT` before the app's local port variable, and serve `/health`. Match the ArcNet port and health settings to the app. Keep local Zap port behavior working.
-- **Frontends and Bull:** Vite apps normally build to `apps/<service>/dist`; configure an SPA fallback when needed. Treat Next.js and SSR docs as framework deployments, not static folders. Use the Bull extension for queue code and the project's namespace for producers and workers; shared Redis/Bull hosting remains planned, as documented in ArcNet.
+- **Frontends and Bull:** Vite apps normally build to `apps/<service>/dist`; ArcNet supplies the inferred SPA fallback. Treat Next.js and SSR docs as framework deployments, not static folders. Use the Bull extension for queue code and the project's namespace for producers and workers; shared Redis/Bull hosting remains planned, as documented in ArcNet.
 
-Use the [hello-world reference project](https://github.com/mp-lb/stackforge/tree/main/helloworld) for concrete package/layout examples. Verify the selected app builds and container startup before declaring deployment ready. Keep provider setup and deployment mechanics in the ArcNet guide.
-
-## Install agent context
-
-After applying and validating ArcNet, add this standalone link to `context/index.md`, with blank lines around it:
-
-```markdown
-[ArcNet](https://hyperdoc.forumlabs.net/232107c4-d98b-4065-851f-9e29d9b5497e)
-
-[Delivery](https://hyperdoc.forumlabs.net/0a66417d-d743-45af-ba2f-3a56adb43509)
-```
-
-Keep project-specific delivery details locally, then run `zap task context-build` and commit the sources and generated agent files.
+Verify the selected app builds and its container starts before declaring deployment ready. The ArcNet setup guide owns provider setup, delivery and installation of the ArcNet/Delivery agent context.

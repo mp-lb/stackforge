@@ -82,17 +82,21 @@ The bootstrap identity needs permissions at the resources it manages. Typical ro
 
 See Google's [project creation permissions](https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects) and [deployment-pipeline federation guide](https://docs.cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines). Prefer short-lived credentials and GitHub OIDC over committing a GCP service-account key.
 
-**Current grants are broader than that design:** the bundled `github-ci` module gives the project deployer Project Editor, Storage Admin on the shared state bucket and, when configured, Billing Costs Manager on the billing account. It grants GitHub Workload Identity User access based on repository name. The environment bootstrap operator must separately grant that deployer `roles/serviceusage.serviceUsageConsumer` on the platform quota project before the first CI deployment; a project CI identity cannot administer platform IAM. A state key prefix is not an IAM boundary; the bucket-wide grant does not isolate projects' Terraform state. Review these grants before adopting the existing modules for another company. Numeric repository/owner identity conditions and narrower state access are improvements still to implement.
+### Project CI permissions
 
-For the current MapLab environment, after the first operator deployment creates `arc-deploy@arcnet-<slug>.iam.gserviceaccount.com`, grant quota-project access from an operator account:
+The bundled `github-ci` module grants the deploy identity project-scoped Editor, Workload Identity Pool Viewer and Cloud Run Admin, plus Storage Admin on the shared state bucket. Editor alone cannot refresh the WIF pool or manage Cloud Run service IAM. Apply new or updated bindings with the authorized operator before relying on CI; source changes do not update existing cloud grants automatically. Billing Costs Manager is opt-in when billing management is selected.
+
+The MAP Lab preset leaves `network-project` empty so project CI cannot maintain shared platform IAM. After the operator deployment creates the project identity, the environment operator grants it quota-project access:
 
 ```sh
-gcloud projects add-iam-policy-binding arcnet-platform \
-  --member="serviceAccount:arc-deploy@arcnet-<slug>.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding <quota-project> \
+  --member='serviceAccount:<project-deploy-service-account>' \
   --role=roles/serviceusage.serviceUsageConsumer
 ```
 
-This is an environment-level bootstrap grant. Remove it when retiring the project; project Terraform does not own it.
+Resolve both values from the reviewed project identity and environment preset (`arcnet-platform` for the current MAP Lab environment). Verify access with the CI identity before handoff, and remove this environment-owned grant when retiring the project. Do not substitute shared-project Editor/Owner.
+
+The current grants are broader than the intended isolation model: the state-bucket grant is bucket-wide, and GitHub federation is conditioned on repository name. State prefixes are not IAM boundaries. Narrower state access and numeric repository/owner conditions remain future improvements.
 
 ### API enablement
 
@@ -194,16 +198,9 @@ A single centrally maintained JSON source is compatible with this model; giving 
 
 Current interfaces: Terraform Vercel uses `VERCEL_API_TOKEN`; the static Vercel adapter uses `VERCEL_TOKEN`. The standard provider configuration comes from the pinned ArcNet package. `ARCNET_ENV_JSON` is a JSON object of **application** secret values, not a universal provider-credentials loader. New projects list non-secret Forum JSON paths under `variables:` in `.arcnet/arcnet.yaml` and commit snapshots from `arcnet variables sync`; legacy projects may still have inline variables or `.arcnet/env.production.json`. The ArcNet CLI loads ordered encrypted Forum JSON sources, provisions per-file GitHub decryption keys, and selects operator credentials through a `deploy` consumer. See [project setup](SETUP.md). GCP CI uses OIDC/WIF.
 
-## 6. Onboard a project and enable push-to-deploy
+## 6. Onboard projects
 
-1. Reserve the project slug, provider destinations, public domains and shared-service namespaces.
-2. Install the [project files](README.md#files-in-a-project) using [SETUP.md](SETUP.md), including application-specific build/Docker settings. Choose existing provider projects explicitly; current mixed Terraform/Vercel-reference limitations still apply.
-3. Bind the project to the versioned environment preset, project-scoped data access and deployment credentials.
-4. Complete initial provisioning with the bootstrap/operator identity. The current Terraform first deployment creates the workload GCP project, image registry and GitHub OIDC trust; CI cannot use that trust before it exists.
-5. Configure the GitHub environment, actual WIF provider/service-account values and secret delivery. Verify a deployment and health/DNS/TLS before treating onboarding as complete.
-6. Commit the ready configuration. From then on, pushes to main build and deploy through GitHub Actions.
-
-Account creation, domain ownership, shared infrastructure and the first identity bootstrap are the prerequisites that make step 6 simple. Merely copying project files and supplying arbitrary API keys is not sufficient today.
+Once the environment is ready, follow [project setup](SETUP.md) for project configuration, initial deployment and live verification. That guide owns the onboarding sequence.
 
 ## 7. Environment infrastructure as code: implementation scope
 
@@ -227,17 +224,3 @@ Creation order: accounts/credentials and existing MongoDB/Redis → GCP environm
 Teardown reverses the dependency order: stop project deploys, remove project workloads/bindings, preserve or explicitly retire data/backups, remove only environment-owned shared resources and DNS records, revoke credentials/trust, then remove the state bucket/network project last. Referenced resources must remain. Environment deletion must not be inferred from `zap arc destroy`: that command destroys the selected **project** state, not this complete environment. There is currently no end-to-end environment teardown command.
 
 Before shipping this lifecycle, prove it on a disposable environment: setup, repeat setup without duplicate resources, onboard hello-world, deploy via GitHub, verify project isolation, exercise partial-failure recovery, and tear down without affecting referenced resources. This document does not claim those environment lifecycle tests have run.
-
-## Project CI permission bootstrap
-
-The `github-ci` module grants the deploy identity project-scoped Editor, Workload Identity Pool Viewer and Cloud Run Admin, plus access to its state bucket. Editor alone cannot refresh the WIF pool or manage Cloud Run service IAM. Apply a new/updated module first with the authorized operator before relying on that identity in CI; these source changes do not alter existing cloud grants automatically.
-
-The MAP Lab preset intentionally leaves the module's `network-project` empty: project CI cannot maintain shared platform IAM. The environment operator must grant the project's deploy identity `roles/serviceusage.serviceUsageConsumer` on the actual quota project during bootstrap:
-
-```sh
-gcloud projects add-iam-policy-binding <quota-project> \
-  --member='serviceAccount:<project-deploy-service-account>' \
-  --role=roles/serviceusage.serviceUsageConsumer
-```
-
-Resolve both values from the reviewed project identity and environment preset. Verify access using the project CI identity before handoff. Do not substitute another quota project or grant shared-project Editor/Owner. Billing-management access remains opt-in for selected budget capabilities.
