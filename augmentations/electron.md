@@ -53,7 +53,7 @@ This distribution setup belongs to the augmentation, not the base FSS Stack exte
 
 ## Install and build
 
-Install `@mp-lb/electron-kit` 0.1.6 or later as a dependency of the desktop package. Install it in the frontend package as well if that package imports the browser, React, or Clerk entry points. Replace the example filters with the target workspace names:
+Install `@mp-lb/electron-kit` 0.1.7 or later as a dependency of the desktop package. Install it in the frontend package as well if that package imports the browser, React, or Clerk entry points. Replace the example filters with the target workspace names:
 
 ```sh
 pnpm --filter <desktop-package> add @mp-lb/electron-kit
@@ -145,6 +145,8 @@ const stopObserving = handleRendererFailure({
 win.once("closed", stopObserving);
 ```
 
+Capture window IDs for diagnostics when creating the window. Electron can destroy native window properties before the `closed` handler runs. Include closing and reopening a packaged window in the smoke test.
+
 For React rendering failures, wrap the application root in the kit's `AppErrorBoundary` from `@mp-lb/electron-kit/react`. Supply an application-owned fallback with a retry action calling `reset`, and use `onError` to forward the error and component stack to the project's monitoring service. React boundaries do not catch event-handler or asynchronous callback errors; handle those where they occur. Preserve any existing monitoring integration when adopting the boundary.
 
 ## Browser sign-in
@@ -156,6 +158,8 @@ Use this flow only when the application needs browser-based desktop authenticati
 3. In the preload, expose only `createAuthBridge()` from `@mp-lb/electron-kit/preload` via `contextBridge`. Type the bridge on `window`; do not expose `ipcRenderer` itself. In the desktop sign-in screen, call `begin()` from the user's button. Subscribe to `onTicket` before calling `getPending()`, unsubscribe on cleanup, and deduplicate tickets: a ticket sent as an event may also be returned as pending.
 4. Serve an authenticated browser page at `/desktop-auth` (or configure `browserPath` in the handler). Preserve its `state` query parameter through browser sign-in. Have it request a one-time ticket from an authenticated server endpoint, then call `createDesktopAuthReturnUrl(protocol, state, ticket)` from `@mp-lb/electron-kit/browser` and navigate to that URL. Provide a retry button: the browser cannot confirm whether the desktop app opened.
 5. Consume the ticket in the desktop renderer using the auth provider's supported flow. For Clerk's **legacy** sign-in API, `consumeClerkTicket` from `@mp-lb/electron-kit/clerk` accepts the ticket, `signIn`, and `setActive`; use the Clerk SDK entry and provider appropriate to the app's installed version. A server using Clerk can mint a short-lived sign-in token for the authenticated user with its server-side Clerk client. Keep its secret key on the server. The core Electron kit does not require Clerk.
+
+On Linux, Electron Kit opens sign-in through the system HTTPS handler using GIO when available. Confirm that both installed packages associate the callback scheme with the app, that the sign-in button launches the default browser, and that the browser returns to the running app.
 
 A minimal main-process and preload integration looks like this. Adapt the existing app lifecycle and preload rather than adding a second single-instance lock or a second `exposeInMainWorld` for the same name:
 
