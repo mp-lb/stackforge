@@ -46,10 +46,10 @@ A successful web deployment does not mean a desktop release exists. Missing sign
 This distribution setup belongs to the augmentation, not the base FSS Stack extension.
 
 1. Choose the GitHub repository that will hold releases. If application source is private, use a separate public `<project>-releases` repository. Give CI write access to that repository; the source repository's default `GITHUB_TOKEN` does not grant cross-repository access. Use `DESKTOP_RELEASES_GITHUB_TOKEN` from the shared standard secrets source, ensuring that its GitHub permissions include Contents read and write for the releases repository. Sync the ArcNet snapshot and map that secret to `GH_TOKEN` in a dedicated `desktopRelease` consumer. Run publishing through `arcnet env run --consumer desktopRelease` so the credential is scoped to that command; GitHub repository secrets hold the source decryption keys. Do not use a broadly scoped interactive login token.
-2. Configure electron-builder's GitHub publish owner/repo to match the releases repository. Enable DMG and ZIP targets, hardened runtime, and notarization for signed macOS releases. Adapt the [release workflow](electron/desktop-release.yml) to the target package, our available runners, the ArcNet credential-loading step above, and the destination repository. Its manual trigger runs on `main` and creates a `desktop-vX.Y.Z` release tag from the package version. ArcNet permits `env run` on the configured repository's `main`; a tag-triggered workflow must use the explicitly permitted desktop export path instead.
-3. Publish the signed DMG, ZIP, and update manifest as one release. Keep asset names stable if using `/releases/latest/download/<asset-name>` links. Configure the updater to read from this same public repository.
-4. Add a minimal landing page with the app name, icon, and download button. Link directly to the published GitHub asset; a backend is unnecessary for a stable asset name. A Next.js page that needs dynamic asset selection can use the optional [download redirect route](electron/desktop-download-route.ts). Keep GitHub credentials out of public frontend code.
-5. Deploy the landing page through full ArcNet. Before showing an enabled download button, verify that its URL downloads the expected signed artifact without authentication. If no release exists, show an unavailable state rather than a broken link. Also verify the ZIP and update manifest URLs, and test update installation from an older installed version when available.
+2. Configure electron-builder's GitHub publish owner and repo. Adapt the [release workflow](electron/desktop-release.yml), replacing the example package filter, product, executable, and repository names. The baseline builds signed and notarized Apple Silicon DMG and ZIP artifacts, x86-64 Linux DEB and RPM packages, and an unsigned x86-64 Windows NSIS installer on native runners. Windows builds with Bash-based workspace scripts use the runner's Git Bash.
+3. Package DEB and RPM in separate output directories so each archive carries its own `resources/package-type`. Use an ArcNet release providing `arcnet desktop linux-manifest` to verify the generated hashes and combine the two `latest-linux.yml` files. Check the embedded marker in each extracted package. Upload all installers and both platform manifests to a draft, then publish it as latest. Preserve macOS signing and notarization checks.
+4. Build the landing page from GitHub's public latest-release response. Offer only uploaded assets with stable, allowlisted filenames and link to the specific release tag checked at build time. Keep the web app link available if there is no desktop release. Use [Shad’s Desktop Download](https://shad.mp-lb.dev/docs/components/desktop-download) to recommend the OS package and expose all available formats in a dropdown. The widget supports a React component or static HTML and browser enhancement. Mobile and unknown browsers get the full list. Linux browsers frequently omit their distro, so label DEB and RPM clearly. The optional [Next.js redirect route](electron/desktop-download-route.ts) serves an explicitly requested installer format.
+5. Refresh the landing page after publishing. Run `pnpm exec arcnet desktop verify --repository <owner/repo> --linux --windows`, then exercise the homepage links anonymously. Test the installed desktop on the target OS as well as the build artifacts.
 
 ## Install and build
 
@@ -66,7 +66,7 @@ Use the dedicated `@mp-lb/electron-kit/preload` entry in a sandboxed preload. Do
 
 ## Updates dialog
 
-Electron Kit owns update checks, downloads, installation, and shared renderer state. Keep one `createAutoUpdater` controller for the app and consume it with `useUpdates`; dispose it when the renderer integration is torn down. Follow the [Electron Kit updater guide](https://github.com/mp-lb/tools/tree/main/packages/electron-kit#updates) for the main process, preload bridge, and renderer setup.
+Electron Kit owns update checks, downloads, installation, and shared renderer state. Enable the updater bridge for macOS and both Linux package types. Windows builds without a signed update channel use the installer for upgrades. Existing Linux installs shipped without an updater need a one-time manual upgrade. Check and download in the background, then explicitly install Linux updates from **Restart and update**, which may ask for administrator authorization. Electron Kit keeps internal download promises out of IPC responses. Keep one `createAutoUpdater` controller for the app and consume it with `useUpdates`; dispose it when the renderer integration is torn down. Follow the [Electron Kit updater guide](https://github.com/mp-lb/tools/tree/main/packages/electron-kit#updates) for the main process, preload bridge, and renderer setup.
 
 Install the shadcn `dialog`, `button`, and `progress` components in the frontend package. Build a small application-owned dialog showing the app version and update status. While downloading, show a labeled `Progress` with the percentage clamped to 0–100. In the footer, show an outline **Check for updates** button, disabled while checking or downloading. When an update is ready, replace it with a primary **Reload update** or **Restart and update** button calling `installUpdate`; disable it while installation is in progress. Display updater errors and distinguish a desktop restart from a hosted-app reload. Use the application's theme and installed component variants.
 
@@ -138,7 +138,7 @@ import { handleRendererFailure } from "@mp-lb/electron-kit";
 const stopObserving = handleRendererFailure({
   window: win,
   onFailure: (details) => {
-    // Record details with the app's logger, then recover.
+    // Electron Kit defers this callback until Chromium finishes teardown.
     recovery.retry();
   },
 });
@@ -243,7 +243,8 @@ Run the target project's lint, typecheck, tests, and desktop build through its n
 
 - Move, resize, maximize, and reopen the window; also check recovery after a monitor is disconnected.
 - Start with the hosted frontend unreachable, confirm the local fallback appears, then restore connectivity and confirm the app loads. Exercise manual retry if provided.
-- Trigger a React error and a renderer failure and check that recovery and reporting work.
+- Trigger a React error and a renderer failure and check that recovery and reporting work. On Linux, verify startup and icon lookup on an installed package under Wayland and X11 with the sandbox enabled.
+- From an older installed Linux build with updates enabled, verify that the live feed selects the same package type, downloads and checks its hash, runs the authorized package-manager install, and restarts into the new version. Report any part of this check that could not be exercised.
 - If auth is enabled, verify browser sign-in, callback state validation, one-time ticket consumption, repeat attempts, and delivery while the renderer is still starting. Exercise the installed protocol on each supported OS.
 - If releasing macOS builds, verify signing and notarization using the project's release workflow.
 

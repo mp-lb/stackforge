@@ -16,7 +16,7 @@ mkdir -p apps/desktop/src
 curl --fail --location --output apps/desktop/src/main.ts https://raw.githubusercontent.com/mp-lb/stackforge/main/fssstack/extensions/electron/templates/desktop-main.ts
 ```
 
-Edit the copied files for the project: set the package name, `build.appId`, `build.productName`, and the hosted HTTPS URL in `desktop-main.ts`. Add a macOS icon and set `build.mac.icon` before a public release. Before installing, approve the copied package's native install scripts in `pnpm-workspace.yaml`:
+Edit the copied files for the project: set the package name, `build.appId`, `build.productName`, and the hosted HTTPS URL in `desktop-main.ts`. Set the homepage, Linux package and executable names, matching `desktopName` (the executable name plus `.desktop`), and package maintainer. Apply the distribution augmentation before publishing. Before installing, approve the copied package's native install scripts in `pnpm-workspace.yaml`:
 
 ```yaml
 allowBuilds:
@@ -35,7 +35,7 @@ For Zapper development, keep the browser services in the default profile and add
 
 Keep Electron's default logo in local development. On macOS, the packaged app uses the embedded bundle icon; do not call `app.dock.setIcon()` to replace it at runtime. A raw Icon Composer PNG used through that API can appear oversized. Verify the packaged result before changing artwork or adding padding; PNG-to-ICNS conversion alone does not guarantee different margins.
 
-Place project-specific artwork in `apps/desktop/assets/` (the template’s `buildResources` directory). For a PNG export, use a square 1024×1024 `assets/icon.png` and set `build.mac.icon` to `assets/icon.png`; electron-builder converts it to the bundle format. An existing `.icns` can be used instead. Commit the source icon, not generated bundles. The generic templates intentionally include no project branding.
+Place project-specific artwork in `apps/desktop/assets/` (the template’s `buildResources` directory). For a PNG export, use a square 1024×1024 `assets/icon.png` and set `build.mac.icon` to `assets/icon.png`; electron-builder converts it to the bundle format. An existing `.icns` can be used instead. For Linux, commit an 8-bit 256×256 RGBA derivative as `assets/icon-linux.png`. The 1024-pixel export can fall outside the installed hicolor theme directories and show a generic launcher icon. Use `icon.png` for the Windows installer. Commit the source icons. The generic templates intentionally include no project branding.
 
 Add this task to the target project's existing `zap.yaml`, replacing the package name:
 
@@ -52,7 +52,7 @@ The packaged app loads its configured hosted production URL. For a project that 
 
 The base extension ends with a working Electron app and local packaging. Signing credentials, release hosting, download landing pages, and automatic updates belong to the consuming project’s distribution setup.
 
-The main-process template has Node integration off, context isolation and sandboxing on. Desktop auth, deep links, offline behavior, auto-update UI, and Windows/Linux releases require project-specific design. Make those changes by following the project architecture, not by blindly inserting source text.
+The main-process template has Node integration off, context isolation and sandboxing on. The Linux window appears after its first paint. Linux and Windows use the same renderer layout as web with native window frames and the default Electron menu removed. Limit title-bar overlays, traffic-light clearance, and any associated preload layout bridge to macOS. Desktop auth, deep links, offline behavior, and auto-update UI follow project-specific design. Make those changes by following the project architecture, not by blindly inserting source text.
 
 ## Install agent context
 

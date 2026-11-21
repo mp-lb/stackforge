@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@types/node": "^22",
-    "electron": "35.0.0",
+    "electron": "44.11.5",
     "electron-builder": "26.8.1",
     "tsup": "8.5.0",
     "typescript": "^5.9"
@@ -26,14 +26,47 @@
       "buildResources": "assets"
     },
     "files": [
-      "dist/**/*"
+      "dist/**/*",
+      "assets/**/*"
     ],
     "mac": {
       "target": [
         "dmg",
         "zip"
       ],
-      "category": "public.app-category.productivity"
+      "category": "public.app-category.productivity",
+      "icon": "assets/icon.png"
+    },
+    "artifactName": "Example-${arch}.${ext}",
+    "linux": {
+      "target": [
+        "deb",
+        "rpm"
+      ],
+      "icon": "assets/icon-linux.png",
+      "category": "Utility",
+      "executableName": "example-desktop",
+      "maintainer": "Example",
+      "description": "Example desktop app"
+    },
+    "deb": {
+      "packageName": "example-desktop",
+      "artifactName": "Example-linux-${arch}.${ext}"
+    },
+    "rpm": {
+      "packageName": "example-desktop",
+      "artifactName": "Example-linux-${arch}.${ext}"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "artifactName": "Example-windows-${arch}.${ext}"
     }
-  }
+  },
+  "homepage": "https://example.com",
+  "desktopName": "example-desktop.desktop"
 }
