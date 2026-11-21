@@ -195,7 +195,8 @@ jobs:
           pattern: desktop-*
           merge-multiple: true
           path: release
-      - name: Publish complete release
+      - name: Resolve the release tag and token
+        id: release
         env:
           ARCNET_STANDARD_SECRETS_KEY: ${{ secrets.ARCNET_STANDARD_SECRETS_KEY }}
           ARCNET_PROJECT_SECRETS_KEY: ${{ secrets.ARCNET_PROJECT_SECRETS_KEY }}
@@ -203,12 +204,46 @@ jobs:
           set -euo pipefail
           VERSION=$(node -p "require('./apps/desktop/package.json').version")
           [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
-          TAG="desktop-v$VERSION"
-          pnpm exec arcnet env run --consumer desktopRelease -- gh release create "$TAG" \
-            release/Example-arm64.dmg release/Example-arm64.zip release/latest-mac.yml \
-            release/Example-linux-amd64.deb release/Example-linux-x86_64.rpm release/latest-linux.yml \
-            release/Example-windows-x64.exe \
-            --repo "$DESKTOP_RELEASE_REPOSITORY" --title "$TAG" --draft
-          pnpm exec arcnet env run --consumer desktopRelease -- gh release edit "$TAG" \
-            --repo "$DESKTOP_RELEASE_REPOSITORY" --draft=false --latest
-          pnpm exec arcnet desktop verify --repository "$DESKTOP_RELEASE_REPOSITORY" --linux --windows
+          echo "tag=desktop-v$VERSION" >> "$GITHUB_OUTPUT"
+          pnpm exec arcnet env export --consumer desktopRelease | node -e '
+            const { appendFileSync, readFileSync } = require("node:fs");
+            const { GH_TOKEN: token } = JSON.parse(readFileSync(0, "utf8"));
+            if (typeof token !== "string" || !/^[A-Za-z0-9_]+$/.test(token))
+              throw new Error("Missing or invalid release repository token");
+            console.log("::add-mask::" + token);
+            appendFileSync(process.env.GITHUB_ENV, "GH_TOKEN=" + token + "\n");
+          '
+
+      - name: Check the release tag before uploading
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          if status=$(gh release view "$TAG" --repo "$DESKTOP_RELEASE_REPOSITORY" --json isDraft --jq .isDraft 2>/dev/null); then
+            test "$status" = true
+          fi
+
+      - name: Upload verified installers to a draft
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release.outputs.tag }}
+          name: ${{ steps.release.outputs.tag }}
+          draft: true
+          repository: ${{ env.DESKTOP_RELEASE_REPOSITORY }}
+          files: |
+            release/Example-arm64.dmg
+            release/Example-arm64.zip
+            release/latest-mac.yml
+            release/Example-linux-amd64.deb
+            release/Example-linux-x86_64.rpm
+            release/latest-linux.yml
+            release/Example-windows-x64.exe
+          fail_on_unmatched_files: true
+          token: ${{ env.GH_TOKEN }}
+
+      - name: Publish and verify the complete release
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          set -euo pipefail
+          gh release edit "$TAG" --repo "$DESKTOP_RELEASE_REPOSITORY" --draft=false --latest
+          env -u GH_TOKEN pnpm exec arcnet desktop verify --repository "$DESKTOP_RELEASE_REPOSITORY" --linux --windows
