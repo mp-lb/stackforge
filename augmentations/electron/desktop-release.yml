@@ -87,10 +87,10 @@ jobs:
 
       - name: Assemble the Linux update manifest
         run: |
-          pnpm exec arcnet desktop linux-manifest \
-            --deb apps/desktop/out/Example-linux-amd64.deb \
-            --rpm apps/desktop/out/rpm/Example-linux-x86_64.rpm \
-            --output apps/desktop/out/latest-linux.yml
+          pnpm exec tsx apps/desktop/scripts/writeLinuxUpdateManifest.ts \
+            apps/desktop/out/Example-linux-amd64.deb \
+            apps/desktop/out/rpm/Example-linux-x86_64.rpm \
+            apps/desktop/out/latest-linux.yml
           cp apps/desktop/out/rpm/Example-linux-x86_64.rpm apps/desktop/out/
 
       - name: Verify Debian package and bundled runtime
@@ -211,4 +211,5 @@ jobs:
             --repo "$DESKTOP_RELEASE_REPOSITORY" --title "$TAG" --draft
           pnpm exec arcnet env run --consumer desktopRelease -- gh release edit "$TAG" \
             --repo "$DESKTOP_RELEASE_REPOSITORY" --draft=false --latest
-          pnpm exec arcnet desktop verify --repository "$DESKTOP_RELEASE_REPOSITORY" --linux --windows
+          # Add --linux --windows when using ArcNet 0.7.21 or later.
+          pnpm exec arcnet desktop verify --repository "$DESKTOP_RELEASE_REPOSITORY"
