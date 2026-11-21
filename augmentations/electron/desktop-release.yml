@@ -7,7 +7,8 @@ concurrency:
   group: desktop-release
   cancel-in-progress: false
 env:
-  DESKTOP_RELEASE_REPOSITORY: mp-lb/example-releases
+  DESKTOP_RELEASE_REPOSITORY: mp-lb/releases
+  DESKTOP_APP_SLUG: example
 jobs:
   desktop-macos:
     if: github.ref == 'refs/heads/main'
@@ -204,7 +205,8 @@ jobs:
           set -euo pipefail
           VERSION=$(node -p "require('./apps/desktop/package.json').version")
           [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
-          echo "tag=desktop-v$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$DESKTOP_APP_SLUG-desktop-v$VERSION" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           pnpm exec arcnet env export --consumer desktopRelease | node -e '
             const { appendFileSync, readFileSync } = require("node:fs");
             const { GH_TOKEN: token } = JSON.parse(readFileSync(0, "utf8"));
@@ -243,7 +245,10 @@ jobs:
       - name: Publish and verify the complete release
         env:
           TAG: ${{ steps.release.outputs.tag }}
+          VERSION: ${{ steps.release.outputs.version }}
         run: |
           set -euo pipefail
-          gh release edit "$TAG" --repo "$DESKTOP_RELEASE_REPOSITORY" --draft=false --latest
-          env -u GH_TOKEN pnpm exec arcnet desktop verify --repository "$DESKTOP_RELEASE_REPOSITORY" --linux --windows
+          gh release edit "$TAG" --repo "$DESKTOP_RELEASE_REPOSITORY" --draft=false --latest=false
+          env -u GH_TOKEN pnpm exec arcnet desktop verify --repository "$DESKTOP_RELEASE_REPOSITORY" --tag "$TAG" --linux --windows
+          jq -n --arg app "$DESKTOP_APP_SLUG" --arg version "$VERSION" '{event_type:"desktop-release",client_payload:{app:$app,version:$version}}' |
+            gh api "repos/$DESKTOP_RELEASE_REPOSITORY/dispatches" --input -
