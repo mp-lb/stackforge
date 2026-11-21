@@ -1,6 +1,6 @@
 # ArcNet deployment extension
 
-Read and follow the [ArcNet setup guide](https://raw.githubusercontent.com/mp-lb/stackforge/refs/heads/main/arcnet/SETUP.md). It owns the installation steps, requirements, supported deployment targets and validation.
+Read and follow the [ArcNet setup guide](https://hyperdoc.forumlabs.net/6628f9a0-6e5b-44b0-b4b3-900def2c6be7). It owns installation, supported deployment targets, validation, and the shared Forum context imports.
 
 ## FSS Stack conventions
 
@@ -13,4 +13,4 @@ Apply after the base project validates. Use these conventions for the project-sp
 - **HTTP backends:** listen on `0.0.0.0`, honor the hosting provider's `PORT` before the app's local port variable, and serve `/health`. Match the ArcNet port and health settings to the app. Keep local Zap port behavior working.
 - **Frontends and Bull:** Vite apps normally build to `apps/<service>/dist`; ArcNet supplies the inferred SPA fallback. Treat Next.js and SSR docs as framework deployments, not static folders. Use the Bull extension for queue code and the project's namespace for producers and workers; shared Redis/Bull hosting remains planned, as documented in ArcNet.
 
-Verify the selected app builds and its container starts before declaring deployment ready. The ArcNet setup guide owns provider setup, delivery and installation of the ArcNet/Delivery agent context.
+Verify the selected app builds and its container starts before declaring deployment ready.

@@ -71,7 +71,17 @@ pnpm exec arcnet check
 
 Review the generated configuration, workflows, snapshots and dependency lockfile. ArcNet supplies deployment validation gates, inferred React/Vite SPA routing, provider root/framework checks and disabled Vercel Git delivery. Preserve explicit routing and resolve reported configuration conflicts before deploying. Custom `vercel.ts` configuration requires manual integration, as reported by setup.
 
-Add the shared [ArcNet context](https://hyperdoc.forumlabs.net/232107c4-d98b-4065-851f-9e29d9b5497e) and [Delivery context](https://hyperdoc.forumlabs.net/0a66417d-d743-45af-ba2f-3a56adb43509) to the project's context source. For FSS Stack, put each link on its own line with blank lines around it in `context/index.md`.
+For FSS Stack projects, add these shared Forum blocks to `context/index.md`. Put each link on its own line with blank lines around it.
+
+```markdown
+<!-- arcnet -->
+
+[ArcNet](https://hyperdoc.forumlabs.net/232107c4-d98b-4065-851f-9e29d9b5497e)
+
+[Delivery](https://hyperdoc.forumlabs.net/0a66417d-d743-45af-ba2f-3a56adb43509)
+
+[Package publishing](https://hyperdoc.forumlabs.net/6a5a5879-934b-47b9-a9b1-093d672d2780)
+```
 
 Add a local secrets context block describing the configured Forum paths, `.arcnet/arcnet.yaml` consumers, committed encrypted snapshots and local secret files. Explain that GitHub holds decryption keys, while `arcnet secrets sync` and `arcnet variables sync` refresh source snapshots. Include `arcnet env check --password` and `arcnet env run --consumer <name> -- <command>` for local use. Include no secret values; distinguish deployment sources from local `.env` secrets and `.env.local` defaults.
 
