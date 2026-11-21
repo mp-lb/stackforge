@@ -53,7 +53,7 @@ This distribution setup belongs to the augmentation, not the base FSS Stack exte
 
 ## Install and build
 
-Install `@mp-lb/electron-kit` 0.1.8 or later as a dependency of the desktop package. Install it in the frontend package as well if that package imports the browser, React, or Clerk entry points. Replace the example filters with the target workspace names:
+Install `@mp-lb/electron-kit` 0.1.9 or later as a dependency of the desktop package. Install it in the frontend package as well if that package imports the browser, React, or Clerk entry points. Replace the example filters with the target workspace names:
 
 ```sh
 pnpm --filter <desktop-package> add @mp-lb/electron-kit
