@@ -53,7 +53,7 @@ This distribution setup belongs to the augmentation, not the base FSS Stack exte
 
 ## Install and build
 
-Install `@mp-lb/electron-kit` 0.1.7 or later as a dependency of the desktop package. Install it in the frontend package as well if that package imports the browser, React, or Clerk entry points. Replace the example filters with the target workspace names:
+Install `@mp-lb/electron-kit` 0.1.8 or later as a dependency of the desktop package. Install it in the frontend package as well if that package imports the browser, React, or Clerk entry points. Replace the example filters with the target workspace names:
 
 ```sh
 pnpm --filter <desktop-package> add @mp-lb/electron-kit
@@ -66,9 +66,9 @@ Use the dedicated `@mp-lb/electron-kit/preload` entry in a sandboxed preload. Do
 
 ## Updates dialog
 
-Electron Kit owns update checks, downloads, installation, and shared renderer state. Enable the updater bridge for macOS and both Linux package types. Windows builds without a signed update channel use the installer for upgrades. Existing Linux installs shipped without an updater need a one-time manual upgrade. Check and download in the background, then explicitly install Linux updates from **Restart and update**, which may ask for administrator authorization. Electron Kit keeps internal download promises out of IPC responses. Keep one `createAutoUpdater` controller for the app and consume it with `useUpdates`; dispose it when the renderer integration is torn down. Follow the [Electron Kit updater guide](https://github.com/mp-lb/tools/tree/main/packages/electron-kit#updates) for the main process, preload bridge, and renderer setup.
+Electron Kit owns update checks, downloads, installation, and shared renderer state. Enable the updater bridge for macOS and both Linux package types. Windows builds without a signed update channel use the installer for upgrades. Existing Linux installs shipped without an updater need a one-time manual upgrade. Check and download in the background, then explicitly install Linux updates from **Install and quit**, which may ask for administrator authorization. Reopen the app from its application menu. Electron Kit skips Chromium’s Linux relaunch so its inherited `NoNewPrivs` flag cannot block the next update. Electron Kit keeps internal download promises out of IPC responses. Keep one `createAutoUpdater` controller for the app and consume it with `useUpdates`; dispose it when the renderer integration is torn down. Follow the [Electron Kit updater guide](https://github.com/mp-lb/tools/tree/main/packages/electron-kit#updates) for the main process, preload bridge, and renderer setup.
 
-Install the shadcn `dialog`, `button`, and `progress` components in the frontend package. Build a small application-owned dialog showing the app version and update status. While downloading, show a labeled `Progress` with the percentage clamped to 0–100. In the footer, show an outline **Check for updates** button, disabled while checking or downloading. When an update is ready, replace it with a primary **Reload update** or **Restart and update** button calling `installUpdate`; disable it while installation is in progress. Display updater errors and distinguish a desktop restart from a hosted-app reload. Use the application's theme and installed component variants.
+Install the shadcn `dialog`, `button`, and `progress` components in the frontend package. Build a small application-owned dialog showing the app version and update status. While downloading, show a labeled `Progress` with the percentage clamped to 0–100. In the footer, show an outline **Check for updates** button, disabled while checking or downloading. When an update is ready, replace it with a primary **Reload update**, **Install and quit** (when ready status has `reopenManually: true`), or **Restart and update** button calling `installUpdate`; disable it while installation is in progress. Display updater errors and distinguish a desktop restart from a hosted-app reload. Use the application's theme and installed component variants.
 
 ## Loading screen
 
@@ -85,7 +85,7 @@ packaged offline fallback described below.
 
 ## Window state
 
-If the app keeps its macOS window alive after closing it, use Electron Kit’s `keepWindowAvailable(app, window, nativeAutoUpdater)` with Electron’s native `autoUpdater`. It handles normal quits and updater-triggered quits before the window closes. If an app has a custom close handler, it must also allow `before-quit-for-update`; do not assume the normal `before-quit` event fires first. Verify normal close, quit, and restart-and-update in the packaged app.
+If the app keeps its macOS window alive after closing it, use Electron Kit’s `keepWindowAvailable(app, window, nativeAutoUpdater)` with Electron’s native `autoUpdater`. It handles normal quits and updater-triggered quits before the window closes. If an app has a custom close handler, it must also allow `before-quit-for-update`; do not assume the normal `before-quit` event fires first. Verify normal close, quit, and the platform’s update flow in the packaged app. Test two consecutive Linux package updates, reopening from the application menu after each install.
 
 After `app.whenReady()`, restore the previous position and dimensions when constructing the main window, then attach persistence immediately:
 
