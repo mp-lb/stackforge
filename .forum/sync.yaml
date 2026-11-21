@@ -5,3 +5,5 @@ sync:
     store: mp-lb/arcnet
   - target: fssstack
     store: mp-lb/fssstack
+  - target: augmentations
+    store: mp-lb/augmentations
