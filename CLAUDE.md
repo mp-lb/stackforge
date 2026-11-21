@@ -92,9 +92,7 @@ The root has no `package.json`. Use the owning folder:
 - Shell test: `pnpm -C fssstack/shell test`
 - Shell build: `pnpm -C fssstack/shell build`
 
-The root `zap.yaml` provides authoring tasks and mobile-script checks. Run
-`zap t mobile-scripts-setup` once, then `zap t mobile-scripts-check`; use
-`zap t mobile-apply-inputs -- <inputs.env> <target-directory>` for mobile setup.
+Shared Expo tooling lives in Tools. Start with `fssstack-mobile/SETUP.md`.
 Target projects use the separate `fssstack/shell/zap.yaml`.
 
 ## Documentation

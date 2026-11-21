@@ -2,24 +2,7 @@ project: stackforge
 profiles:
   default:
     services: []
-native:
-  mobile-scripts-watch:
-    cmd: pnpm --dir fssstack-mobile/packages/scripts exec tsc --noEmit --watch
 tasks:
-  mobile-scripts-setup:
-    cmds:
-      - pnpm --dir fssstack-mobile/packages/scripts install --frozen-lockfile
-  mobile-scripts-check:
-    cmds:
-      - pnpm --dir fssstack-mobile/packages/scripts lint
-      - pnpm --dir fssstack-mobile/packages/scripts typecheck
-      - pnpm --dir fssstack-mobile/packages/scripts test
-  mobile-apply-inputs:
-    cmds:
-      - fssstack-mobile/packages/scripts/node_modules/.bin/tsx fssstack-mobile/packages/scripts/applyInputs.ts {{REST}}
-  mobile-generate-icons:
-    cmds:
-      - fssstack-mobile/packages/scripts/node_modules/.bin/tsx fssstack-mobile/packages/scripts/generateIcons.ts {{REST}}
   context-build:
     cmds:
       - |

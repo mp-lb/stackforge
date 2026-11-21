@@ -1,8 +1,0 @@
-allowBuilds:
-  esbuild: true
-  sharp: true
-
-# Consume our own releases immediately; age-check third-party packages.
-minimumReleaseAge: 1440
-minimumReleaseAgeExclude:
-  - '@mp-lb/*'
