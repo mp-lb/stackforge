@@ -89,15 +89,30 @@ Rebuild context (`zap task context-build` for FSS Stack) and commit the sources,
 
 ## First deployment (full setup only)
 
-Cloud Run needs an authorized operator's first deployment to establish GitHub's GCP trust. Before applying a service with a custom domain, delegate the already verified parent domain to the exact deployment service account:
+For Terraform services, provision the project's foundation first in
+[mp-lb/arcnet-base](https://github.com/mp-lb/arcnet-base). Add a project stack,
+then run `mise run plan -- <project>` and `mise run apply -- <project>` locally
+with `ARCNET_BASE_ACCOUNT` set to an authorized Google account. The base repository
+owns cloud projects, APIs, registries, CI identities, IAM, budgets and state
+buckets. Its CI only validates; it never applies infrastructure.
+
+Copy the stack's `application_config` output into `.arcnet/arcnet.yaml`, including
+both `foundation` and `identity`. Application state must use its own bucket;
+application CI receives no access to base state. Use ArcNet 0.7.23 or newer.
+Existing projects must transfer their base resources to separate state using the
+base repository's migration procedure before removing their configuration.
+Never recreate an existing project or grant IAM administrator roles to app CI.
+
+Before applying a service with a custom domain, delegate the already verified
+parent domain to the exact deployment service account:
 
 ```sh
 pnpm exec arcnet environment domain-owner --domain <parent-domain> --email <deploy-service-account> --quota-project <quota-project>
 ```
 
-Verify the reported owner; DNS access alone is insufficient. Use the environment's operator/ADC and verified domain. Run `pnpm exec arcnet plan` and `pnpm exec arcnet deploy`, record the resulting `identity` in `.arcnet/arcnet.yaml`, and complete the [CI permission bootstrap](initial-setup.md#project-ci-permissions) before handing deployment to GitHub.
-
-If a local container build fails for capacity, check Docker's storage separately from host disk space. Preserve unrelated data. Review partial state and verify the foundation/deploy identity before using CI to complete the image and service deployment; a partial apply is not a successful deployment.
+Verify the reported owner; DNS access alone is insufficient. Domain verification
+is separate from Terraform IAM permissions. Setting a local ADC quota project
+does not change permissions or the identity used in GitHub Actions.
 
 Commit the completed configuration and push to `main` to run delivery. Vercel-only projects need no GCP bootstrap. Check the deployment workflow, then verify the live result.
 

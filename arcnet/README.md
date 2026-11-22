@@ -23,7 +23,7 @@ project/
 └── pnpm-lock.yaml                  updated after installation
 ```
 
-The [ArcNet package](https://github.com/mp-lb/tools/tree/main/packages/arcnet) supplies the standard `mp-lb` environment, provider and Terraform defaults, deployment runners, and workflow templates. ArcNet renders Zap Arc's deployment input temporarily; a project does not commit a network snapshot or a second service list. Existing installations using `project.json`, `services.json`, `network.yaml`, or `secrets.json` remain supported until explicitly migrated.
+The [ArcNet package](https://github.com/mp-lb/tools/tree/main/packages/arcnet) supplies the standard `mp-lb` environment, provider and Terraform defaults, deployment runners, and workflow templates. ArcNet renders Zap Arc's deployment input temporarily; a project does not commit a network snapshot or a second service list. Legacy configurations remain inspectable, but combined base/application Terraform must be migrated before deployment. Terraform projects use the `foundation` and `identity` outputs from [mp-lb/arcnet-base](https://github.com/mp-lb/arcnet-base). That repository owns projects, registries, IAM, budgets and state storage and is applied locally by an administrator. Application CI uses its own isolated state bucket.
 
 A package-only project selects no services: it needs no domain, Dockerfile, cloud project, or deploy workflow. For an FSS Stack project, setup automatically wires the `publish` secret consumer into the marked auto-publish workflow. Other projects can use the same consumer with an explicit release-workflow handoff. [Publishing setup](SETUP.md#shared-configuration).
 

@@ -39,7 +39,7 @@ Collect these before provisioning. Organization slugs identify provider accounts
 | ---------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------- |
 | Provider accounts      | Company identity, billing, domain ownership and initial administrative access                             | Before bootstrap                    |
 | ArcNet environment     | Network GCP project, Terraform state storage, shared MongoDB, DNS conventions and credential distribution | Once per company/environment        |
-| Project infrastructure | Cloud Run/Vercel services, S3 where selected, database bindings and CI identity                           | On project onboarding and updates   |
+| Project infrastructure | Cloud Run/Vercel services, S3 where selected and database bindings                           | On project onboarding and updates   |
 | Application runtime    | App configuration, database/queue namespaces and scoped connection credentials                            | Injected into each selected app     |
 | Delivery               | GitHub workflow that builds and deploys committed project configuration                                   | Every push to main after onboarding |
 
@@ -84,19 +84,32 @@ See Google's [project creation permissions](https://docs.cloud.google.com/resour
 
 ### Project CI permissions
 
-The bundled `github-ci` module grants the deploy identity project-scoped Editor, Workload Identity Pool Viewer and Cloud Run Admin, plus Storage Admin on the shared state bucket. Editor alone cannot refresh the WIF pool or manage Cloud Run service IAM. Apply new or updated bindings with the authorized operator before relying on CI; source changes do not update existing cloud grants automatically. Billing Costs Manager is opt-in when billing management is selected.
+MAP Lab manages project foundations in
+[mp-lb/arcnet-base](https://github.com/mp-lb/arcnet-base). A local administrator
+plans and applies that repository with an explicit Google CLI account. It owns
+project creation, API enablement, registries, WIF, deployment service accounts,
+IAM grants, budgets and state storage. This implements the base-infrastructure
+boundary for the current environment; the broader lifecycle described below
+remains a future design.
 
-The MAP Lab preset leaves `network-project` empty so project CI cannot maintain shared platform IAM. After the operator deployment creates the project identity, the environment operator grants it quota-project access:
+Each application's exported `foundation` configuration selects its own state
+bucket. Base state lives in a separate administrator-only bucket. App CI receives
+Storage Object Admin on its own bucket and no base-state access; state prefixes
+alone are not IAM boundaries. The migration removes each app's old shared-bucket
+Storage Admin grant. Retain versioned state for recovery.
 
-```sh
-gcloud projects add-iam-policy-binding <quota-project> \
-  --member='serviceAccount:<project-deploy-service-account>' \
-  --role=roles/serviceusage.serviceUsageConsumer
-```
+The base retains project-scoped Editor, Workload Identity Pool Viewer and Cloud
+Run Admin for application deployment. It manages Service Usage Consumer on the
+quota project explicitly. Budgets belong to the base, so app CI does not need
+billing administration. Do not substitute platform Editor/Owner or permanent
+project IAM Admin. Numeric repository/owner federation conditions remain a
+future improvement.
 
-Resolve both values from the reviewed project identity and environment preset (`arcnet-platform` for the current MAP Lab environment). Verify access with the CI identity before handoff, and remove this environment-owned grant when retiring the project. Do not substitute shared-project Editor/Owner.
-
-The current grants are broader than the intended isolation model: the state-bucket grant is bucket-wide, and GitHub federation is conditioned on repository name. State prefixes are not IAM boundaries. Narrower state access and numeric repository/owner conditions remain future improvements.
+Copy the base stack's `application_config` output into the application's
+`.arcnet/arcnet.yaml`. Ordinary deployment refuses base changes and points the
+operator to the base repository. Verify deployment with the existing CI identity
+after migration. A local ADC quota-project setting does not grant IAM permissions
+or modify GitHub's identity.
 
 ### API enablement
 
