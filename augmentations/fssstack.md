@@ -39,11 +39,11 @@ idiomatic_version_file_enable_tools = ["node", "pnpm"]
 
 For an npm project, enable only `node` in that setting and use npm bundled with the selected Node. Preserve an existing runtime version from the project’s build configuration when introducing `.node-version`; align explicit CI/build pins deliberately, without silently upgrading them.
 
-Run `mise trust` and `mise install`, then verify `mise exec -- node --version`
-and `mise exec -- pnpm --version` match the pins (use `mise exec -- npm --version` for npm projects). Use an activated mise shell
-or `mise exec -- zap ...` so services and tasks inherit the selected tools.
+Run `mise trust` and `mise install`, then verify `node --version` and
+`pnpm --version` match the pins (use `npm --version` for npm projects).
+Run commands normally; no mise activation or `mise exec` prefix is required.
 Do not add duplicate `[tools]` pins, `.nvmrc`, or `.tool-versions` files.
-Zapper remains the task/process runner; mise only selects tools. Keep shared local CLI entrypoints such as `zap` and `fm` in a version-independent PATH directory (for example `~/.local/bin`), linked to their owning local builds, rather than only inside one Node installation. Verify `mise exec -- zap --version` and `mise exec -- fm --version` after changing tool selection.
+Zapper remains the task/process runner; mise only selects tools. Keep shared local CLI entrypoints such as `zap` and `fm` in a version-independent PATH directory (for example `~/.local/bin`), linked to their owning local builds, rather than only inside one Node installation. Verify `zap --version` and `fm --version` after changing tool selection.
 
 When aligning an existing project, preserve its pnpm version and choose an
 exact Node release compatible with its dependencies and deployed runtime.

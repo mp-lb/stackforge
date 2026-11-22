@@ -2,7 +2,7 @@
 
 ## When to use
 
-Apply this MAP Lab augmentation after the [FSS Stack Electron extension](../fssstack/extensions/electron/README.md) has added an Electron shell. Adapt these instructions to the application's existing desktop package and frontend; do not replace their main process or preload wholesale. The base extension remains usable without this augmentation.
+Apply this after the [FSS Stack Electron extension](../fssstack/extensions/electron/README.md) has added an Electron shell. Adapt these instructions to the application's existing desktop package and frontend; do not replace their main process or preload wholesale. The base extension remains usable without this augmentation.
 
 ## Signing credentials
 

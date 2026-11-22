@@ -34,3 +34,8 @@ Other projects may retain local blocks for their specific operational details. D
 All 15 consumers retain mise with their existing version pins and package managers. Forum Mobile remains npm-based. The public shell stays independent of mise; the augmentation adds it to every adopting project.
 
 When updating context, preserve product-specific knowledge and existing execution restrictions. Verify required imports resolve once, the shared remote style expands, both outputs match, and there are no orphaned or boilerplate dependency blocks. Update this inventory when responsibilities change.
+
+
+## Termkit adoption
+
+31 October 2026: Termkit uses mise with the Fssstack Node/pnpm pins, the MAP Lab development and code-style imports, Fumadocs documentation guidance, shared frontend UI, and full ArcNet/delivery context. Its Next.js landing page hosts the static docs at `/docs`. Local project context records the library scope, docs generation/staging, related tooling repositories, Forum deployment sources and consumers. The package stays private pending its first release.
