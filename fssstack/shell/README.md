@@ -88,10 +88,10 @@ its findings to `docs/audits/YYYY-MM-DD-fssstack.md` in an isolated worktree for
 `packageManager` in that file is the exact pnpm pin. Keep `pnpm-lock.yaml`
 committed and use `pnpm install --frozen-lockfile` in CI.
 
-Use a version manager of your choice. For nvm, run
-`nvm install "$(cat .node-version)"` and `nvm use "$(cat .node-version)"`.
-Install the pinned pnpm version before installing dependencies. Mise integration
-is provided by the house augmentation, not required by this public shell.
+The shell includes `mise.toml`, which reads these canonical pins. Run
+`mise trust` and `mise install`, then verify `node --version` and `pnpm --version`.
+Use mise’s shell integration or shims; if the shell is not configured, run
+commands through `mise exec -- <command>`. Tool selection is a FSS Stack default.
 
 Dependency policy belongs in `pnpm-workspace.yaml`: `saveExact: true` for
 external dependencies and explicit `workspace:*` references for internal ones.
