@@ -14,12 +14,6 @@ tasks:
     desc: Introduce this project
     cmds:
       - pnpm --dir packages/scripts exec tsx index.ts
-  publish-packages:
-    cmds:
-      - pnpm exec tsx packages/scripts/autoPublish.ts {{REST}}
-  verify-publication:
-    cmds:
-      - pnpm exec tsx packages/scripts/verifyPublication.ts
   augment-docs-site:
     cmds:
       - pnpm exec tsx packages/scripts/augmentDocsSite.ts {{REST}}

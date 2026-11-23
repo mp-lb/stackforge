@@ -56,7 +56,7 @@ examples and applying the documented wiring.
 - Shared library packages.
 - A simple backend.
 - A simple publishable library.
-- Release docs and release wiring for the target repo.
+- Package preparation and local packing; release orchestration belongs to ArcNet.
 
 `fssstack/` owns the setup instructions an agent reads from Forum and the
 shell they assemble:
@@ -66,7 +66,7 @@ shell they assemble:
 - Layering order.
 - Commands to scaffold Vite, Next.js, backend, and library projects.
 - Commands to validate the resulting target repo.
-- References to standards docs and release process docs that should exist in the generated target repo.
+- References to standards and package-preparation docs for the generated target repo.
 
 Avoid putting fake working projects, copied package files, or framework app
 templates outside `fssstack/`. The docs should describe how to assemble the

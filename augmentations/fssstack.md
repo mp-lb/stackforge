@@ -68,6 +68,14 @@ Deployment workflows should read `.node-version` with `actions/setup-node` and
 let `pnpm/action-setup` read `package.json`. Align provider/container Node majors
 with the project contract; never maintain independent tool pins in CI.
 
+### Package releases
+
+For publishable packages, select ArcNet package releases separately from hosted
+application deployment: `fm read package-releases.md --store mp-lb/arcnet`.
+Projects without publishable packages need only their validation checks; do not
+install dormant publishers or publishing credentials. Preserve explicit release
+holds and manual release policies.
+
 ### Existing project audit
 
 Compare context with actual implementation and configuration. Keep separate blocks only for recurring, non-obvious instructions; do not install one for every dependency. Record meaningful extension guidance and retained project-specific knowledge in [Context inventory](context-inventory.md). Rebuild when context changes.

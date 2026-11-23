@@ -1,7 +1,12 @@
-# Library and CLI releases
+# Prepare libraries and CLIs for publishing
 
-Push to `main`. CI checks the project, builds public npm packages, and compares their packed files with the latest published versions. If a package changed, CI publishes the next patch version. If it did not, CI skips it. There are no changesets, release notes, or manual version bumps.
+FSS Stack owns package preparation: build and test commands, declarations,
+exports, executable entrypoints, package contents and `pnpm pack`. Keep generated
+files deterministic and inspect the packed archive before distributing it.
 
-The target repository's `packages/scripts/autoPublish.ts` handles comparison and publishing. It processes workspace dependencies first and ignores only the package manifest's `version` field. Keep generated package files deterministic; a timestamp that changes on every build would cause a release on every push.
+A package can be published manually with pnpm/npm using the registry's normal
+workflow. FSS Stack supplies no release command, automatic versioning policy,
+Changesets configuration, CI workflow, or publishing credentials.
 
-Run `zap t publish-packages -- --dry-run` to preview. After CI, check the release workflow and `npm view <package-name> version`. The workflow needs an npm credential or trusted publishing. ArcNet setup wires its `publish` secret consumer for the marked FSS Stack workflow when a secrets configuration exists; the configured secret source must contain `NPM_TOKEN`. FSS Stack does not require ArcNet.
+Choose release orchestration separately and follow that integration’s setup
+and credential instructions.

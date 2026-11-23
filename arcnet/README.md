@@ -1,6 +1,6 @@
 # ArcNet
 
-ArcNet adds publishing credentials and selected deployments to an existing project. It does not require FSS Stack; the current installer expects pnpm and GitHub; Zapper is optional. [Project setup](SETUP.md) · [Initial environment setup](initial-setup.md) · [FSS Stack extension](../fssstack/extensions/arcnet/README.md)
+ArcNet adds package releases, publishing credentials and selected deployments to an existing project. It does not require FSS Stack; the current installer expects pnpm and GitHub; Zapper is optional. [Project setup](SETUP.md) · [Initial environment setup](initial-setup.md) · [FSS Stack extension](../fssstack/extensions/arcnet/README.md)
 
 The examples below use the current `mp-lb` environment preset. ArcNet still needs a configurable environment preset before another organization can install it without MapLab-specific defaults.
 
@@ -24,7 +24,11 @@ project/
 
 The [ArcNet package](https://github.com/mp-lb/tools/tree/main/packages/arcnet) supplies the standard `mp-lb` environment, provider and Terraform defaults, deployment runners, and workflow templates. ArcNet calls Terraform directly using its own application modules. Production settings come entirely from `.arcnet/arcnet.yaml`; the runner never reads a local stack or invokes Zapper. Removed multi-file deployment formats are not supported. Terraform projects use the `foundation` and `identity` outputs from [mp-lb/arcnet-base](https://github.com/mp-lb/arcnet-base). That repository owns projects, registries, IAM, budgets and state storage and is applied locally by an administrator. Application CI uses its own isolated state bucket.
 
-A package-only project selects no services: it needs no domain, Dockerfile, cloud project, or deploy workflow. For an FSS Stack project, setup automatically wires the `publish` secret consumer into the marked auto-publish workflow. Other projects can use the same consumer with an explicit release-workflow handoff. [Publishing setup](SETUP.md#shared-configuration).
+A package-only project needs no domain, Dockerfile, cloud project, or deploy
+workflow. Opt into `arcnet packages setup --repository owner/repo` to install
+package release CI independently of application deployments. ArcNet owns the
+publisher and verifier; target projects do not copy their implementations.
+[Package releases](package-releases.md).
 
 ## What ArcNet currently supports
 
@@ -36,7 +40,7 @@ A package-only project selects no services: it needs no domain, Dockerfile, clou
 | Redis                      | Shared URL can be supplied through secrets; ArcNet does not provision project-scoped access yet |
 | S3                         | Private `arcnet.<project>.backend` bucket by default; browser CORS follows app domains          |
 | Bull workers               | Deferred; no qualified shared worker deployment                                                 |
-| npm publishing credentials | `publish` consumer supplies selected secrets to an existing release workflow                    |
+| Package releases | Packed-content comparison, patch publishing, verification, optional CI and credential integration |
 
 Shared services use the project slug as the naming boundary; credentials must also enforce access isolation. [Domain lifecycle design](domains.md) · [Audit](audit.md).
 

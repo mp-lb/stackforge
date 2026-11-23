@@ -102,8 +102,8 @@ When changing the Node pin, check dependency engine requirements and rerun the
 project checks. CI reads `.node-version`; deployment providers and container
 images must use a compatible Node major, configured by the deployment layer.
 
-## Release reports
+## Package preparation
 
-Release scripts print their package/version report to the console. CI passes
-that report through the publisher step’s `release_report` output to verification
-via `FSSSTACK_RELEASE_RESULT`; no release-result file is created in the checkout.
+Build and test packages locally, then run `pnpm pack` from a package directory to
+inspect the distributable. FSS Stack does not install CI or release orchestration.
+Choose a delivery integration for credentials, versioning and automated publishing.

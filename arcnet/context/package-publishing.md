@@ -1,6 +1,16 @@
 ## Package publishing
 
-For public npm packages, push `main` to run the release workflow. It builds the workspace packages, compares the packed files with the published versions, and releases the next patch for each changed package. ArcNet supplies CI credentials through the `publish` consumer. Run `zap t publish-packages -- --dry-run` to preview the FSS Stack publisher and check the release run and npm after delivery.
+When package releases are selected, push `main` to run the configured release
+workflow. ArcNet builds packages, compares their packed files with published
+versions and publishes the next patch for changed packages. Run
+`pnpm exec arcnet packages publish --dry-run` to preview. Credentials come from
+the project's configured registry authentication; use the ArcNet `publish`
+consumer when configured. Verify the workflow and exact published versions with
+`arcnet packages verify` and its `ARCNET_RELEASE_RESULT` report input.
+
+Setup and migration: `fm read package-releases.md --store mp-lb/arcnet`.
+FSS Stack supplies package preparation, not a publisher. Preserve intentional
+manual release policies, registry selection, and publication holds.
 
 ### First publish
 

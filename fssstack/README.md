@@ -19,7 +19,7 @@ everything to the shared packages below.
   publishable example library + CLI. It installs, typechecks, tests, and builds
   on day one.
 - **Standards docs** — the conventions the agent (and you) follow: tRPC, errors,
-  logging, the event schema, CRUD, env vars, formatting, release process, and
+  logging, the event schema, CRUD, env vars, formatting, package preparation, and
   more.
 - **Extensions** — opt-in setup for MongoDB, Redis, Bull, Clerk + RBAC, S3,
   Playwright and custom domains,

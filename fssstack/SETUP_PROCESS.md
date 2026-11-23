@@ -34,12 +34,10 @@ pnpm add -Dw --save-exact @mp-lb/forum-cli
 
 Use `pnpm exec fm` for subsequent Forum CLI commands from the project root.
 
-Template the shell before creating project packages: replace
-`REPLACE_WITH_OWNER/REPOSITORY` in `.github/workflows/release.yaml` with the
-`githubRepository` value from `fssstack.yaml`. This keeps the publish workflow
-scoped to the target repository from the initial setup.
+FSS Stack supplies local checks and publishable package structure. It installs no
+CI, versioning policy, release workflow, or publishing credentials. Select release
+automation separately.
 
-Keep the shell publishing workflow and scripts. If the selected project has no publishable libraries, set its workflow `PUBLISH_PACKAGES` environment value to `"false"` and keep packages private. Validation still runs; publishing and publication verification are skipped. Re-enable deliberately when a publishable package is added, rather than deleting and reconstructing the release baseline.
 
 The shell is compilable reference code: the root workspace config, the `docs/`
 baseline, the shared
@@ -325,7 +323,7 @@ Then, in `packages/<library slug>`:
   `tsconfig.build.json` for the emitted `dist`);
 - keep public exports small and explicit;
 - set `private: false` and `publishConfig.access: public` only on packages that should publish to npm;
-- configure `NPM_TOKEN` (or trusted publishing) for the target repository. The release workflow was templated from `githubRepository` during shell setup and compares packed files on every push to `main`; no changeset is needed.
+- run `pnpm pack` from the package directory and inspect the archive, including resolved workspace dependencies. Publishing and release automation belong to the chosen delivery integration.
 
 A library that ships a command-line tool is still a library: add a package `bin`, a `#!/usr/bin/env node` shebang on the entrypoint, and `chmod +x dist/index.js` in the build (see `packages/example-cli` for the shape). There is no separate CLI package type. Read `standards/clis.md` remotely from the `mp-lb/fssstack` Forum store for command-line behaviour on top of the library baseline.
 
