@@ -18,7 +18,8 @@ The root of this git repo should stay thin. It owns the FSS Stack source content
 
 - `fssstack/` is the Forum content and shell for creating FSS Stack target projects.
 - `arcnet/` owns opt-in deployment onboarding and non-secret network config; the shared engine lives in Tools and administrator-managed infrastructure lives in ArcNet Base and operator credentials remain outside Git.
-- `fssstack-mobile/` owns mobile setup and release guidance.
+- `fastnative/` owns standalone Expo app setup and native API integration guidance.
+- `arcnative/` owns Expo CI and delivery guidance. Tools owns shared code and templates.
 
 [`fssstack-start`](https://github.com/mp-lb/fssstack-start) is a separate
 downstream repository. It owns the configurator and CLI, and depends on this
@@ -92,7 +93,7 @@ The root has no `package.json`. Use the owning folder:
 - Shell test: `pnpm -C fssstack/shell test`
 - Shell build: `pnpm -C fssstack/shell build`
 
-Shared Expo tooling lives in Tools. Start with `fssstack-mobile/SETUP.md`.
+Shared Expo tooling lives in Tools. Start with `fastnative/README.md` for app setup and `arcnative/README.md` for CI and delivery.
 Target projects use the separate `fssstack/shell/zap.yaml`.
 
 ## Documentation

@@ -8,5 +8,5 @@ The root has no `package.json`. Use the owning folder:
 - Shell test: `pnpm -C fssstack/shell test`
 - Shell build: `pnpm -C fssstack/shell build`
 
-Shared Expo tooling lives in Tools. Start with `fssstack-mobile/SETUP.md`.
+Shared Expo tooling lives in Tools. Start with `fastnative/README.md` for app setup and `arcnative/README.md` for CI and delivery.
 Target projects use the separate `fssstack/shell/zap.yaml`.

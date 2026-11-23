@@ -11,18 +11,15 @@ permissions:
 jobs:
   check:
     runs-on: blacksmith-4vcpu-ubuntu-2404
-    strategy:
-      matrix:
-        directory: [fssstack/shell, fssstack-mobile/packages/scripts]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          package_json_file: ${{ matrix.directory }}/package.json
+          package_json_file: fssstack/shell/package.json
       - uses: actions/setup-node@v4
         with:
           node-version-file: fssstack/shell/.node-version
       - run: pnpm install --frozen-lockfile
-        working-directory: ${{ matrix.directory }}
+        working-directory: fssstack/shell
       - run: pnpm lint && pnpm typecheck && pnpm test && pnpm --if-present build
-        working-directory: ${{ matrix.directory }}
+        working-directory: fssstack/shell

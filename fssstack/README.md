@@ -24,7 +24,7 @@ everything to the shared packages below.
 - **Extensions** — opt-in setup for MongoDB, Redis, Bull, Clerk + RBAC, S3,
   Playwright and custom domains,
   layered in only when a project needs them.
-- **React Native setup** — a separate path for mobile.
+- **[FastNative](https://github.com/mp-lb/stackforge/tree/main/fastnative)** — standalone Expo app setup.
 - **Project audits** — every shell-based project gets root `audit.md` to guide
   comparison against the committed, verified HelloWorld reference in Stackforge. Root
   configuration and folder structure come first; findings distinguish justified
