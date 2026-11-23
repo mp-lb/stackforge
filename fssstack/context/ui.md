@@ -15,3 +15,9 @@ pnpm dlx shadcn@latest add dialog
 Use the shared theme tokens and existing component variants for colors, typography, spacing and radii. UI consistency takes priority over making one screen look different. Do not override theme-owned styles in individual components without a concrete reason; make intentional design-system changes at the shared theme or component level.
 
 CLI reference: https://ui.shadcn.com/docs/cli.
+
+### Loading UI
+
+When the Shad augmentation is installed, use its `FullScreenLoading` and dot-matrix loader for full-screen application/session readiness and root Suspense gates. Keep inline loaders inline and preserve the project theme. Electron offline recovery must use packaged assets, independently of the hosted frontend.
+
+Read `fm read shad.md --store mp-lb/augmentations` for registry installation and verification.

@@ -1,12 +1,14 @@
 # Context inventory
 
+Current ownership (24 November 2026): FSS Stack owns tool selection, code style and shared context defaults. ArcNet owns desktop release setup. Older augmentation context paths are compatibility references. The adoption notes below are historical; no downstream context recompilation is required by this change.
+
 Reconciled 30 October 2026. Stackforge owns the shared defaults and extension installation policy; project maintainers own local facts and product-specific rules. Factory aliases Berth.
 
 ## Shared and local context
 
 Reconciled 31 October 2026. Projects import shared standards, scripts and documentation from Forum, and use remote development, validation, UI and ArcNet blocks where they apply. `project.md` and project-specific development, validation, UI, documentation and delivery details remain local. The former library/CLI block has been removed.
 
-The FSS Stack shell imports the standard blocks remotely for new projects. Agent context and the default development and validation blocks live in `mp-lb/fssstack`; MAP Lab overrides development in `mp-lb/augmentations`. ArcNet and delivery context live in `mp-lb/arcnet`; compilation expands Forum links after local blocks and writes matching `AGENTS.md` and `CLAUDE.md`.
+The FSS Stack shell imports the standard blocks remotely for new projects. Agent context and the default development and validation blocks live in `mp-lb/fssstack`; development (including mise) now lives in `mp-lb/fssstack`; the old augmentation path forwards to it. ArcNet and delivery context live in `mp-lb/arcnet`; compilation expands Forum links after local blocks and writes matching `AGENTS.md` and `CLAUDE.md`.
 
 ## Project-specific blocks
 
@@ -31,7 +33,7 @@ Other projects may retain local blocks for their specific operational details. D
 
 ## Mise and maintenance
 
-All 15 consumers retain mise with their existing version pins and package managers. Forum Mobile remains npm-based. The public shell stays independent of mise; the augmentation adds it to every adopting project.
+All 15 consumers retain mise with their existing version pins and package managers. Forum Mobile remains npm-based. The shell now includes mise directly; existing projects retain their pins.
 
 When updating context, preserve product-specific knowledge and existing execution restrictions. Verify required imports resolve once, the shared remote style expands, both outputs match, and there are no orphaned or boilerplate dependency blocks. Update this inventory when responsibilities change.
 

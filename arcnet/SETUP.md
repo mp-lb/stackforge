@@ -40,6 +40,10 @@ pnpm exec arcnet variables sync
 
 Use `secrets add` instead of `init` when the project source already exists. These commands prompt for the Forum encryption password, provision recipient/GitHub keys, record sources and create encrypted snapshots. On reruns, retain existing keys and mappings; use `--existing-key` only after verifying it decrypts the corresponding source. Never commit plaintext secrets.
 
+## Desktop capability
+
+Desktop support is included in ArcNet. For a project without Electron, leave it inactive: do not create desktop workflows or consumers. If Electron is already present, follow [Desktop releases](desktop-releases.md) as part of this setup, preserving the current release policy. When Electron is added later, its extension follows the same guide. Desktop delivery requires shared secrets and app-specific release configuration, not hosting services.
+
 ## Select applications (full setup only)
 
 Add the selected deployment capabilities to the same `.arcnet/arcnet.yaml`. For example:
@@ -93,7 +97,7 @@ context block.
 
 Add a local secrets context block describing the configured Forum paths, `.arcnet/arcnet.yaml` consumers, committed encrypted snapshots and local secret files. Explain that GitHub holds decryption keys, while `arcnet secrets sync` and `arcnet variables sync` refresh source snapshots. Include `arcnet env check --password` and `arcnet env run --consumer <name> -- <command>` for local use. Include no secret values; distinguish deployment sources from local `.env` secrets and `.env.local` defaults.
 
-Rebuild context (`zap task context-build` for FSS Stack) and commit the sources, generated context and ArcNet files. **Minimal setup ends here.** Full setup continues below before the first push that deploys.
+Compile context once for a new FSS Stack project. Existing projects may defer recompilation; when refreshing with `zap task context-build`, commit both generated files together. Commit the source context and ArcNet files. **Minimal setup ends here.** Full setup continues below before the first push that deploys.
 
 ## First deployment (full setup only)
 

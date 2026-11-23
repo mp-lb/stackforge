@@ -25,8 +25,11 @@ npx -y @mp-lb/forum-cli pull --direct --store mp-lb/fssstack --path shell --targ
 Before running the install, select the exact Node version from `.node-version`
 and install the exact pnpm version from `package.json#packageManager`. The shell
 requires Node 22.13 or newer; `engines.node` is a compatibility declaration, not
-a tool installer. The public setup does not require mise. Keep general pnpm
-settings in `pnpm-workspace.yaml`, not `.npmrc`.
+a tool installer. The shell includes `mise.toml`, which reads those canonical
+pins. Run `mise trust` and `mise install`, then verify `node --version` and
+`pnpm --version` match. Follow [Tool selection](tool-selection.md), including
+when adopting an existing npm project. Keep general pnpm settings in
+`pnpm-workspace.yaml`, not `.npmrc`.
 
 ```bash
 pnpm add -Dw --save-exact @mp-lb/forum-cli
@@ -356,7 +359,7 @@ a pointer to `audit.md` in the project's context source blocks so agents can
 find the process. Keep `/tmp/` gitignored for scratch files; audit reports are
 tracked and committed from an isolated worktree for project-owner integration.
 
-Keep the shell's `context/index.md` and project-specific `context/project.md`. Agent context itself is a shared remote block. Shared standards lookup, development, validation, scripts and documentation are compiled from Forum links in the index. Add local project-specific details; do not copy shared blocks into the project. Deployment integrations supply their own delivery guidance when installed.
+Keep the shell's `context/index.md` and project-specific `context/project.md`. Agent context itself is a shared remote block. Shared code style, standards lookup, development, validation, scripts and documentation are compiled from Forum links in the index. Add local project-specific details; do not copy shared blocks into the project. Deployment integrations supply their own delivery guidance when installed.
 
 For shadcn frontends, add the remote link `[Frontend UI](https://hyperdoc.forumlabs.net/e161b5b1-76b2-4656-84fe-a193af43ae58)` on its own line, separated by blank lines. Keep any project-specific UI details locally. Docs sites additionally use the block described above.
 
@@ -403,4 +406,4 @@ git add .
 git commit -m init
 ```
 
-Each selected extension installs its own context payloads and any other files using the mappings in its README. Recompile and commit context after applying each capability. MapLab working conventions are a separate augmentation, not part of the public shell.
+Each selected extension installs its own context payloads and any other files using the mappings in its README. Compile once after new-project assembly. Existing projects may defer context recompilation; when they choose to refresh, commit both generated files together. Tool selection, code style and shared context are FSS Stack defaults. ArcNet capability choices belong to the project-creation process; Clerk and Shad can retain their company augmentations.

@@ -1,3 +1,1 @@
-### Clerk account setup
-
-Follow the MapLab Clerk augmentation for account/instance and social-login setup. Preserve the project's configured authentication method and readiness UI. Diagnose provider errors from their actual error codes and callback configuration. Read `fm read clerk.md --store mp-lb/augmentations` before changing organization-specific setup.
+[Shared clerk context](https://hyperdoc.forumlabs.net/7be4205e-f051-4559-8abe-0b9f2fffda90)

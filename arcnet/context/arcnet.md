@@ -13,3 +13,7 @@ Read `.arcnet/arcnet.yaml` for the actual Forum sources and configured consumers
 After changing sources, run `arcnet secrets sync` or `arcnet variables sync` as appropriate and commit refreshed snapshots. Use `arcnet env check --password` for local validation and `arcnet env run --consumer <name> -- <command>` for a configured consumer. Keep plaintext, passwords and decryption keys out of context and Git.
 
 These delivery sources are distinct from local `.env` secrets and `.env.local` non-secret defaults where the project uses those files.
+
+## Desktop releases
+
+Desktop release support is available even when this project has no Electron app. Do not install dormant workflows or signing consumers. When adding Electron, follow `fm read desktop-releases.md --store mp-lb/arcnet` as part of extension setup; when adopting ArcNet with an existing desktop app, preserve and integrate its release workflow. Desktop releases do not require hosted services. Electron Kit and the FSS Stack extension own runtime integration.

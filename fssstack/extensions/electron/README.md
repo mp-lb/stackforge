@@ -16,7 +16,7 @@ mkdir -p apps/desktop/src
 curl --fail --location --output apps/desktop/src/main.ts https://raw.githubusercontent.com/mp-lb/stackforge/main/fssstack/extensions/electron/templates/desktop-main.ts
 ```
 
-Edit the copied files for the project: set the package name, `build.appId`, `build.productName`, and the hosted HTTPS URL in `desktop-main.ts`. Set the homepage, Linux package and executable names, matching `desktopName` (the executable name plus `.desktop`), and package maintainer. Apply the distribution augmentation before publishing. Before installing, approve the copied package's native install scripts in `pnpm-workspace.yaml`:
+Edit the copied files for the project: set the package name, `build.appId`, `build.productName`, and the hosted HTTPS URL in `desktop-main.ts`. Set the homepage, Linux package and executable names, matching `desktopName` (the executable name plus `.desktop`), and package maintainer. For ArcNet projects, activate [desktop releases](../../../arcnet/desktop-releases.md) as part of adding this extension; no separate augmentation is needed. Before installing, approve the copied package's native install scripts in `pnpm-workspace.yaml`:
 
 ```yaml
 allowBuilds:
@@ -50,7 +50,7 @@ tasks:
 
 The packaged app loads its configured hosted production URL. For a project that has only local services, retain the explicit `DESKTOP_DEV_URL` requirement in packaged mode too, and add a project-specific `desktop-open` Zap task that passes the resolved URL via `open --env DESKTOP_DEV_URL=... <app-path>`. Resolve the app path from the product name and host architecture. Do not bake a checkout's port into the bundle or introduce a default port. Such a bundle is a local preview and must not be published as a standalone app.
 
-The base extension ends with a working Electron app and local packaging. Signing credentials, release hosting, download landing pages, and automatic updates belong to the consuming project’s distribution setup.
+The extension supplies the application and local packaging. Follow [Electron application integration](integration.md) for Electron Kit, window state, offline recovery and any selected browser-auth or updater UI. For projects using ArcNet, complete [desktop release setup](../../../arcnet/desktop-releases.md) before declaring this extension ready for distribution. Without ArcNet, keep local packaging and the project’s selected distributor; adding Electron does not implicitly select ArcNet hosting.
 
 The main-process template has Node integration off, context isolation and sandboxing on. The Linux window appears after its first paint. Linux and Windows use the same renderer layout as web with native window frames and the default Electron menu removed. Limit title-bar overlays, traffic-light clearance, and any associated preload layout bridge to macOS. Desktop auth, deep links, offline behavior, and auto-update UI follow project-specific design. Make those changes by following the project architecture, not by blindly inserting source text.
 
@@ -65,4 +65,4 @@ fm read extensions/electron/context/electron.md --store mp-lb/fssstack > context
 grep -qxF '@electron.md' context/index.md || printf '\n@electron.md\n' >> context/index.md
 ```
 
-Adapt the blocks to the installed package paths, services, tasks and configuration. Remove assumptions that do not apply. Then run `zap task context-build` and commit the source blocks and both generated agent files.
+Adapt the blocks to the installed package paths, services, tasks and configuration. Remove assumptions that do not apply. Compile context once for a new project. Existing projects choose when to run `zap task context-build`; when refreshing, commit source blocks and both generated files together.

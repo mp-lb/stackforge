@@ -1,6 +1,6 @@
 # ArcNet
 
-ArcNet adds package releases, publishing credentials and selected deployments to an existing project. The full installer uses pnpm and GitHub. [ArcNative](https://github.com/mp-lb/stackforge/tree/main/arcnative) uses ArcNet's encrypted secrets snapshots for standalone npm-based Expo apps. [Project setup](SETUP.md) · [Initial environment setup](initial-setup.md) · [FSS Stack extension](../fssstack/extensions/arcnet/README.md)
+ArcNet adds secrets, package and desktop releases, and selected deployments to an existing project. The full installer uses pnpm and GitHub. [ArcNative](https://github.com/mp-lb/stackforge/tree/main/arcnative) uses ArcNet's encrypted secrets snapshots for standalone npm-based Expo apps. [Project setup](SETUP.md) · [Initial environment setup](initial-setup.md) · [FSS Stack extension](../fssstack/extensions/arcnet/README.md)
 
 The examples below use the current `mp-lb` environment preset. ArcNet still needs a configurable environment preset before another organization can install it without MapLab-specific defaults.
 
@@ -30,6 +30,8 @@ package release CI independently of application deployments. ArcNet owns the
 publisher and verifier; target projects do not copy their implementations.
 [Package releases](package-releases.md).
 
+[Desktop releases](desktop-releases.md) are another independent layer. The tooling is available in every ArcNet installation; no Electron dependency, desktop workflow or signing consumers are installed until an app needs them. Adding Electron activates setup through its extension guide, without requiring hosted applications.
+
 ## What ArcNet currently supports
 
 | Capability                 | Current behavior                                                                                |
@@ -40,6 +42,7 @@ publisher and verifier; target projects do not copy their implementations.
 | Redis                      | Shared URL can be supplied through secrets; ArcNet does not provision project-scoped access yet |
 | S3                         | Private `arcnet.<project>.backend` bucket by default; browser CORS follows app domains          |
 | Bull workers               | Deferred; no qualified shared worker deployment                                                 |
+| Desktop releases | Built-in tooling and workflow template, activated when an Electron app is added; signing, installers and update feeds |
 | Package releases | Packed-content comparison, patch publishing, verification, optional CI and credential integration |
 
 Shared services use the project slug as the naming boundary; credentials must also enforce access isolation. [Domain lifecycle design](domains.md) · [Audit](audit.md).
