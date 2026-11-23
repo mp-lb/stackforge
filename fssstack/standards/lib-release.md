@@ -10,3 +10,8 @@ Changesets configuration, CI workflow, or publishing credentials.
 
 Choose release orchestration separately and follow that integration’s setup
 and credential instructions.
+
+For the optional ArcNet integration, read
+`fm read package-releases.md --store mp-lb/arcnet`. Its shared implementation
+lives in Tools; target projects do not copy publishing scripts. Preserve each
+project's registry choices, manual release policies and publication holds.
