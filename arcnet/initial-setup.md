@@ -2,15 +2,15 @@
 
 An ArcNet environment is the company-owned infrastructure and configuration that projects deploy into. Create it once, then onboard projects through the [project setup guide](SETUP.md). A different company supplies its own accounts, billing, domain, network configuration and credentials; it does not reuse MAP Lab's identifiers or secrets.
 
-**Status:** this is a setup runbook and a specification for the missing automation. `zap arc bootstrap` implements part of the GCP bootstrap today. `arcnet environment domain-owner` delegates an already verified base domain to a deploy identity. Full environment infrastructure as code, environment teardown, shared Redis/Bull hosting and a domain-map generator are not implemented. No cloud changes are performed by reading or applying the project extension alone.
+**Status:** this is a setup runbook and a specification for the missing automation. [ArcNet Base](https://github.com/mp-lb/arcnet-base) owns the administrator-applied GCP foundation. `arcnet environment domain-owner` delegates an already verified base domain to a deploy identity. Full environment infrastructure as code, environment teardown, shared Redis/Bull hosting and a domain-map generator are not implemented. No cloud changes are performed by reading or applying the project extension alone.
 
-For the current `mp-lb` environment, new projects select the versioned preset with `environment: mp-lb` in `.arcnet/arcnet.yaml`; they do not copy a network file. The `network.yaml` references below describe legacy bootstrap inputs and existing multi-file projects. Creating a second company's environment preset is not yet automated.
+For the current `mp-lb` environment, new projects select the versioned preset with `environment: mp-lb` in `.arcnet/arcnet.yaml`; they do not copy a network file. The preset contains application provider defaults; concrete foundation stacks live in ArcNet Base. Creating a second company's environment preset is not yet automated.
 
 ## Location and ownership
 
-This guide owns environment setup. Reusable executable tooling belongs in [`@mp-lb/arcnet`](https://github.com/mp-lb/tools/tree/main/packages/arcnet); environment bootstrap, health checks, inventory and teardown remain to be implemented there. These are environment operations, not application Zap tasks. Project installation uses the published CLI described in [project setup](SETUP.md).
+This guide owns environment setup. Reusable executable tooling belongs in [`@mp-lb/arcnet`](https://github.com/mp-lb/tools/tree/main/packages/arcnet); generic deployment helpers belong there, while concrete environment infrastructure and administrator commands belong in ArcNet Base. These are environment operations, not application Zap tasks. Project installation uses the published CLI described in [project setup](SETUP.md).
 
-The environment lifecycle scripts have not been implemented. Keep actual credentials and private company configuration outside this public source folder and pass their locations explicitly. New tooling must not depend on an implicit `~/.config/zap-arc` pointer. The existing Zap bootstrap is described below as legacy behavior, not the intended entry point.
+Keep credentials outside Git. Use an explicit administrator account for Base, and configured ArcNet secret consumers for application delivery. Zapper has no environment bootstrap or deployment command.
 
 ## Environment inputs
 
@@ -31,7 +31,7 @@ Collect these before provisioning. Organization slugs identify provider accounts
 
 **Naming rule:** `gcp_project_id = environment_slug`. GCP project IDs must satisfy Google's naming rules, be globally unused, and cannot be reused after permanent deletion. `arcnet` is the requested value, not a verified available ID. If unavailable, fail with a clear explanation and require an explicitly chosen different environment slug; do not silently append a suffix. Rebuilding after project deletion requires a new slug/ID. See [project ID constraints](https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects) and [deletion/reuse rules](https://docs.cloud.google.com/resource-manager/docs/delete-restore-projects).
 
-**Intended GCP boundary:** one GCP project per ArcNet environment, containing its GCP infrastructure and application workloads, with application-slug names, labels and scoped access. This is not the current implementation: today's configuration uses a network project plus a GCP project per application. The existing `network.yaml` template and project factory must be adapted before the new naming/boundary can be used; this document does not migrate existing infrastructure.
+**Intended GCP boundary:** one GCP project per ArcNet environment, containing its GCP infrastructure and application workloads, with application-slug names, labels and scoped access. This is not the current implementation: today's configuration uses a network project plus a GCP project per application. This is a future design only; it requires a reviewed change to ArcNet Base and the Tools environment preset and does not migrate existing infrastructure.
 
 ## The layers
 
@@ -57,7 +57,7 @@ Create the accounts and choose billing/owners before running provisioning tools.
 | Upstash                       | Shared Redis instance and scoped runtime connection details                                 | Redis for projects that need it                                                  |
 | AWS                           | Account and scoped provisioning access, only if S3 is selected                              | Object storage                                                                   |
 
-Copy [network.yaml](https://github.com/mp-lb/tools/blob/main/packages/arcnet/templates/network.yaml) into an environment-owned configuration location. Replace all company-specific values, not just `REPLACE_` entries: name, GCP project prefix, network project, billing account, regions, DNS zone, state bucket, registry pattern and Atlas facts. Decide backup/retention policy and who owns the environment. The template's `mp-lb` names are not defaults for another company.
+For a new environment, define its administrator-managed stacks in its base repository and add its reusable application preset to Tools. Replace all provider IDs, domains and shared-service references deliberately. Do not copy MAP Lab account identifiers into another company’s configuration.
 
 Install Node 22+, the pinned ArcNet dependencies, Terraform 1.15.6, gcloud and Docker where container builds are required. Vercel CLI is pinned by the deployment templates. Cloudflare's `cf` CLI is useful for operator diagnostics; CI does not need it. Atlas and Upstash provisioning can use Terraform providers or their APIs.
 
@@ -124,19 +124,25 @@ Enable APIs in the **network/quota project before bootstrap uses them**, and in 
 | Service accounts and CI federation           | `iam.googleapis.com`, `iamcredentials.googleapis.com`, `sts.googleapis.com`                         |
 | Billing budgets                              | `billingbudgets.googleapis.com` when used                                                           |
 
-The current bootstrap enables the listed management/workload/IAM APIs except it does not explicitly enable `storage.googleapis.com`; verify Cloud Storage availability before bucket creation. The project factory separately enables Run, Artifact Registry, Compute, Resource Manager, Billing Budgets and the three IAM/federation APIs. Neither list is a promise that organization policies or billing prerequisites have been satisfied.
+API definitions belong in the base stacks. Review the enabled API list against
+the selected application modules before onboarding; application CI does not
+bootstrap its own project or grant its own permissions.
 
-### Existing bootstrap command (legacy)
+### Administrator entry point
 
-Configure the operator's `~/.config/zap-arc/config.yaml` to point to the new environment's `network.yaml` and provider credentials file; the current operator credentials loader uses dotenv. Authenticate gcloud and ADC, then run the installed Zapper's:
+Follow [ArcNet Base's local administration instructions](https://github.com/mp-lb/arcnet-base#local-administration):
 
 ```sh
-zap arc bootstrap
+export ARCNET_BASE_ACCOUNT='your-admin@example.com'
+mise run plan -- <project>
+# Review the saved plan, then:
+mise run apply -- <project>
 ```
 
-Today this command creates the network GCP project if missing, links billing for a newly created project, enables APIs, creates a GCS state bucket with uniform bucket-level access and versioning, configures Docker authentication and sets the ADC quota project. Supply an explicit billing account; the command otherwise attempts to select an open account. It does not fully reconcile billing/versioning/settings on resources that already exist, and it has no plan/destroy lifecycle for this environment.
-
-The state bucket must exist before Terraform can use it as a backend. Keep it private, recoverable and separate from workload teardown. Terraform's [GCS backend guide](https://developer.hashicorp.com/terraform/language/backend/gcs) documents locking, credentials and recommended object versioning. Current project state uses `terraform/state/<project-slug>` inside the shared bucket.
+Run these commands in the Base checkout. Its bootstrap state tracks the
+protected base-state bucket. Application state lives in a separate bucket per
+project. Copy the exported `foundation` and `identity` settings into the app’s
+`.arcnet/arcnet.yaml`; do not expose base state to application CI.
 
 ## 3. Shared data and networking
 
@@ -209,7 +215,7 @@ Use an encrypted JSON document as the environment's secret source if that is the
 
 A single centrally maintained JSON source is compatible with this model; giving every project its decrypted contents is not the isolation model. Deliver project-specific subsets/credentials. If every repo holds the same encrypted file and a key that decrypts all of it, filtering variables afterward does not prevent that repo from reading the other secrets.
 
-Current interfaces: Terraform Vercel uses `VERCEL_API_TOKEN`; the static Vercel adapter uses `VERCEL_TOKEN`. The standard provider configuration comes from the pinned ArcNet package. `ARCNET_ENV_JSON` is a JSON object of **application** secret values, not a universal provider-credentials loader. New projects list non-secret Forum JSON paths under `variables:` in `.arcnet/arcnet.yaml` and commit snapshots from `arcnet variables sync`; legacy projects may still have inline variables or `.arcnet/env.production.json`. The ArcNet CLI loads ordered encrypted Forum JSON sources, provisions per-file GitHub decryption keys, and selects operator credentials through a `deploy` consumer. See [project setup](SETUP.md). GCP CI uses OIDC/WIF.
+Current interfaces: Terraform Vercel uses `VERCEL_API_TOKEN`; the static Vercel adapter uses `VERCEL_TOKEN`. The standard provider configuration comes from the pinned ArcNet package. `ARCNET_ENV_JSON` is a JSON object of **application** secret values, not a universal provider-credentials loader. New projects list non-secret Forum JSON paths under `variables:` in `.arcnet/arcnet.yaml` and commit snapshots from `arcnet variables sync`. The ArcNet CLI loads ordered encrypted Forum JSON sources, provisions per-file GitHub decryption keys, and selects operator credentials through a `deploy` consumer. See [project setup](SETUP.md). GCP CI uses OIDC/WIF.
 
 ## 6. Onboard projects
 
@@ -217,16 +223,10 @@ Once the environment is ready, follow [project setup](SETUP.md) for project conf
 
 ## 7. Environment infrastructure as code: implementation scope
 
-The environment tooling belongs here in Stackforge, with declarative Terraform resources and CLI/API calls for bootstrap prerequisites. It uses environment state separate from application state. The planned source layout is:
-
-```text
-stackforge/arcnet/
-├── initial-setup.md             This guide and input contract
-└── environment/                 Planned environment tooling
-    ├── infrastructure/          Environment Terraform definitions
-    ├── scripts/                 Setup, checks, analysis and teardown
-    └── tests/                   Environment lifecycle tests
-```
+Concrete environment infrastructure and administrator operations belong in
+ArcNet Base. Shared executable helpers and application deployment modules belong
+in Tools. Stackforge owns this guidance. These boundaries also apply to future
+environment lifecycle work; do not add deployment code back to Zapper.
 
 Supply the company-specific configuration and encrypted secrets from an explicit external location. They are inputs to this tooling, not files to commit under Stackforge. MongoDB and Upstash are provisioned manually and treated as referenced resources; environment teardown must preserve them.
 
@@ -234,6 +234,6 @@ The required lifecycle is **check → bootstrap → plan → apply → export pr
 
 Creation order: accounts/credentials and existing MongoDB/Redis → GCP environment project/APIs → state bucket → environment Terraform state → environment-owned resources → DNS configuration → project access/bindings. A minimal bootstrap state must be preserved or imported once remote state exists; an imperative script must not leave untracked infrastructure behind.
 
-Teardown reverses the dependency order: stop project deploys, remove project workloads/bindings, preserve or explicitly retire data/backups, remove only environment-owned shared resources and DNS records, revoke credentials/trust, then remove the state bucket/network project last. Referenced resources must remain. Environment deletion must not be inferred from `zap arc destroy`: that command destroys the selected **project** state, not this complete environment. There is currently no end-to-end environment teardown command.
+Teardown reverses the dependency order: stop project deploys, remove project workloads/bindings, preserve or explicitly retire data/backups, remove only environment-owned shared resources and DNS records, revoke credentials/trust, then remove the state bucket/network project last. Referenced resources must remain. There is currently no end-to-end environment teardown command.
 
 Before shipping this lifecycle, prove it on a disposable environment: setup, repeat setup without duplicate resources, onboard hello-world, deploy via GitHub, verify project isolation, exercise partial-failure recovery, and tear down without affecting referenced resources. This document does not claim those environment lifecycle tests have run.

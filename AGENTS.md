@@ -17,7 +17,7 @@ Stackforge is the authoring workbench for the FSS Stack setup system. It is not 
 The root of this git repo should stay thin. It owns the FSS Stack source content:
 
 - `fssstack/` is the Forum content and shell for creating FSS Stack target projects.
-- `arcnet/` owns opt-in deployment onboarding and non-secret network config; the engine stays in Zapper and operator credentials remain outside Git.
+- `arcnet/` owns opt-in deployment onboarding and non-secret network config; the shared engine lives in Tools and administrator-managed infrastructure lives in ArcNet Base and operator credentials remain outside Git.
 - `fssstack-mobile/` owns mobile setup and release guidance.
 
 [`fssstack-start`](https://github.com/mp-lb/fssstack-start) is a separate
@@ -77,8 +77,8 @@ owns the configurator and CLI. Its only integration boundary here is the basic
 `fssstack.yaml` input contract; keep that contract synchronized when it changes.
 
 Opt-in deployment onboarding and non-secret network configuration live in
-`arcnet/`; the engine remains in Zapper and operator credentials remain outside
-Git. The public shell carries no deployment opinions. Do not mix
+`arcnet/`; the shared engine lives in Tools, administrator-managed infrastructure
+lives in ArcNet Base, and operator credentials remain outside Git. The public shell carries no deployment opinions. Do not mix
 deployment-specific cloud configuration into the local-development shell unless
 the target repo genuinely needs it to run locally.
 

@@ -28,7 +28,7 @@ owns the configurator and CLI. Its only integration boundary here is the basic
 `fssstack.yaml` input contract; keep that contract synchronized when it changes.
 
 Opt-in deployment onboarding and non-secret network configuration live in
-`arcnet/`; the engine remains in Zapper and operator credentials remain outside
-Git. The public shell carries no deployment opinions. Do not mix
+`arcnet/`; the shared engine lives in Tools, administrator-managed infrastructure
+lives in ArcNet Base, and operator credentials remain outside Git. The public shell carries no deployment opinions. Do not mix
 deployment-specific cloud configuration into the local-development shell unless
 the target repo genuinely needs it to run locally.

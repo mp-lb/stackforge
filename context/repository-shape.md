@@ -3,7 +3,7 @@
 The root of this git repo should stay thin. It owns the FSS Stack source content:
 
 - `fssstack/` is the Forum content and shell for creating FSS Stack target projects.
-- `arcnet/` owns opt-in deployment onboarding and non-secret network config; the engine stays in Zapper and operator credentials remain outside Git.
+- `arcnet/` owns opt-in deployment onboarding and non-secret network config; the shared engine lives in Tools and administrator-managed infrastructure lives in ArcNet Base and operator credentials remain outside Git.
 - `fssstack-mobile/` owns mobile setup and release guidance.
 
 [`fssstack-start`](https://github.com/mp-lb/fssstack-start) is a separate

@@ -28,7 +28,7 @@ variables:
     - /projects/<project-slug>/variables.json
 ```
 
-`project` must match `zap.yaml`. Project variables override standard variables because their path comes last.
+`project` identifies the production application; no `zap.yaml` is required. Project variables override standard variables because their path comes last.
 
 Provision the shared and project secret sources:
 
