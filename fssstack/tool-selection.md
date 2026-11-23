@@ -16,7 +16,7 @@ For an npm project, enable only `node` in that setting and use npm bundled with 
 
 Run `mise trust` and `mise install`, then verify `node --version` and
 `pnpm --version` match the pins (use `npm --version` for npm projects).
-Run commands normally; no mise activation or `mise exec` prefix is required.
+With mise’s shell integration or shims configured, run commands normally. In a shell without that setup, use `mise exec -- <command>` so the project pins still apply.
 Do not add duplicate `[tools]` pins, `.nvmrc`, or `.tool-versions` files.
 Zapper remains the task/process runner; mise only selects tools. Keep shared local CLI entrypoints such as `zap` and `fm` in a version-independent PATH directory (for example `~/.local/bin`), linked to their owning local builds, rather than only inside one Node installation. Verify `zap --version` and `fm --version` after changing tool selection.
 
