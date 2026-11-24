@@ -3,7 +3,7 @@
 Set up CI, signed builds, and updates for a [FastNative](../fastnative/README.md) app. The shared GitHub Actions code and templates live in [Expo release tooling](https://github.com/mp-lb/tools/tree/main/packages/expo-release).
 
 1. Run `npm exec --yes --package=@mp-lb/expo-release -- expo-release-setup .`. Add `--replace-app-json` when replacing the config from a fresh scaffold.
-2. Fill `inputs.env` from the generated example. Run `eas init` to link the Expo project, then run `npm exec --yes --package=@mp-lb/expo-release -- expo-release-apply-inputs inputs.env .`. Verify the selected platform's app identifier and store submission profile.
+2. Fill `inputs.env` from the generated example. Run `eas init` to link the Expo project, then run `npm exec --yes --package=@mp-lb/expo-release -- expo-release-apply-inputs inputs.env .`. Verify the selected platform's app identifier and store submission profile. For a first iOS release, use `ios.supportsTablet: false` in `app.json`. Set it to `true` when native iPad support is in scope.
 3. If the app installs private GitHub packages, follow [Standard package access](#standard-package-access).
 4. Use **Test EAS Connection** and run **Release** in `sync` mode to configure the Expo production environment. To create a first signed binary, run `eas build --profile production --platform ios` for iOS or `eas build --profile production --platform android` for Android.
 5. Use the [mobile app release skill](https://hyperdoc.forumlabs.net/57afee86-5a3b-423c-8a6e-95560c90e1c5) for TestFlight or Play testing, store forms, review, and launch.
