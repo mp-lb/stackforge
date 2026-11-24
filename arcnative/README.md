@@ -18,6 +18,6 @@ Set up CI, signed builds, and updates for a [FastNative](../fastnative/README.md
 
 ## Mandatory app-side updates
 
-Every app follows [Fastnative automatic updates](../fastnative/updates.md): install `@mp-lb/mobile-updates`, mount its provider above authentication/navigation, protect unsaved work and expose the shared debug panel. EAS publication alone does not provide foreground checking and safe automatic installation.
+Every app follows [Fastnative automatic updates](../fastnative/updates.md): install `@mp-lb/react-native-updates`, mount its provider above authentication/navigation, protect unsaved work and expose the shared debug panel. EAS publication alone does not provide foreground checking and safe automatic installation.
 
 Use `release` mode for the app's authorized main-branch delivery trigger. The fingerprint action publishes a compatible OTA update or starts a new production binary with automatic submission when required. Verify CI, publication/build/submission and device installation separately. Preserve native startup checks and Expo rollback/error recovery; do not turn off the shared updater to work around a failed release.

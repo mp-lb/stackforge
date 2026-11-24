@@ -1,11 +1,11 @@
 # Automatic updates
 
-Every Fastnative app installs [@mp-lb/mobile-updates](https://github.com/mp-lb/tools/tree/main/packages/mobile-updates). Update handling is a baseline capability, not an optional auth augmentation. Tools owns the implementation; apps use the package rather than copying update loops.
+Every Fastnative app installs [@mp-lb/react-native-updates](https://github.com/mp-lb/tools/tree/main/packages/react-native-updates). Update handling is a baseline capability, not an optional auth augmentation. Tools owns the implementation; apps use the package rather than copying update loops.
 
 ## Install and mount
 
 ```sh
-npm install @mp-lb/mobile-updates
+npm install @mp-lb/react-native-updates
 npx expo install expo-updates
 ```
 
