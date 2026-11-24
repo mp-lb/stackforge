@@ -43,7 +43,8 @@ publisher and verifier; target projects do not copy their implementations.
 | S3                         | Private `arcnet.<project>.backend` bucket by default; browser CORS follows app domains          |
 | Bull workers               | Deferred; no qualified shared worker deployment                                                 |
 | Desktop releases | Built-in tooling and workflow template, activated when an Electron app is added; signing, installers and update feeds |
-| Package releases | Packed-content comparison, patch publishing, verification, optional CI and credential integration |
+| Public package publishing | [npm releases](package-releases.md): packed-content comparison, patch publishing, verification and optional CI |
+| Private package publishing | [GitHub Packages](private-package-publishing.md): release orchestration, registry credentials, authenticated checks and local/CI consumer access; access grants and private workflow setup are guided steps |
 
 Shared services use the project slug as the naming boundary; credentials must also enforce access isolation. [Domain lifecycle design](domains.md) · [Audit](audit.md).
 

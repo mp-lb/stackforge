@@ -75,10 +75,14 @@ pnpm exec arcnet check
 
 Review the generated configuration, workflows, snapshots and dependency lockfile. ArcNet supplies deployment validation gates, inferred React/Vite SPA routing, provider root/framework checks and disabled Vercel Git delivery. Preserve explicit routing and resolve reported configuration conflicts before deploying. Custom `vercel.ts` configuration requires manual integration, as reported by setup.
 
-If package releases are selected, follow [Package releases](package-releases.md).
-Install its workflow separately with `pnpm exec arcnet packages setup --repository
-owner/repo`. Keep existing custom workflows and migrate their commands explicitly;
-do not install a second publisher. No application deployment is required.
+If package releases are selected, choose public or private delivery explicitly.
+For public npm, follow [Package releases](package-releases.md) and install its
+workflow with `pnpm exec arcnet packages setup --repository owner/repo`. For
+GitHub Packages, follow [Private package publishing](private-package-publishing.md),
+including producer authentication and read access for local/CI consumers; the
+public workflow generator and public verifier do not configure those steps.
+Preserve custom workflows and publication holds; do not add a competing publisher.
+Neither capability requires application hosting.
 
 For FSS Stack projects, add these shared Forum blocks to `context/index.md`. Put each link on its own line with blank lines around it.
 

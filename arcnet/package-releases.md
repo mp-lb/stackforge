@@ -21,10 +21,14 @@ Run commands from the target workspace, or select it with `arcnet --root <path>`
   public npm. Existing package registry configuration determines eligibility.
 - `arcnet packages verify` verifies exact public npm versions and downloadable
   tarballs using `ARCNET_RELEASE_RESULT` from the publisher's `release_report`
-  GitHub output. GitHub Packages retains its authenticated project-specific checks.
+  GitHub output. For authenticated GitHub Packages checks and consumer access,
+  follow [Private package publishing](private-package-publishing.md).
 
-Packages are discovered under `packages/*` and `apps/*`. Private packages are
-excluded. Changed packages receive the next patch version; unchanged packages are
+Packages are discovered under `packages/*` and `apps/*`. Packages with
+`"private": true` in their manifest are excluded from all publication; that flag
+is different from private registry visibility. Publishable GitHub Packages
+packages select `publishConfig.registry: https://npm.pkg.github.com`. Changed
+packages receive the next patch version; unchanged packages are
 skipped. Existing initial versions are retained for first publications. Builds
 must be deterministic. No Changesets or release commits are required.
 

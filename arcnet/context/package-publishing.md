@@ -5,8 +5,15 @@ workflow. ArcNet builds packages, compares their packed files with published
 versions and publishes the next patch for changed packages. Run
 `pnpm exec arcnet packages publish --dry-run` to preview. Credentials come from
 the project's configured registry authentication; use the ArcNet `publish`
-consumer when configured. Verify the workflow and exact published versions with
-`arcnet packages verify` and its `ARCNET_RELEASE_RESULT` report input.
+consumer when configured. For public npm, verify the workflow and exact published
+versions with `arcnet packages verify` and its `ARCNET_RELEASE_RESULT` report input.
+For private GitHub Packages, use `arcnet packages publish --registry github` and
+authenticated exact-version download/install checks from the consumer context;
+the current verifier is public-npm-only. ArcNet owns registry routing, publishing
+credentials and local/CI consumer access. Read
+`fm read private-package-publishing.md --store mp-lb/arcnet`.
+`private: true` in a package manifest disables publishing entirely; registry
+visibility is a separate setting.
 
 Setup and migration: `fm read package-releases.md --store mp-lb/arcnet`.
 FSS Stack supplies package preparation, not a publisher. Preserve intentional
