@@ -7,10 +7,11 @@ versions and publishes the next patch for changed packages. Run
 the project's configured registry authentication; use the ArcNet `publish`
 consumer when configured. For public npm, verify the workflow and exact published
 versions with `arcnet packages verify` and its `ARCNET_RELEASE_RESULT` report input.
-For private GitHub Packages, use `arcnet packages publish --registry github` and
-authenticated exact-version download/install checks from the consumer context;
-the current verifier is public-npm-only. ArcNet owns registry routing, publishing
-credentials and local/CI consumer access. Read
+For private GitHub Packages, declare the publish/consume list with
+`arcnet packages private setup`, publish with `arcnet packages private publish`,
+and verify exact authenticated downloads with `arcnet packages private verify`.
+Tools implements the npmrc, Zap and CI wiring; ArcNet owns these setup conventions
+and credential integration. Read
 `fm read private-package-publishing.md --store mp-lb/arcnet`.
 `private: true` in a package manifest disables publishing entirely; registry
 visibility is a separate setting.

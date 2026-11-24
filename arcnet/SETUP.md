@@ -79,8 +79,9 @@ If package releases are selected, choose public or private delivery explicitly.
 For public npm, follow [Package releases](package-releases.md) and install its
 workflow with `pnpm exec arcnet packages setup --repository owner/repo`. For
 GitHub Packages, follow [Private package publishing](private-package-publishing.md),
-including producer authentication and read access for local/CI consumers; the
-public workflow generator and public verifier do not configure those steps.
+and run `pnpm exec arcnet packages private setup --repository owner/repo --publish @owner/package`.
+The shared tooling configures the package list, npmrc, Zap tasks and private release
+CI; supply the token through local/CI environments and grant consumers read access.
 Preserve custom workflows and publication holds; do not add a competing publisher.
 Neither capability requires application hosting.
 
