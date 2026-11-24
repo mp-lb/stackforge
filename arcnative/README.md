@@ -15,3 +15,9 @@ Set up CI, signed builds, and updates for a [FastNative](../fastnative/README.md
 3. For Expo builds, create `.arcnet/arcnet.yaml` with `version: 1`, `project`, `repository`, `environment: mp-lb`, and an `expo` consumer under `secrets.consumers`. Map the registry variable from the app’s `.npmrc` to `READ_PACKAGES_GITHUB_PAT`.
 4. Run `arcnet secrets add --key ARCNET_STANDARD_SECRETS_KEY --store mp-lb/mp-lb --path /admin/standard-secrets.json.enc --repository <owner/repo>` and enter the Forum encryption password in your terminal. Commit the generated encrypted snapshot and validation workflow, then wire the trusted main-branch callers to the `expo` consumer. [Shared action inputs](https://github.com/mp-lb/tools/tree/main/packages/expo-release#github-actions)
 5. After editing or rotating the standard token, run `arcnet secrets sync`, commit the refreshed ciphertext, and run **Release** in `sync` mode.
+
+## Mandatory app-side updates
+
+Every app follows [Fastnative automatic updates](../fastnative/updates.md): install `@mp-lb/mobile-updates`, mount its provider above authentication/navigation, protect unsaved work and expose the shared debug panel. EAS publication alone does not provide foreground checking and safe automatic installation.
+
+Use `release` mode for the app's authorized main-branch delivery trigger. The fingerprint action publishes a compatible OTA update or starts a new production binary with automatic submission when required. Verify CI, publication/build/submission and device installation separately. Preserve native startup checks and Expo rollback/error recovery; do not turn off the shared updater to work around a failed release.
