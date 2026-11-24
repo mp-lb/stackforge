@@ -9,7 +9,7 @@ list, npmrc routing, Zap tasks, private release workflow and authenticated verif
 Install the published tooling in the workspace, then declare the packages:
 
 ```sh
-pnpm add -Dw --save-exact @mp-lb/arcnet@0.7.29
+pnpm add -Dw --save-exact @mp-lb/arcnet@0.7.31
 pnpm exec arcnet packages private setup --repository mp-lb/forum --publish @mp-lb/forum-trpc
 ```
 
@@ -26,7 +26,7 @@ dependency and existing token variable. Bootstrap the public tooling outside pri
 scope routing:
 
 ```sh
-npm exec --yes --registry=https://registry.npmjs.org --@mp-lb:registry=https://registry.npmjs.org --package=@mp-lb/arcnet@0.7.29 -- arcnet packages private setup --consume @mp-lb/forum-trpc --token-env GITHUB_PAT
+npm exec --yes --registry=https://registry.npmjs.org --@mp-lb:registry=https://registry.npmjs.org --package=@mp-lb/arcnet@0.7.31 -- arcnet packages private setup --consume @mp-lb/forum-trpc --token-env GITHUB_PAT
 ```
 
 The generated `.npmrc` contains only a variable reference. Supply that variable
